@@ -1,0 +1,44 @@
+.tn-navbar {
+    background-color: #FAF8F0;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.container {
+    background-color: #FAF8F0;
+}
+.tn-navbar .navbar-nav {
+    margin-right: auto !important; 
+    margin-left: 40px !important; 
+}
+
+.tn-navbar .nav-item a {
+
+    font-size: 20px;
+    margin: 0 10px; 
+    padding: 10px 0;
+    text-decoration: none;
+    color: #1A531A;
+    font-weight: bold;
+}
+
+.logo {
+    height: 60px;
+    width: auto;
+}
+.tn-navbar p {
+    text-decoration: none;
+    color: #1A531A;
+    font-weight: bold;
+}
+
+.nav-buttons {
+    margin-right: 0px; 
+}
+.btn-group .btn-primary{ 
+    background-color: #1A531A !important;
+    border-color: #1A531A !important;
+    color: #FAF8F0 !important;
+}
+.btn-group .btn-primary:hover {
+    background-color: #0d420d !important; 
+}

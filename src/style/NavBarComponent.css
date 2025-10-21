@@ -1,44 +1,127 @@
 .tn-navbar {
-    background-color: #FAF8F0;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: none;
+    transition: background-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .container {
-    background-color: #FAF8F0;
+    background-color: transparent;
+    padding: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    width: 100vw;
 }
+
 .tn-navbar .navbar-nav {
-    margin-right: auto !important; 
-    margin-left: 40px !important; 
+    margin: auto;
 }
 
-.tn-navbar .nav-item a {
-
+.tn-navbar .nav-item a.nav-link {
     font-size: 20px;
-    margin: 0 10px; 
+    margin: 0 20px;
     padding: 10px 0;
     text-decoration: none;
-    color: #1A531A;
+    font-family: "Inter", sans-serif;
     font-weight: bold;
+    transition: color 0.4s ease;
+}
+
+.tn-navbar .navbar-brand {
+    position: relative !important;
 }
 
 .logo {
     height: 60px;
     width: auto;
-}
-.tn-navbar p {
-    text-decoration: none;
-    color: #1A531A;
-    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0;
+    transition: opacity 0.4s ease;
 }
 
-.nav-buttons {
-    margin-right: 0px; 
+.tn-navbar p {
+    position: sticky;
+    margin: 0 20px;
+    padding-left: 60px;
+    font-family: "Inter", sans-serif;
+    font-weight: bold;
+    transition: color 0.4s ease;
 }
-.btn-group .btn-primary{ 
+
+
+.navbar-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+}
+
+.navbar-transparent {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.navbar-transparent.tn-navbar .nav-item a.nav-link,
+.navbar-transparent.tn-navbar p {
+    color: #FAF8F0 !important;
+}
+
+.navbar-transparent .btn-secondary {
+    background-color: #1a531a73 !important;
+    border-color: #1a531a73 !important;
+    color: #FAF8F0 !important;
+}
+
+.navbar-transparent .logo-claro {
+    opacity: 1;
+}
+
+.navbar-transparent .logo-oscuro {
+    opacity: 0;
+}
+
+.navbar-solid {
+    background-color: #FAF8F0 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-solid.tn-navbar .nav-item a,
+.navbar-solid.tn-navbar p {
+    color: #1A531A !important;
+}
+
+.navbar-solid .btn-secondary {
     background-color: #1A531A !important;
     border-color: #1A531A !important;
     color: #FAF8F0 !important;
 }
-.btn-group .btn-primary:hover {
-    background-color: #0d420d !important; 
+
+.navbar-solid .logo-claro {
+    opacity: 0;
+}
+
+.navbar-solid .logo-oscuro {
+    opacity: 1;
+}
+
+.dropdown-menu .dropdown-item {
+    background-color: #FAF8F010;
+    color: #FAF8F0;
+    font-size: bolder;
+    left: -5px;
+
+}
+
+.dropdown-menu.show {
+    background-color: #FAF8F010;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #FAF8F020;
+    color: #B85C38;
+    font-size: bolder;
+    left: -5px;
+
 }

@@ -2,43 +2,49 @@ import { PackageTravelContext } from "../context/PackageTravelContext";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../style/SearchComponent.css';
+import { Search } from "lucide-react";
 
-export const SearchComponent = () => {
+function getUniqueDestinations(packages) {
+  const uniqueDestinations = [];
+  return packages.filter(pkg => {
+    if (!uniqueDestinations.includes(pkg.destination.toLowerCase())) {
+      uniqueDestinations.push(pkg.destination.toLowerCase());
+      return true;
+    }
+    return false;
+  });
+}
+
+export const SearchComponent = ({ onFilter }) => {
 
   const { packageTravel } = useContext(PackageTravelContext);
-  const navigate = useNavigate();
-
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-
   useEffect(() => {
-        if (searchTerm.length === 0) {
-      setSuggestions(packageTravel);
-      if (showSuggestions) {
-          setShowSuggestions(packageTravel.length > 0);
-      }
-      return; 
-    }
-    const filteredPackage = packageTravel.filter(pkg => 
+    let filtered = packageTravel;
+    if (searchTerm.length > 0) {
+      filtered = packageTravel.filter(pkg =>
         pkg.destination.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setSuggestions(filteredPackage);
-    setShowSuggestions(filteredPackage.length > 0);
-    
-  }, [searchTerm, packageTravel, showSuggestions]); 
+      );
+    }
+    setSuggestions(getUniqueDestinations(filtered));
+  }, [searchTerm, packageTravel]);
 
   const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setShowSuggestions(true); 
+    const value = event.target.value;
+    setSearchTerm(value);
+    setShowSuggestions(true);
+    if (onFilter && value.trim() === "") {
+      onFilter(null);
+    }
   };
 
-  const handleSuggestionClick = (packageTravelId) => {
-    navigate(`/detallePaquete/${packageTravelId}`); 
-    setSearchTerm(''); 
-    setSuggestions([]); 
-    setShowSuggestions(false); 
+  const handleSuggestionClick = (destination) => {
+    if (onFilter) onFilter(destination);
+    setSearchTerm(destination);
+    setShowSuggestions(false);
   };
 
   const handleInputBlur = () => {
@@ -48,48 +54,55 @@ export const SearchComponent = () => {
   };
 
   const handleInputFocus = () => {
-    if (searchTerm.length === 0) {
-        setSuggestions(packageTravel);
-    }
+    setSuggestions(getUniqueDestinations(packageTravel));
     setShowSuggestions(true);
   };
 
   const handleSearchSubmit = (event) => {
-    event.preventDefault(); 
+    event.preventDefault();
     if (suggestions.length > 0 && searchTerm.length > 0) {
-      handleSuggestionClick(suggestions[0].id);
+      handleSuggestionClick(suggestions[0].destination);
     } else {
-        alert('No se encontraron paquetes que coincidan con tu búsqueda.');
+      setErrorMessage('No se encontraron paquetes que coincidan con tu búsqueda.');
     }
     setSearchTerm('');
     setSuggestions([]);
     setShowSuggestions(false);
   };
 
-return(
-<div className="search-container">
-            <form className="d-flex" role="search" onSubmit={handleSearchSubmit}>
-              <input
-                className="form-control me-2"
-                type="search"
-                placeholder="Selecciona tu destino"
-                aria-label="Search"
-                value={searchTerm} 
-                onChange={handleSearchChange} 
-                onFocus={handleInputFocus}
-                onBlur={handleInputBlur}
-              />
-              <button className="btn btn-outline-success" type="submit">Buscar</button>
-            </form>
-            {showSuggestions && suggestions.length > 0 && (
-              <ul className="suggestions-list">
-                {suggestions.map(pkg => (
-                   <li key={pkg.id} onClick={() => handleSuggestionClick(pkg.id)}>
-                    <span>{pkg.destination}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+  return (
+    <div className="search-container">
+      <form className="d-flex" role="search" onSubmit={handleSearchSubmit}>
+        <div className="input-group">
+          <div className="input-group-prepend">
+            <Search
+              size={18}
+              color="#FAF8F0"
+              className="search-icon"
+            />
           </div>
-          )
+
+          <input
+            className="form-control me-2"
+            type="search"
+            placeholder="Selecciona tu destino"
+            aria-label="Search"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+          />
+        </div>
+      </form>
+      {showSuggestions && suggestions.length > 0 && (
+        <ul className="suggestions-list">
+          {suggestions.map(pkg => (
+            <li key={pkg.id} onClick={() => handleSuggestionClick(pkg.destination)}>
+              <span>{pkg.destination}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
 }

@@ -1,0 +1,116 @@
+.footer-tn {
+  background-color: #FAF8F0;
+  color: #1A531A;
+  padding: 20px 20px 0;
+  font-family: "Inter", sans-serif;
+  border-top: 5px solid #1A531A;
+}
+
+.footer-content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 30px;
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.logo-foot {
+  width: 100px;
+  height: auto;
+}
+
+.footer-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1A531A;
+  margin-top: 10px;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+
+@media (min-width: 768px) {
+  .footer-rest-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 50px;
+    padding-top: 15px;
+  }
+
+  .footer-section.social {
+    text-align: right;
+  }
+
+  .social-links {
+    justify-content: flex-end;
+  }
+}
+
+.footer-subtitle{
+  font-size: 25px;
+  font-weight: 600;
+  color:  #B85C38;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  display: inline-block;
+  text-align: center;
+}
+.footer-link{
+font-size: 1.1rem;
+  font-weight: 600;
+  color: #1A531A;
+  padding-top: 10px;
+  border-bottom: 2px solid #618A3D;
+  padding-bottom: 5px;
+  display: inline-block;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .footer-section.social .footer-subtitle {
+    margin-left: auto;
+  }
+}
+
+.description p {
+  margin: 5px 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+}
+
+.social-links a {
+  color: #1A531A;
+  transition: color 0.3s;
+}
+
+.social-links a:hover {
+  color: #B85C38;
+}
+
+.footer-icon {
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding: 15px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 0.8rem;
+  margin-top: 10px;
+  color: #1A531A;
+}

@@ -16,7 +16,7 @@
 }
 
 .tn-navbar .nav-item a.nav-link {
-    font-size: 20px;
+    font-size: 1.25rem;
     margin: 0 20px;
     padding: 10px 0;
     text-decoration: none;
@@ -47,7 +47,6 @@
     font-weight: bold;
     transition: color 0.4s ease;
 }
-
 
 .navbar-fixed {
     position: fixed;
@@ -108,7 +107,7 @@
 .dropdown-menu .dropdown-item {
     background-color: #FAF8F010;
     color: #FAF8F0;
-    font-size: bolder;
+    font-weight: bolder;
     left: -5px;
 
 }
@@ -121,7 +120,6 @@
 .dropdown-menu .dropdown-item:hover {
     background-color: #FAF8F020;
     color: #B85C38;
-    font-size: bolder;
+    font-weight: bolder;
     left: -5px;
-
 }

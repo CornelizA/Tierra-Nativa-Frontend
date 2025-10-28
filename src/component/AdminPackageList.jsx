@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { apiGetPackages, apiDeletePackage } from '../service/PackageTravelService';
 import { AdminPackageForm, initialFormData } from './AdminPackageForm';
+import '../style/AdminPackageList.css';
+import { Pencil, X, Plus, Laptop } from 'lucide-react';
 
 
 export const AdminPackageList = () => {
@@ -8,14 +10,25 @@ export const AdminPackageList = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [packageToEdit, setPackageToEdit] = useState(null);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const loadPackages = async () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await apiGetPackages('/paquetes/admin');
-            setPackages(data);
+            if (!isMobile) {
+                const data = await apiGetPackages('/paquetes/admin');
+                setPackages(data);
+            }
         } catch (err) {
             setError('Error al cargar la lista de paquetes.');
             console.error(err);
@@ -23,6 +36,12 @@ export const AdminPackageList = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (!isMobile) {
+            loadPackages();
+        }
+    }, [isMobile]);
 
     useEffect(() => {
         loadPackages();
@@ -35,7 +54,7 @@ export const AdminPackageList = () => {
         );
         if (isConfirmed) {
             try {
-                await apiDeletePackage(`/paquetes/${packageId}`);
+                await apiDeletePackage(packageId);
                 loadPackages();
                 alert(`Paquete "${packageName}" eliminado con éxito.`);
             } catch (err) {
@@ -58,6 +77,24 @@ export const AdminPackageList = () => {
 
     if (loading) return <div>Cargando lista de paquetes...</div>;
     if (error) return <div className="error">{error}</div>;
+
+    if (isMobile) {
+        return (
+            <div className="mobile-access-denied-container">
+                <div className="mobile-access-card">
+                    <Laptop size={64} style={{ color: '#1A531A', marginBottom: '15px' }} />
+                    <h2>Acceso Restringido</h2>
+                    <p>
+                        La sección de <strong>Administración de Paquetes</strong> requiere una interfaz de escritorio para su correcta gestión y visualización de tablas.
+                    </p>
+                    <p>
+                        Por favor, acceda desde una <strong>computadora o laptop</strong> para continuar.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     if (packageToEdit) {
         return (
             <AdminPackageForm
@@ -91,13 +128,19 @@ export const AdminPackageList = () => {
                                 <button
                                     className="btn btn-warning me-2"
                                     onClick={() => handleEdit(pkg)}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                                 >
+                                    <Pencil size={16} />
                                     Editar
                                 </button>
+
                                 <button
                                     className="btn btn-danger"
                                     onClick={() => handleDelete(pkg.id, pkg.name)}
+                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                                 >
+
+                                    <X size={16} />
                                     Eliminar
                                 </button>
                             </td>
@@ -105,8 +148,13 @@ export const AdminPackageList = () => {
                     ))}
                 </tbody>
             </table>
-            <button className="btn btn-primary mt-3" onClick={() => setPackageToEdit(initialFormData)}>
-                + Registrar Nuevo Paquete
+            <button
+                className="btn btn-primary mt-3"
+                onClick={() => setPackageToEdit(initialFormData)}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+            >
+                <Plus size={18} />
+                Registrar Nuevo Paquete
             </button>
 
         </div>

@@ -7,6 +7,7 @@ import { SearchComponent } from "../component/SearchComponent";
 import { Link } from "react-router-dom";
 import { DestinationComponent } from "../component/DestinationComponent";
 
+const FALLBACK_CARD_URL = 'https://placehold.co/400x300/CCCCCC/000000?text=SIN+IMAGEN';
 
 export const Home = () => {
 
@@ -25,7 +26,7 @@ export const Home = () => {
   }, [selectedDestination, packageTravel]);
 
   if (loading) {
-    return <div className="text-center mt-5">Cargando paquetes de Tierra Nativa...</div>;
+    return <div className="text-center ">Cargando paquetes de Tierra Nativa...</div>;
   }
   const TipIcon = ({ Icon, bgColor }) => (
     <div className={`w-10 h-10 flex items-center justify-center rounded-full ${bgColor} text-white mr-3 flex-shrink-0`}>
@@ -101,7 +102,7 @@ export const Home = () => {
           <div className="map-column">
             <div className="map-image-container">
               <img
-                src="src/images/MAPA ARGENTINA.png"
+                src="/images/MAPA ARGENTINA.png"
                 alt="Mapa de Argentina con divisiones provinciales"
                 className="map-image"
               />

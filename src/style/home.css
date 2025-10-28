@@ -5,7 +5,7 @@
     color: #FAF8F0;
     font-family: "Inter", sans-serif;
     font-weight: bold;
-    font-size: 50px;
+    font-size: 3.125rem;
 }
 
 .container h2 {
@@ -15,7 +15,7 @@
     text-align: center;
     margin-top: 40px;
     margin-bottom: 40px;
-    font-size: 50px;
+    font-size: 3.125rem;
     width: 100vw;
     padding: 20px 0 40px 0;
 }
@@ -35,7 +35,7 @@
     color: #FAF8F0;
     font-family: "Inter", sans-serif;
     font-weight: bold;
-    font-size: 40px;
+    font-size: 2.5rem;
     text-align: center;
     margin-bottom: 50px;
 
@@ -45,7 +45,7 @@
 .hero-section {
     height: 600px;
     width: 100vw;
-    background-image: url('https://images.pexels.com/photos/13421304/pexels-photo-13421304.jpeg');
+    background-image: url('https://images.pexels.com/photos/4613847/pexels-photo-4613847.jpeg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -97,7 +97,7 @@
 .destination-content h3 {
     color: #1A531A;
     font-family: "Inter", sans-serif;
-    font-size: 40px;
+    font-size: 2.5rem;
     font-weight: bold;
     text-align: center;
     border-bottom: #B85C38 solid 3px;
@@ -107,7 +107,7 @@
 .destination-content p {
     color: #1A531A;
     font-family: "Inter", sans-serif;
-    font-size: 20px;
+    font-size: 1.25rem;
     text-align: justify;
     text-indent: 25px;
 }
@@ -115,7 +115,7 @@
 .destination-content h4 {
     color: #B85C38;
     font-family: "Inter", sans-serif;
-    font-size: 28px;
+    font-size: 1.75rem;
     text-align: center;
     padding: 10px 5px;
 }
@@ -124,7 +124,7 @@
     font-family: "Inter", sans-serif;
     color: #FAF8F0;
     font-weight: bold;
-    font-size: 50px;
+    font-size: 3.125rem;
     text-align: center;
     margin-top: 20px;
 
@@ -195,9 +195,21 @@
 }
 
 .map-column p {
-    color: #FAF8F0;
+    color: #fff;
     font-weight: bolder;
-    font-size: 25px;
+    font-size: 1.563rem;
     font-family: "Inter", sans-serif;
 
+}
+
+.text-center {
+    padding: 350px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 2rem;
+    color: #fff;
+    font-weight: bolder;
+    width: 115%;
 }

@@ -1,9 +1,19 @@
 body {
-    background-image: url('https://images.pexels.com/photos/4613847/pexels-photo-4613847.jpeg');
+    background-image: url('/images/IMAG-BODY.jpeg');
     background-size: cover;
-    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.659);
+    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.396);
     margin: 0;
     padding: 0;
     width: 100vw;
     font-family: "Inter", sans-serif;
+}
+
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-content-wrapper {
+    flex-grow: 1;
 }

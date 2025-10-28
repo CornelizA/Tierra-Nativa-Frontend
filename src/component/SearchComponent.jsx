@@ -1,6 +1,5 @@
 import { PackageTravelContext } from "../context/PackageTravelContext";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import '../style/SearchComponent.css';
 import { Search } from "lucide-react";
 

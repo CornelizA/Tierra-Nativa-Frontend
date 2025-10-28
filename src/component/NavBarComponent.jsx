@@ -1,26 +1,21 @@
 import { useContext } from 'react';
 import { PackageTravelContext } from '../context/PackageTravelContext';
-import { useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-
 import '../style/NavBarComponent.css';
 
-export const NavBarComponent = ({ isScrolled, isDetailedPage }) => {
+export const NavBarComponent = ({ isScrolled, shouldBeSolid }) => {
 
     const { packageTravel } = useContext(PackageTravelContext);
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const navClasses = `navbar navbar-expand-lg tn-navbar navbar-fixed ${isDetailedPage || isScrolled ? 'navbar-solid' : 'navbar-transparent'
-        }`;
+    const navClasses = `navbar navbar-expand-lg tn-navbar navbar-fixed ${shouldBeSolid || isScrolled ? 'navbar-solid' : 'navbar-transparent'}`;
 
     return (
         <nav className={navClasses}>
             <div className="container-fluid">
                 <NavLink to='/' className="navbar-brand d-flex align-items-center">
                     <img
-                        src={isDetailedPage || isScrolled ? "src/images/LOGO TIERRA NATIVA.png" : "src/images/LOGO TIERRA NATIVA BLANCO.png"}
+                        src={shouldBeSolid || isScrolled ?
+                            "/images/LOGO TIERRA NATIVA.png"
+                            : "/images/LOGO TIERRA NATIVA BLANCO.png"}
                         alt="Logo de Tierra Nativa"
                         className='logo'
                     />

@@ -1,43 +1,35 @@
-body {
-    background-color: #f8f9fa;
-}
-
 .admin-form-container {
     max-width: 900px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: #ffffff;
+    padding: 50px 30px;
+    margin-left: 300px;
+    background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
 }
 
 .admin-form-container h2 {
-    color: #343a40;
-    border-bottom: 2px solid #dee2e6;
-    padding-bottom: 10px;
+    color: #FAF8F0;
+    background-color: #1A531A;
+    font-weight: bolder;
+    border-bottom: 1px solid #B85C38;
+    padding-bottom: 20px;
     margin-bottom: 20px;
-    font-size: 1.8rem;
-    font-weight: 600;
-    text-align: center;
+    font-size: 30px;
+    width: 107.2%;
+    margin-left: -30px;
+
+
 }
 
 .admin-form-container h3 {
-    color: #17a2b8;
-    margin-top: 30px;
+    color: #1A531A;
+    margin-top: 15px;
     margin-bottom: 15px;
-    font-size: 1.3rem;
-    font-weight: 500;
+    font-size: 25px;
+    font-weight: bolder;
 }
 
-.message-status {
-    padding: 10px 15px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-    text-align: center;
-}
 
 .package-form .form-group {
     margin-bottom: 15px;
@@ -48,9 +40,9 @@ body {
 .package-form select {
     width: 100%;
     padding: 12px;
-    border: 1px solid #dee2e6;
-    ;
+    border: 1px solid #15572470;
     border-radius: 4px;
+    background-color: #fff;
     box-sizing: border-box;
     font-size: 1rem;
     transition: border-color 0.3s;
@@ -59,8 +51,8 @@ body {
 .package-form input:focus,
 .package-form textarea:focus,
 .package-form select:focus {
-    border-color: #17a2b8;
-    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+    border-color: #155724;
+    box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
     outline: none;
 }
 
@@ -92,8 +84,8 @@ body {
 .btn-remove-image {
     flex-shrink: 0;
     padding: 8px 12px;
-    background-color: #dc3545;
-    color: white;
+    background-color: #B85C38;
+    color: #FAF8F0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -101,15 +93,15 @@ body {
 }
 
 .btn-remove-image:hover {
-    background-color: #c82333;
+    background-color: #B85C3880;
 }
 
 .btn-add-image {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
-    background-color: #17a2b8;
-    color: white;
+    background-color: #A49989;
+    color: #FAF8F0;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -118,7 +110,7 @@ body {
 }
 
 .btn-add-image:hover {
-    background-color: #138496;
+    background-color: #A4998980;
 }
 
 .btn {
@@ -131,23 +123,23 @@ body {
     text-align: center;
 }
 
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
+.btn-back-to-list {
+    background-color: #A49989;
+    color: #FAF8F0;
 }
 
-.btn-secondary:hover {
-    background-color: #5a6268;
+.btn-back-to-list:hover {
+    background-color: #A4998980;
 }
 
-/* Botón de Submit */
+
 .btn-success {
-    background-color: #28a745;
-    color: white;
+    background-color: #1A531A;
+    color: #FAF8F0;
 }
 
 .btn-success:hover {
-    background-color: #218838;
+    background-color: #1A531A90;
 }
 
 .btn-warning {
@@ -169,4 +161,72 @@ body {
         flex-direction: column;
         gap: 0;
     }
+
+    .container {
+        margin: 0 auto !important;
+    }
+
+    .mobile-access-denied-container {
+        margin-top: 30px;
+
+        h2 {
+            width: auto;
+        }
+    }
+}
+
+.package-form input.input-error,
+.package-form textarea.input-error,
+.package-form select.input-error {
+    border-bottom: #B85C38;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.validation-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.validation-modal {
+    background-color: #ffffffde;
+    border-radius: 8px;
+    padding: 10px;
+    border: 3px solid #B85C38;
+    max-width: 600px;
+    height: 200px;
+    width: 90%;
+}
+
+.validation-modal .message-status.error-status {
+    color: #B85C38;
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+    position: relative;
+    padding: 50px 30px 20px 20px;
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #B85C38;
+    line-height: 1;
+}
+
+.validation-error {
+    font-size: 15px;
+    color: #B85C38;
 }

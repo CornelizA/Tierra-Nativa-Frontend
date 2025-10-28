@@ -15,37 +15,43 @@ export const TierraNativa = () => {
     const isDetailedPage = location.pathname.startsWith('/detallePaquete/') &&
         location.pathname.split('/').length === 3;
 
+    const isAdminPage = location.pathname.startsWith('/paquetes/admin');
+
+    const shouldBeSolid = isDetailedPage || isAdminPage;
+
     useEffect(() => {
         const handleScroll = () => {
-            if (!isDetailedPage) {
+            if (!shouldBeSolid) {
                 setIsScrolled(window.scrollY > SCROLL_THRESHOLD);
             }
         };
-
-        if (!isDetailedPage) {
+        if (!shouldBeSolid) {
             window.addEventListener('scroll', handleScroll);
         } else {
-            setIsScrolled(false);
+            setIsScrolled(true);
         }
 
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [isDetailedPage]);
+    }, [shouldBeSolid]);
 
 
     return (
         <>
-            <NavBarComponent isScrolled={isScrolled} isDetailedPage={isDetailedPage} />
-            <div className={`container ${isDetailedPage ? 'pt-80' : ''}`}>
-                <Routes>
-                    <Route path='/' element={<Home />}></Route>
-                    <Route path='/paquetes' element={<Home />}></Route>
-                    <Route path='/detallePaquete/:id' element={<PackageDetailed />}></Route>
-                    <Route path="/paquetes/admin" element={<AdminPackageList />}></Route>
-                </Routes>
+            <div className="app-wrapper">
+                <div className="app-content-wrapper">
+                    <NavBarComponent isScrolled={isScrolled} isDetailedPage={isDetailedPage} />
+
+                    <div className={`container ${shouldBeSolid ? 'pt-80' : ''}`}>
+                        <Routes>
+                            <Route path='/' element={<Home />}></Route>
+                            <Route path='/paquetes' element={<Home />}></Route>
+                            <Route path='/detallePaquete/:id' element={<PackageDetailed />}></Route>
+                            <Route path="/paquetes/admin" element={<AdminPackageList />}></Route>
+                        </Routes>
+                    </div>
+                </div>
+                <FooterComponent />
             </div>
-            <FooterComponent />
         </>
     )
-
-
 };

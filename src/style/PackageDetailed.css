@@ -1,3 +1,22 @@
+.row-detailed {
+    background-size: cover;
+    width: 100vw;
+
+    .description-column {
+        padding-top: 16px;
+
+        .card-body {
+            padding-left: 30px;
+        }
+
+        .card-header {
+            margin-top: 20px;
+            padding-bottom: 20px !important;
+            margin-bottom: 24px;
+        }
+    }
+}
+
 .detail-header-block {
     width: 100vw;
     background-color: #1A531A;
@@ -15,7 +34,7 @@
 }
 
 .product-title {
-    font-size: 45px;
+    font-size: 2.813rem;
     font-weight: bold;
     color: #FAF8F0;
     margin-top: 25px;
@@ -29,7 +48,7 @@
     margin-top: 20px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 1.3rem;
     border-radius: 5px;
     transition: background-color 0.3s;
     align-items: center;
@@ -37,21 +56,21 @@
 
 .back-button:hover {
     background-color: #B85C38;
-    color: white;
+    color: #FAF8F0;
 }
 
 .image-gallery-block {
     width: 100vw;
     padding: 0 20px;
     margin-bottom: 40px;
-    margin-left: -200px;
+
 }
 
 .gallery-layout {
     display: flex;
     gap: 24px;
     width: 100%;
-    max-width: 900px;
+    max-width: 1050px;
     margin: 0 auto;
 }
 
@@ -63,7 +82,7 @@
 
 .main-image {
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     height: auto;
     border-radius: 12px;
     object-fit: cover;
@@ -189,114 +208,110 @@
     }
 }
 
-.product-details-section {
-    background-color: #FAF8F0;
-    color: #1A531A;
-    padding: 40px 0;
+.product-details-section .card {
+    background-color: #fff;
     border-radius: 8px;
-    margin-top: 30px;
-    width: 100vw;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
+    margin-bottom: 25px;
+    overflow: hidden;
+    height: 430px;
 }
 
-.product-details-section h2.section-subtitle,
-.product-details-section h3.section-subtitle {
+.product-details-section .card-header {
+    background-color: #fff;
     color: #1A531A;
+    padding: 5px 20px;
+    font-size: 1.875rem;
     font-weight: bolder;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #B85C38;
-    padding-bottom: 5px;
-    text-align: center;
-}
-
-.description-column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     width: 100%;
+    border-bottom: 2px #5f5f60 solid;
 }
 
-.description-column p,
-.detailed-description,
-.itinerary-summary {
-    text-align: justify;
-    line-height: 1.8;
-    font-size: 18px;
-    margin-bottom: 20px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+.product-details-section .card-body {
+    padding: 0px 20px 20px 20px;
 }
 
-.itinerary-summary {
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    font-size: 17px;
-    text-align: center;
-}
-
-.itinerary-label {
+.product-details-section .itinerary-label {
     color: #B85C38;
+    font-size: 1.1rem;
     font-weight: bolder;
-
+    margin-top: 15px;
+    margin-bottom: 2px;
 }
 
-.itinerary-value {
-    color: #1A531A;
-    font-weight: 400;
+.product-details-section .itinerary-value {
+    color: #333;
+    font-size: 1.1rem;
+    margin-top: 15px;
+    margin-bottom: 2px;
 }
 
-.details-content {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 0 16px;
+
+.product-details-section .card-text {
+    color: #333;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
 }
 
 .day-list {
-    width: 100%;
     list-style: none;
-    margin: 30px 0 40px 0;
-    padding-left: 320px;
-
+    padding: 0;
+    color: #B85C38;
 }
 
 .day-list li {
-    margin-bottom: 18px;
-    font-size: 1.13rem;
-    line-height: 1.7;
+    padding: 10px 0;
+    border-bottom: 1px dashed #DEDEDE;
 }
 
-.day-label {
+.day-list li:last-child {
+    border-bottom: none;
+}
+
+.day-list .day-label {
+    font-weight: 700;
+    margin-right: 8px;
+    display: inline-block;
+    font-size: 1.1rem;
+}
+
+.day-list .day-desc {
+    color: #333;
+    font-size: 1.1rem;
+}
+
+
+.card-body p {
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.card-body p svg {
     color: #B85C38;
-    font-weight: bold;
     margin-right: 6px;
+    flex-shrink: 0;
+    vertical-align: text-top;
 }
 
-.day-desc {
-    color: #1A531A;
-    font-weight: 400;
+.itinerary-label {
+    margin-right: 5px;
 }
 
-@media (max-width: 767px) {
-    .product-details-section {
-        padding: 25px 0;
-    }
+.card-list-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    padding-left: 0;
+    font-size: 1.1rem;
+}
 
-    .description-column p,
-    .detailed-description,
-    .itinerary-summary {
-        font-size: 16px;
-        max-width: 95vw;
-    }
+.card-list-item svg {
+    margin-right: 8px;
+    flex-shrink: 0;
+    color: #B85C38;
+}
+
+
+.card-list-item span {
+    line-height: 1.4;
 }

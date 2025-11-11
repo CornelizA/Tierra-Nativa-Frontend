@@ -22,7 +22,6 @@
     }
 }
 
-
 .detail-header-block {
     background-color: #1A531A;
     padding: 20px 0px;
@@ -33,7 +32,6 @@
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
-
 }
 
 .header-content-wrapper {
@@ -72,10 +70,9 @@
 }
 
 .image-gallery-block {
-    width: 100vw;
+    width: 100%;
     padding: 0 20px;
     margin-bottom: 40px;
-
 }
 
 .gallery-layout {
@@ -198,28 +195,6 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
-@media (max-width: 900px) {
-    .gallery-layout {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .main-image-container,
-    .secondary-images-grid {
-        width: 100%;
-        max-width: 100%;
-    }
-
-    .main-image {
-        max-width: 100%;
-        height: 220px;
-    }
-
-    .secondary-image {
-        height: 100px;
-    }
-}
-
 .product-details-section .top-cards-row {
     display: flex;
     align-items: stretch;
@@ -231,13 +206,14 @@
     background-color: #fff;
     border-radius: 8px;
     margin-bottom: 0px;
+    padding: 0px 10px;
     overflow: hidden;
     height: auto;
     width: 100%;
 }
 
 .product-details-section .card-top {
-    height: 450px;
+    height: 520px;
     display: flex;
     flex-direction: column;
 }
@@ -264,6 +240,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    text-align: justify;
 }
 
 .product-details-section .itinerary-label {
@@ -349,4 +326,60 @@
 
 .card-list-item span {
     line-height: 1.4;
+    text-align: justify;
+    text-indent: 10px;
+}
+
+@media (max-width: 575px) {
+    .header-content-wrapper {
+        display: block;
+    }
+
+    .product-details-section .card-top {
+        height: auto;
+        margin-bottom: 25px;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .image-gallery-block {
+        width: auto;
+        padding: 0;
+    }
+}
+
+@media (max-width: 900px) {
+    .gallery-layout {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .back-button {
+        margin-top: 0px;
+        padding: 0px 40px;
+    }
+
+    .main-image-container,
+    .secondary-images-grid {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .main-image {
+        max-width: 100%;
+        height: 220px;
+    }
+
+    .secondary-image {
+        height: 100px;
+    }
+
+}
+
+@media (min-width: 1024px) {
+    .image-gallery-block {
+        display: flex;
+        justify-content: center;
+    }
+
 }

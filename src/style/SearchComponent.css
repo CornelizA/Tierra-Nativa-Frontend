@@ -50,7 +50,6 @@
     border-top: none;
     background-color: #FAF8F010;
     width: 712px;
-
 }
 
 .suggestions-list li {
@@ -81,4 +80,10 @@
 
 .form-control.me-2 {
     padding-left: 35px;
+}
+
+@media (max-width: 575px) {
+    .search-container {
+        width: 336px;
+    }
 }

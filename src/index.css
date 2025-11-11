@@ -1,20 +1,18 @@
 body {
     background-image: url('/images/IMAG-BODY.jpeg');
     background-size: cover;
-    /* Asegura que el body no tenga scroll horizontal inesperado */
-    overflow-x: hidden; 
+    overflow-x: hidden;
     box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.396);
     margin: 0;
     padding: 0;
-    width: 100%; /* Ya que tiene overflow-x: hidden, 100% es suficiente */
+    width: 100%;
     font-family: "Inter", sans-serif;
 }
 
 .app-wrapper {
     display: flex;
     flex-direction: column;
-    /* Cambiado de 100vw (ancho) a 100vh (alto) para ocupar el alto de la ventana */
-    min-height: 100vh; 
+    min-height: 100vh;
 }
 
 .app-content-wrapper {

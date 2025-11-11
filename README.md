@@ -1,16 +1,101 @@
-# React + Vite
+![main page](./public/images/TIERRA%20NATIVA.jpg)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# ✈️ Tierra Nativa - Paquetes de Viaje
 
-Currently, two official plugins are available:
+Aplicación web especializada en la gestión y visualización de paquetes turísticos en Argentina. Permite a los usuarios explorar destinos y detalles de itinerario. Los administradores disponen de un completo **CRUD** con una interfaz optimizada y totalmente **responsiva**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ⚙️ Tecnologías
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🖥️ Frontend
+- **React** (`^19.1.1`)
+- **Vite**
+- **Axios** (`^1.12.2`)
+- **React Router DOM** (`^7.6.0`)
+- **SweetAlert2** (Feedback de usuario)
+- **Lucide React** (Iconografía)
+- **CSS Modular** (Diseño Responsivo)
+- **React Testing Library + Jest/Vitest**
 
-## Expanding the ESLint configuration
+### ☕ Backend
+- **Java** (`21`)
+- **Spring Boot** (`3.5.6`)
+- **Spring Data JPA**
+- **Lombok**
+- **H2 Database** (Runtime/Testing)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🚀 Instalación local
+
+### 🧩 Requisitos previos
+- `Node.js` (Recomendado 18+)
+- `Java 21+`
+- `Maven`
+
+### 📦 Cloná el repositorio
+
+```bash
+git clone [URL_DEL_REPOSITORIO]
+cd Tierra-Nativa
+```
+
+### 📁 Backend (/)
+```
+Bash
+# Correr el backend:
+./mvnw spring-boot:run
+```
+El Backend estará disponible en http://localhost:8080.
+
+### 🖼️ Frontend (/frontend)
+
+```
+Bash
+cd frontend
+npm install
+```
+Configurar variables de entorno:
+
+```
+Bash
+touch .env
+```
+
+Archivo .env (Variables de entorno):
+
+```
+Fragmento de código
+# .env
+# Apunta al endpoint base de tu API de paquetes (Ruta actual: /paquetes)
+```
+VITE_API_URL=http://localhost:8080/paquetes
+
+Correr el frontend:
+
+```
+Bash
+npm run dev
+```
+
+La aplicación estará disponible en http://localhost:5173
+
+## 🧪 Testing
+
+Cobertura completa: Se implementaron tests para todos los componentes y páginas usando Jest/Vitest y React Testing Library.
+
+```
+Bash
+npm test
+```
+
+## 👤 Autores
+@CornelizA
+
+## 📞 Soporte
+¿Encontraste un bug o tienes una sugerencia?
+
+- 🐛 Reportar bug
+
+- 📧 Email: ariannaesthefani@gmail.com

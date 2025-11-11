@@ -3,24 +3,16 @@ import { formatCurrency } from '../helpers/FormatCurrency';
 import '../style/PackageTravelCard.css';
 import { MapPin, Globe } from 'lucide-react';
 
-export const PackageTravelCard = ({ name, shortDescription, basePrice, destination, category, images }) => {
 
-    const getCardImageUrl = (images) => {
-        const cardImage = images.find(img => img.principal === false);
-        if (!images || images.length === 0) {
-            return 'URL_DE_FALLBACK_DEFAULT';
-        }
-        return cardImage ? cardImage.url : images[0].url; 
-    };
-    const finalImageUrl = getCardImageUrl(images);
-    
+export const PackageTravelCard = ({ name, shortDescription, basePrice, destination, category, imageUrl }) => {
+
     return (
         <>
             <div className="flip-card">
                 <div className="flip-card-inner">
                     <div className="flip-card-front">
                         <img
-                            src={finalImageUrl} 
+                            src={imageUrl}
                             alt={name}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             onError={(e) => { e.target.src = 'URL_DE_FALLBACK_DEFAULT'; }}

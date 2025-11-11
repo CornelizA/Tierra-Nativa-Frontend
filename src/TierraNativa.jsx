@@ -34,7 +34,6 @@ export const TierraNativa = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [shouldBeSolid]);
 
-
     return (
         <>
             <div className="app-wrapper">
@@ -43,10 +42,10 @@ export const TierraNativa = () => {
 
                     <div className={`container ${shouldBeSolid ? 'pt-80' : ''}`}>
                         <Routes>
-                            <Route path='/' element={<Home />}></Route>
+                            <Route path='/home' element={<Home />}></Route>
                             <Route path='/paquetes' element={<Home />}></Route>
                             <Route path='/detallePaquete/:id' element={<PackageDetailed />}></Route>
-                            <Route path="/paquetes/admin" element={<AdminDashboard />}></Route>
+                            <Route path='/paquetes/admin' element={<AdminDashboard />}></Route>
                         </Routes>
                     </div>
                 </div>

@@ -11,7 +11,7 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid }) => {
     return (
         <nav className={navClasses}>
             <div className="container-fluid">
-                <NavLink to='/' className="navbar-brand d-flex align-items-center">
+                <NavLink to='/home' className="navbar-brand d-flex align-items-center">
                     <img
                         src={shouldBeSolid || isScrolled ?
                             "/images/LOGO TIERRA NATIVA.png"

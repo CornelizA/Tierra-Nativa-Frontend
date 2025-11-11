@@ -8,12 +8,12 @@ import { PackageDetailedProvider } from './context/PackageDetailedProvider.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-       <BrowserRouter> 
-             <PackageTravelProvider> 
-              <PackageDetailedProvider>
-    <TierraNativa/>
-    </PackageDetailedProvider>
-          </PackageTravelProvider> 
-     </BrowserRouter> 
+    <BrowserRouter>
+      <PackageTravelProvider>
+        <PackageDetailedProvider>
+          <TierraNativa />
+        </PackageDetailedProvider>
+      </PackageTravelProvider>
+    </BrowserRouter>
   </StrictMode>,
 )

@@ -1,8 +1,8 @@
 .admin-form-container {
     max-width: 900px;
     padding: 50px 30px;
-     margin-left: auto; 
-    margin-right: auto; 
+    margin-left: auto;
+    margin-right: auto;
     width: 90%;
     background-color: #fff;
     border-radius: 8px;
@@ -20,8 +20,6 @@
     font-size: 30px;
     width: 107.2%;
     margin-left: -30px;
-
-
 }
 
 .admin-form-container h3 {
@@ -185,50 +183,6 @@
 .package-form select.input-error {
     border-bottom: #B85C38;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-}
-
-.validation-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.validation-modal {
-    background-color: #ffffffde;
-    border-radius: 8px;
-    padding: 10px;
-    border: 3px solid #B85C38;
-    max-width: 600px;
-    height: 200px;
-    width: 90%;
-}
-
-.validation-modal .message-status.error-status {
-    color: #B85C38;
-    text-align: center;
-    font-weight: bold;
-    font-size: 25px;
-    position: relative;
-    padding: 50px 30px 20px 20px;
-}
-
-.close-modal-btn {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: #B85C38;
-    line-height: 1;
 }
 
 .validation-error {

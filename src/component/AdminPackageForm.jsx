@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { apiPostPackage, apiUpdatePackage } from '../service/PackageTravelService';
 import '../style/AdminPackageForm.css';
 import { Plus, ArrowLeft } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 export const initialFormData = {
     name: '',
@@ -53,10 +54,8 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         return initialFormData;
     });
 
-    const [message, setMessage] = useState('');
     const isEditing = formData.id != null;
     const [validationErrors, setValidationErrors] = useState({});
-    const [showModal, setShowModal] = useState(false);
 
     const validateForm = () => {
         const errors = {};
@@ -137,13 +136,22 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         e.preventDefault();
         const isValid = validateForm();
         if (!isValid) {
-            setMessage('Error de validación: Revise los campos marcados en rojo.');
-            setShowModal(false);
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validación Incompleta',
+                text: 'Por favor, revise y complete todos los campos obligatorios marcados.',
+                confirmButtonText: 'Aceptar'
+            });
             return;
         }
-        setMessage(isEditing ? 'Actualizando...' : 'Registrando...');
-        setValidationErrors({});
-        setShowModal(false);
+
+        Swal.fire({
+            title: isEditing ? 'Actualizando Paquete...' : 'Registrando Paquete...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         try {
             const { imageDetails, id, ...restOfFormData } = formData;
@@ -164,46 +172,59 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
 
             if (isEditing) {
                 response = await apiUpdatePackage(dataToSend);
-                setMessage(`Paquete "${response.name}" actualizado con éxito!`);
             } else {
                 response = await apiPostPackage(dataToSend);
-                setMessage(`Paquete "${response.name}" registrado con éxito!`);
             }
+
+            Swal.fire({
+                icon: 'success',
+                title: '¡Operación Exitosa!',
+                text: `Paquete "${response.name}" ${isEditing ? 'actualizado' : 'registrado'} con éxito.`,
+                showConfirmButton: false,
+                timer: 2000
+            });
+
             setTimeout(onActionComplete, 1500);
+        }
+        catch (error) {
+            Swal.close();
 
-        } catch (error) {
-            let errorMessage = `Error al ${isEditing ? 'actualizar' : 'registrar'} el paquete. Verifique los datos o el servidor.`;
-            const errorData = error.response?.data || error;
+            let displayErrorTitle = `Error al ${isEditing ? 'Actualizar' : 'Registrar'} Paquete`;
+            let displayErrorMessage = `Ha ocurrido un error inesperado. Por favor, verifique el servidor o intente más tarde.`;
 
-            if (errorData.message) {
-                if (errorData.message.includes('ya está en uso')) {
-                    errorMessage = `Error: El nombre "${formData.name.trim()}" ya está en uso. Por favor, elija otro.`;
-                    setValidationErrors(prevErrors => ({ ...prevErrors, name: errorMessage }));
-                    setMessage(`Error de validación: ${errorMessage}`);
-                    setShowModal(false);
-                    return;
+            const errorResponse = error.response;
+            const status = errorResponse?.status;
+            const errorBody = errorResponse?.data;
+
+            if (status === 409) {
+
+                const apiMessage = typeof errorBody === 'string' ? errorBody : (errorBody?.message || '');
+
+                if (apiMessage.toLowerCase().includes('nombre') && apiMessage.toLowerCase().includes('ya está en uso')) {
+                    displayErrorTitle = 'Nombre Duplicado (409)';
+                    displayErrorMessage = `El nombre "${formData.name.trim()}" ya está en uso. Por favor, elija otro nombre para el paquete.`;
+
+                    setValidationErrors(prevErrors => ({ ...prevErrors, name: displayErrorMessage }));
                 } else {
-                    errorMessage = `Error de API: ${errorData.message}`;
+                    displayErrorMessage = apiMessage || displayErrorMessage;
                 }
             }
-            setMessage(errorMessage);
-            setShowModal(true);
-            console.error('Error de API:', error);
+
+            else if (errorBody) {
+                displayErrorMessage = typeof errorBody === 'string' ? errorBody : (errorBody.message || JSON.stringify(errorBody));
+            }
+
+            Swal.fire({
+                icon: 'error',
+                title: displayErrorTitle,
+                text: displayErrorMessage,
+                confirmButtonText: 'Entendido'
+            });
         }
     };
 
     return (
         <div className="admin-form-container">
-            {showModal && (
-                <div className="validation-modal-overlay">
-                    <div className="validation-modal">
-                        <div className={`message-status error-status`}>
-                            {message}
-                            <button className="close-modal-btn" onClick={() => setShowModal(false)}>&times;</button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             <h2>{isEditing ? 'Editar Paquete Existente' : 'Registrar Nuevo Paquete de Viaje'}</h2>
 
@@ -216,12 +237,6 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 <ArrowLeft size={18} />
                 Volver al Listado
             </button>
-
-            {message && !showModal && (
-                <div className={`message-status ${message.includes('éxito') ? 'success-status' : 'error-status'}`}>
-                    {message}
-                </div>
-            )}
 
             <form onSubmit={handleSubmit} className="package-form">
 

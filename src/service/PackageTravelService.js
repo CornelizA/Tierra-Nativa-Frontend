@@ -3,7 +3,6 @@ import Swal from 'sweetalert2';
 
 const API_URL = 'http://localhost:8080/paquetes';
 
-
 const handleErrorAlert = (error, defaultMessage) => {
     let message = defaultMessage;
 
@@ -60,8 +59,7 @@ export const apiUpdatePackage = async (packageData) => {
         const response = await axios.put(API_URL, packageData, {
             headers: { 'Content-Type': 'application/json' }
         });
-        Swal.fire('¡Actualizado!', 'El paquete ha sido modificado con éxito.', 'success');
-        return response.data;
+        return response.data || packageData;
     } catch (error) {
         handleErrorAlert(error, "Error al actualizar el paquete.");
         throw error;

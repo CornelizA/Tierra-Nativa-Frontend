@@ -1,7 +1,6 @@
 .hero-section h1 {
     text-align: center;
     margin-top: 100px;
-
     margin-bottom: 20px;
     color: #FAF8F0;
     font-family: "Inter", sans-serif;
@@ -21,7 +20,6 @@
     padding: 20px 0 40px 0;
 }
 
-
 .row {
     flex-direction: row;
     width: 100%;
@@ -39,12 +37,11 @@
     font-size: 2.5rem;
     text-align: center;
     margin-bottom: 50px;
-
 }
 
 .hero-section {
     height: 600px;
-    background-image: url('https://images.pexels.com/photos/4613847/pexels-photo-4613847.jpeg');
+    background-image: url('/images/HERO-SECTION.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -88,7 +85,6 @@
     background-color: #b85c385c;
     border-color: #b85c38a3;
 }
-
 
 .map-layout {
     display: flex;
@@ -160,7 +156,7 @@
 
 .map-column {
     flex: 1 1 50%;
-    background-image: url('https://images.pexels.com/photos/13421304/pexels-photo-13421304.jpeg');
+    background-image: url('/images/DESTINATION-SECTION.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -171,7 +167,6 @@
     display: flex;
     flex-direction: column;
 }
-
 
 .destination-slider-container {
     padding: 1.5rem 2rem;
@@ -219,18 +214,17 @@
         font-size: 2.2rem;
         padding: 15px 0 25px 0;
     }
-    
+
     .row {
         padding: 10px 20px;
     }
 
-    /* Asumo que tienes un .navbar-brand o similar */
     .navbar {
         padding: 10px 15px;
     }
-    
+
     .hero-section {
-        height: 400px; 
+        height: 400px;
     }
 
     .hero-section h1 {
@@ -242,27 +236,28 @@
         font-size: 1.5rem;
         margin-bottom: 20px;
     }
-    
+
     .search-overlay {
         padding: 15px;
-        width: 90%; 
+        width: 90%;
     }
 
-    .search-overlay input, .search-overlay select, .search-overlay .btn-primary {
+    .search-overlay input,
+    .search-overlay select,
+    .search-overlay .btn-primary {
         font-size: 1rem;
         padding: 10px;
     }
 
     .map-slider-section h2 {
-        /* Reducir el título de la sección destinos */
         font-size: 2.2rem;
         padding: 30px 10px;
     }
 
     .map-layout {
-        flex-direction: column; 
-        padding-right: 45px; 
-        padding-left: 0px; 
+        flex-direction: column;
+        padding-right: 45px;
+        padding-left: 0px;
     }
 
     .destination-slider-container {
@@ -274,57 +269,47 @@
         margin: 20px auto;
     }
 
-  .tn-navbar .navbar-nav {
-        /* Permite que los ítems del menú se apilen o se muestren en el colapso */
+    .tn-navbar .navbar-nav {
         margin: 0;
         text-align: center;
     }
-    
+
     .tn-navbar .nav-item a.nav-link {
-        /* Reducir el tamaño de la fuente del menú */
         font-size: 1rem;
         margin: 0 10px;
         padding: 8px 0;
     }
 
     .logo {
-        /* Reducir el tamaño del logo en móviles */
         height: 45px;
     }
 
     .tn-navbar p {
-        /* Reducir el padding y el tamaño del texto secundario de la nav */
         font-size: 0.9rem;
         padding-left: 50px;
     }
-    
-    /* El comportamiento de collapse de Bootstrap ya debería apilar el menú */
 
-    /* ======================================= */
-    /* 2. SECCIÓN HERO Y BUSCADOR (de tu CSS anterior) */
-    /* ======================================= */
     .hero-section {
         height: 400px;
     }
+
     .hero-section h1 {
         font-size: 2rem;
         margin-top: 50px;
     }
+
     .text-lg {
         font-size: 1.5rem;
         margin-bottom: 20px;
     }
+
     .row {
         padding: 10px 20px;
     }
-    
-    /* ======================================= */
-    /* 3. CARDS (FLIP-CARD) */
-    /* ======================================= */
+
     .flip-card {
-        /* Reducir la altura de las tarjetas */
         height: 300px;
-        margin-bottom: 20px; /* Asegurar separación entre tarjetas apiladas */
+        margin-bottom: 20px;
     }
 
     .card-title {
@@ -339,19 +324,15 @@
         font-size: 0.875rem;
     }
 
-    /* ======================================= */
-    /* 4. FOOTER (.footer-tn) */
-    /* ======================================= */
     .footer-tn {
         padding: 20px 15px;
-        text-align: center; /* Centrar todo el texto en móvil */
+        text-align: center;
     }
-    
+
     .footer-content-wrapper {
         padding: 0 10px;
     }
-    
-    /* Resetear el layout de escritorio para apilar */
+
     .footer-main-layout {
         display: block;
     }
@@ -362,9 +343,8 @@
         max-width: 100%;
         margin-bottom: 20px;
     }
-    
+
     .footer-right-block {
-        /* Eliminar la línea divisoria y el padding que solo funcionan en desktop */
         padding-left: 0;
         border-left: none;
         max-width: 100%;
@@ -373,11 +353,10 @@
     }
 
     .footer-section {
-        /* Asegurar que las secciones de contacto y social estén centradas */
         align-items: center;
         text-align: center;
     }
-    
+
     .footer-section.contact-info,
     .footer-section.social {
         align-items: center;
@@ -388,49 +367,38 @@
         justify-content: center;
     }
 }
-  
 
 @media (min-width: 769px) and (max-width: 1023px) {
-    /* ======================================= */
-    /* 1. SECCIÓN HERO Y BUSCADOR */
-    /* ======================================= */
+
     .hero-section {
         height: 500px;
     }
 
     .hero-section h1 {
-        /* Ajuste intermedio de tamaño de título */
         font-size: 2.6rem;
     }
-    
+
     .text-lg {
-        /* Ajuste intermedio del texto grande */
         font-size: 2rem;
     }
-    
+
     .search-overlay {
-        /* Centrar la caja en la tableta */
-        width: 80%; 
+        width: 80%;
     }
 
-    /* ======================================= */
-    /* 2. SECCIÓN DESTINOS (Layout Vertical Aún) */
-    /* ======================================= */
     .map-slider-section h2 {
         font-size: 2.6rem;
     }
-    
+
     .map-layout {
-        /* Ajuste de padding antes de que se active el layout horizontal a 1024px */
-        padding-right: 30px; 
+        padding-right: 30px;
     }
-    
+
     .map-image {
-        /* Ajuste de altura de imagen */
         height: 400px;
     }
+
     .tn-navbar .nav-item a.nav-link {
-        /* Mantener tamaño de fuente legible */
         font-size: 1.1rem;
         margin: 0 15px;
     }
@@ -440,40 +408,27 @@
     }
 
     .tn-navbar p {
-        /* Ajustar padding para centrar mejor en tablet */
         padding-left: 55px;
         font-size: 1rem;
     }
-    
-    /* ======================================= */
-    /* 2. SECCIÓN HERO Y BUSCADOR (de tu CSS anterior) */
-    /* ======================================= */
+
     .hero-section {
         height: 500px;
     }
+
     .hero-section h1 {
         font-size: 2.6rem;
     }
+
     .text-lg {
         font-size: 2rem;
     }
 
-    /* ======================================= */
-    /* 3. CARDS (FLIP-CARD) */
-    /* ======================================= */
     .flip-card {
-        /* Mantener una altura razonable */
         height: 320px;
     }
 
-    /* ======================================= */
-    /* 4. FOOTER (.footer-tn) */
-    /* ======================================= */
-    /* Se utiliza el diseño de desktop (min-width: 768px), 
-       pero podemos hacer ajustes menores si es necesario */
-       
     .footer-main-layout {
-        /* Asegurar más espacio entre las secciones en tabletas */
         padding-left: 20px;
         padding-right: 20px;
     }
@@ -483,3 +438,44 @@
     }
 }
 
+@media (max-width: 575px) {
+    .hero-section {
+        height: 100vh;
+    }
+
+    .flip-card {
+        height: 335px;
+        margin-bottom: 0;
+        margin-top: 30px;
+    }
+
+    .row {
+        padding: 0 10px;
+        margin: auto;
+    }
+
+    .map-layout {
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .slider-column {
+        padding: 0;
+    }
+
+    .map-slider-section {
+        padding-bottom: 0;
+    }
+
+    .navbar-transparent .navbar-collapse {
+        background: #1a531a;
+        width: 100% !important;
+        margin: -50px -28px;
+        padding-top: 50px;
+        z-index: -1;
+    }
+
+    .navbar {
+        margin-top: -3px;
+    }
+}

@@ -36,12 +36,17 @@ export const PackageDetailed = () => {
   const principalImageObject = allImageObjects.find(img => img.principal === true)
     || allImageObjects[0];
 
-  const mainImage = (principalImageObject && principalImageObject.url)
+  const calculatedMainImageUrl = (principalImageObject && principalImageObject.url && principalImageObject.url.trim())
     ? principalImageObject.url.trim()
-    : packageTravel.imageUrl || FALLBACK_URL;
+    : packageTravel.imageUrl;
+
+  const mainImage = calculatedMainImageUrl || FALLBACK_URL;
+  const filterUrl = calculatedMainImageUrl;
 
   const secondaryImagesUrls = allImageObjects
-    .filter(img => (img.url && img.url.trim()) !== mainImage)
+    .filter(img => {
+      return img.url && img.url.trim() && img.url.trim() !== filterUrl;
+    })
     .map(img => img.url)
     .slice(0, 4);
 
@@ -131,7 +136,7 @@ export const PackageDetailed = () => {
         <section className="product-details-section">
           <div className="details-content">
             <div className="row-detailed row top-cards-row">
-              <div className="col-md-5 description-column">
+              <div className="col-md-6 col-lg-5 description-column">
                 <div className="card card-top">
                   <h2 className="card-header">Resumen del Itinerario</h2>
                   <div className="card-body">
@@ -159,7 +164,7 @@ export const PackageDetailed = () => {
                 </div>
               </div>
 
-              <div className="col-md-5 description-column">
+              <div className="col-md-6 col-lg-5 description-column">
                 <div className="card card-top">
                   <h2 className="card-header">Planificación día por día</h2>
                   <div className="card-body">

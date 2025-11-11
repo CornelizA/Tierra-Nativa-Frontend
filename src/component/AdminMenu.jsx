@@ -75,7 +75,6 @@ export const AdminMenu = ({ onViewChange }) => {
     if (showMobileDenied) {
         return <MobileDeniedCard />;
     }
-
     return (
         <div className="admin-menu-container">
             <h2>Menú de Administrador</h2>

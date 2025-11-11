@@ -45,7 +45,6 @@
     text-transform: uppercase;
 }
 
-
 .admin-list-container td {
     padding: 10px 15px;
     color: #333;
@@ -114,7 +113,6 @@
 .admin-list-container .btn-primary:hover {
     background-color: #9e4c30;
 }
-
 
 .pagination .page-item .page-link {
     color: #B85C38; 

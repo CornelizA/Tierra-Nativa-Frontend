@@ -1,0 +1,46 @@
+import React, { useState } from 'react';
+import { AdminMenu } from './AdminMenu';
+import { AdminPackageList } from './AdminPackageList'; 
+import { AdminPackageForm, initialFormData } from './AdminPackageForm';
+
+export const AdminDashboard = () => {
+    const [currentView, setCurrentView] = useState('MENU');
+    
+    const handleViewChange = (view) => {
+        setCurrentView(view);
+    };
+
+    const handleActionComplete = () => {
+        setCurrentView('LIST');
+    };
+
+    const renderContent = () => {
+        switch (currentView) {
+            case 'LIST':
+    
+                return (
+                    <AdminPackageList
+                        onBackToMenu={() => handleViewChange('MENU')}
+                    />
+                );
+
+            case 'CREATE_FORM':
+                return (
+                    <AdminPackageForm
+                        packageToEdit={initialFormData}
+                        onActionComplete={() => handleViewChange('LIST')}
+                    />
+                );
+
+            case 'MENU':
+            default:
+                return <AdminMenu onViewChange={handleViewChange} />;
+        }
+    };
+
+    return (
+        <div className="admin-dashboard-root">
+            {renderContent()}
+        </div>
+    );
+};

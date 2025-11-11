@@ -22,20 +22,18 @@ export const initialFormData = {
 
 function mapPackageToFormData(pkg) {
     let imageDetails = [];
+
     if (Array.isArray(pkg.images) && pkg.images.length > 0) {
-        imageDetails = pkg.images.map(img => ({
+        imageDetails = pkg.images.map((img, i) => ({
             url: img.url || '',
-            principal: !!img.principal
+            principal: i === 0
         }));
-    }
-    else if (pkg.imageUrl) {
-        imageDetails = [{ url: pkg.imageUrl, principal: true }];
-    }
-    else {
+    } else {
         imageDetails = [{ url: '', principal: true }];
     }
 
     return {
+        id: pkg.id,
         ...initialFormData,
         ...pkg,
         itineraryDetail: {
@@ -62,38 +60,23 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
 
     const validateForm = () => {
         const errors = {};
-        if (!formData.name.trim()) {
-            errors.name = 'El nombre del paquete es obligatorio.';
+        if (!formData.name.trim()) { errors.name = 'El nombre del paquete es obligatorio.'; }
+        if (!formData.shortDescription.trim()) { errors.shortDescription = 'La descripción corta es obligatoria.'; }
+        const basePriceValue = parseFloat(formData.basePrice);
+        if (!formData.basePrice || isNaN(basePriceValue) || basePriceValue <= 0) {
+            errors.basePrice = 'El precio base es obligatorio y debe ser un número positivo.';
         }
-        if (!formData.shortDescription.trim()) {
-            errors.shortDescription = 'La descripción corta es obligatoria.';
-        }
-        if (!formData.basePrice || isNaN(parseFloat(formData.basePrice))) {
-            errors.basePrice = 'El precio base es obligatorio y debe ser un número.';
-        }
-        if (!formData.destination.trim()) {
-            errors.destination = 'El destino es obligatorio.';
-        }
-        if (!formData.itineraryDetail.duration.trim()) {
-            errors.duration = 'La duración del viaje es obligatoria.';
-        }
-        if (!formData.itineraryDetail.lodgingType.trim()) {
-            errors.lodgingType = 'El tipo de hospedaje es obligatorio.';
-        }
-        if (!formData.itineraryDetail.transferType.trim()) {
-            errors.transferType = 'El tipo de traslado es obligatorio.';
-        }
-        if (!formData.itineraryDetail.dailyActivitiesDescription.trim()) {
-            errors.dailyActivitiesDescription = 'La planificación día por día es obligatoria.';
-        }
-        if (!formData.itineraryDetail.foodAndHydrationNotes.trim()) {
-            errors.foodAndHydrationNotes = 'Las notas de alimentación son obligatorias.';
-        }
-        if (!formData.itineraryDetail.generalRecommendations.trim()) {
-            errors.generalRecommendations = 'Las recomendaciones generales son obligatorias.';
-        }
+        if (!formData.destination.trim()) { errors.destination = 'El destino es obligatorio.'; }
 
-        const principalImage = (formData.imageDetails || []).find(img => img.principal);
+        const itinerary = formData.itineraryDetail;
+        if (!itinerary.duration.trim()) { errors.duration = 'La duración del viaje es obligatoria.'; }
+        if (!itinerary.lodgingType.trim()) { errors.lodgingType = 'El tipo de hospedaje es obligatorio.'; }
+        if (!itinerary.transferType.trim()) { errors.transferType = 'El tipo de traslado es obligatorio.'; }
+        if (!itinerary.dailyActivitiesDescription.trim()) { errors.dailyActivitiesDescription = 'La planificación día por día es obligatoria.'; }
+        if (!itinerary.foodAndHydrationNotes.trim()) { errors.foodAndHydrationNotes = 'Las notas de alimentación son obligatorias.'; }
+        if (!itinerary.generalRecommendations.trim()) { errors.generalRecommendations = 'Las recomendaciones generales son obligatorias.'; }
+
+        const principalImage = (formData.imageDetails || []).find((img, i) => i === 0);
         if (!principalImage || !principalImage.url.trim()) {
             errors.imageDetails = 'Debe proporcionar la URL de la Imagen Principal.';
         }
@@ -104,21 +87,21 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        if (formData.itineraryDetail && (name in formData.itineraryDetail)) {
-            setFormData({
-                ...formData,
+        if (name in initialFormData.itineraryDetail) {
+            setFormData(prev => ({
+                ...prev,
                 itineraryDetail: {
-                    ...formData.itineraryDetail,
+                    ...prev.itineraryDetail,
                     [name]: value
                 }
-            });
+            }));
         } else {
-            setFormData({ ...formData, [name]: value });
+            setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
 
     const handleImageChange = (index, value) => {
-        const newImages = formData.imageDetails.map((img, i) => {
+        const newImages = (formData.imageDetails || []).map((img, i) => {
             if (i === index) {
                 return {
                     ...img,
@@ -130,7 +113,6 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         });
         setFormData({ ...formData, imageDetails: newImages });
     };
-
 
     const handleAddImage = () => {
         const currentImages = formData.imageDetails || [];
@@ -154,25 +136,22 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validateForm();
-
         if (!isValid) {
             setMessage('Error de validación: Revise los campos marcados en rojo.');
-            setShowModal(true);
+            setShowModal(false);
             return;
         }
         setMessage(isEditing ? 'Actualizando...' : 'Registrando...');
         setValidationErrors({});
         setShowModal(false);
 
-
         try {
-
-            const { imageDetails, ...restOfFormData } = formData;
+            const { imageDetails, id, ...restOfFormData } = formData;
 
             const dataToSend = {
-                ...(isEditing && { id: restOfFormData.id }),
+                ...(isEditing && { id: id }),
                 ...restOfFormData,
-                basePrice: parseFloat(restOfFormData.basePrice) || 0,
+                basePrice: parseFloat(restOfFormData.basePrice),
                 images: (imageDetails || [])
                     .filter(img => img.url.trim() !== '')
                     .map(img => ({
@@ -193,16 +172,19 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
             setTimeout(onActionComplete, 1500);
 
         } catch (error) {
-            setMessage(`Error al ${isEditing ? 'actualizar' : 'registrar'} el paquete. Verifique los datos o el servidor.`);
+            let errorMessage = `Error al ${isEditing ? 'actualizar' : 'registrar'} el paquete. Verifique los datos o el servidor.`;
             const errorData = error.response?.data || error;
 
-            if (errorData.message && errorData.message.includes('ya está en uso')) {
-                errorMessage = `Error: El nombre "${formData.name.trim()}" ya está en uso. Por favor, elija otro.`;
-
-                setValidationErrors(prevErrors => ({ ...prevErrors, name: errorMessage }));
-
-            } else if (errorData.message) {
-                errorMessage = `Error de API: ${errorData.message}`;
+            if (errorData.message) {
+                if (errorData.message.includes('ya está en uso')) {
+                    errorMessage = `Error: El nombre "${formData.name.trim()}" ya está en uso. Por favor, elija otro.`;
+                    setValidationErrors(prevErrors => ({ ...prevErrors, name: errorMessage }));
+                    setMessage(`Error de validación: ${errorMessage}`);
+                    setShowModal(false);
+                    return;
+                } else {
+                    errorMessage = `Error de API: ${errorData.message}`;
+                }
             }
             setMessage(errorMessage);
             setShowModal(true);
@@ -212,7 +194,6 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
 
     return (
         <div className="admin-form-container">
-
             {showModal && (
                 <div className="validation-modal-overlay">
                     <div className="validation-modal">
@@ -223,6 +204,7 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                     </div>
                 </div>
             )}
+
             <h2>{isEditing ? 'Editar Paquete Existente' : 'Registrar Nuevo Paquete de Viaje'}</h2>
 
             <button
@@ -234,66 +216,90 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 <ArrowLeft size={18} />
                 Volver al Listado
             </button>
-            {message && (
-                <div className={`message-status ${message.startsWith('Error') ? 'error-status' : 'success-status'}`}>
+
+            {message && !showModal && (
+                <div className={`message-status ${message.includes('éxito') ? 'success-status' : 'error-status'}`}>
                     {message}
                 </div>
             )}
+
             <form onSubmit={handleSubmit} className="package-form">
 
                 <h3>Información Básica</h3>
                 <div className="form-group">
-                    <input name="name" value={formData.name} onChange={handleChange} placeholder="Nombre del Paquete" className={validationErrors.name ? 'input-error' : ''} />
+                    <label htmlFor="name">Nombre del Paquete</label>
+                    <input id="name" name="name" value={formData.name} onChange={handleChange} placeholder="Nombre del Paquete" className={validationErrors.name ? 'input-error' : ''} />
+                    {validationErrors.name && <p className="validation-error">{validationErrors.name}</p>}
                 </div>
-                {validationErrors.name && <p className="validation-error">{validationErrors.name}</p>}
+
                 <div className="form-group">
-                    <textarea name="shortDescription" value={formData.shortDescription} onChange={handleChange} placeholder="Descripción Corta (máx 150 caracteres)" rows="2" className={validationErrors.shortDescription ? 'input-error' : ''} />
+                    <label htmlFor="shortDescription">Descripción Corta</label>
+                    <textarea id="shortDescription" name="shortDescription" value={formData.shortDescription} onChange={handleChange} placeholder="Descripción Corta (máx 150 caracteres)" rows="2" className={validationErrors.shortDescription ? 'input-error' : ''} />
+                    {validationErrors.shortDescription && <p className="validation-error">{validationErrors.shortDescription}</p>}
                 </div>
-                {validationErrors.shortDescription && <p className="validation-error">{validationErrors.shortDescription}</p>}
 
                 <div className="form-group-inline">
-                    <input name="basePrice" type="number" value={formData.basePrice} onChange={handleChange} placeholder="Precio Base ($)" className={validationErrors.basePrice ? 'input-error' : ''} />
-                    <input name="destination" value={formData.destination} onChange={handleChange} placeholder="Destino (Ej: El Calafate, Jujuy)" className={validationErrors.destination ? 'input-error' : ''} />
+                    <div className="form-group-half">
+                        <label htmlFor="basePrice">Precio Base ($)</label>
+                        <input id="basePrice" name="basePrice" type="number" value={formData.basePrice} onChange={handleChange} placeholder="Precio Base ($)" className={validationErrors.basePrice ? 'input-error' : ''} />
+                        {validationErrors.basePrice && <p className="validation-error">{validationErrors.basePrice}</p>}
+                    </div>
+                    <div className="form-group-half">
+                        <label htmlFor="destination">Destino</label>
+                        <input id="destination" name="destination" value={formData.destination} onChange={handleChange} placeholder="Destino (Ej: El Calafate, Jujuy)" className={validationErrors.destination ? 'input-error' : ''} />
+                        {validationErrors.destination && <p className="validation-error">{validationErrors.destination}</p>}
+                    </div>
                 </div>
-                {validationErrors.basePrice && <p className="validation-error">{validationErrors.basePrice}</p>}
-                {validationErrors.destination && <p className="validation-error">{validationErrors.destination}</p>}
 
                 <div className="form-group">
-                    <select name="category" value={formData.category} onChange={handleChange} >
+                    <label htmlFor="category">Categoría</label>
+                    <select id="category" name="category" value={formData.category} onChange={handleChange} className={validationErrors.category ? 'input-error' : ''} >
                         <option value="GEOPAISAJES">Geopaisajes</option>
                         <option value="AVENTURA">Aventura</option>
                         <option value="ECOTURISMO">Ecoturismo</option>
                         <option value="LITORAL">Litoral</option>
                         <option value="RELAJACION">Relajación</option>
                     </select>
+                    {validationErrors.category && <p className="validation-error">{validationErrors.category}</p>}
                 </div>
-                {validationErrors.category && <p className="validation-error">{validationErrors.category}</p>}
 
                 <h3>Detalles del Itinerario </h3>
                 <div className="form-group-inline">
-                    <input name="duration" value={formData.itineraryDetail.duration} onChange={handleChange} placeholder="Duración (ej. 4 Días / 3 Noches)" className={validationErrors.duration ? 'input-error' : ''} />
-                    <input name="lodgingType" value={formData.itineraryDetail.lodgingType} onChange={handleChange} placeholder="Tipo de Hospedaje" className={validationErrors.lodgingType ? 'input-error' : ''} />
+                    <div className="form-group-half">
+                        <label htmlFor="duration">Duración</label>
+                        <input id="duration" name="duration" value={formData.itineraryDetail.duration} onChange={handleChange} placeholder="Duración (ej. 4 Días / 3 Noches)" className={validationErrors.duration ? 'input-error' : ''} />
+                        {validationErrors.duration && <p className="validation-error">{validationErrors.duration}</p>}
+                    </div>
+                    <div className="form-group-half">
+                        <label htmlFor="lodgingType">Tipo de Hospedaje</label>
+                        <input id="lodgingType" name="lodgingType" value={formData.itineraryDetail.lodgingType} onChange={handleChange} placeholder="Tipo de Hospedaje" className={validationErrors.lodgingType ? 'input-error' : ''} />
+                        {validationErrors.lodgingType && <p className="validation-error">{validationErrors.lodgingType}</p>}
+                    </div>
                 </div>
-                {validationErrors.duration && <p className="validation-error">{validationErrors.duration}</p>}
-                {validationErrors.lodgingType && <p className="validation-error">{validationErrors.lodgingType}</p>}
 
                 <div className="form-group">
-                    <input name="transferType" value={formData.itineraryDetail.transferType} onChange={handleChange} placeholder="Tipo de Traslados (Ej: Vuelo a IGR, Bus, 4x4)" className={validationErrors.transferType ? 'input-error' : ''} />
+                    <label htmlFor="transferType">Tipo de Traslados</label>
+                    <input id="transferType" name="transferType" value={formData.itineraryDetail.transferType} onChange={handleChange} placeholder="Tipo de Traslados (Ej: Vuelo a IGR, Bus, 4x4)" className={validationErrors.transferType ? 'input-error' : ''} />
+                    {validationErrors.transferType && <p className="validation-error">{validationErrors.transferType}</p>}
                 </div>
-                {validationErrors.transferType && <p className="validation-error">{validationErrors.transferType}</p>}
 
                 <div className="form-group">
-                    <textarea name="dailyActivitiesDescription" value={formData.itineraryDetail.dailyActivitiesDescription} onChange={handleChange} placeholder="Planificación día por día (Actividades diarias)" rows="5" className={validationErrors.dailyActivitiesDescription ? 'input-error' : ''} />
+                    <label htmlFor="dailyActivitiesDescription">Planificación día por día</label>
+                    <textarea id="dailyActivitiesDescription" name="dailyActivitiesDescription" value={formData.itineraryDetail.dailyActivitiesDescription} onChange={handleChange} placeholder="Planificación día por día (Actividades diarias)" rows="5" className={validationErrors.dailyActivitiesDescription ? 'input-error' : ''} />
+                    {validationErrors.dailyActivitiesDescription && <p className="validation-error">{validationErrors.dailyActivitiesDescription}</p>}
                 </div>
-                {validationErrors.dailyActivitiesDescription && <p className="validation-error">{validationErrors.dailyActivitiesDescription}</p>}
+
                 <div className="form-group">
-                    <textarea name="foodAndHydrationNotes" value={formData.itineraryDetail.foodAndHydrationNotes} onChange={handleChange} placeholder="Notas de Alimentación e Hidratación" rows="3" className={validationErrors.foodAndHydrationNotes ? 'input-error' : ''} />
+                    <label htmlFor="foodAndHydrationNotes">Notas de Alimentación e Hidratación</label>
+                    <textarea id="foodAndHydrationNotes" name="foodAndHydrationNotes" value={formData.itineraryDetail.foodAndHydrationNotes} onChange={handleChange} placeholder="Notas de Alimentación e Hidratación" rows="3" className={validationErrors.foodAndHydrationNotes ? 'input-error' : ''} />
+                    {validationErrors.foodAndHydrationNotes && <p className="validation-error">{validationErrors.foodAndHydrationNotes}</p>}
                 </div>
-                {validationErrors.foodAndHydrationNotes && <p className="validation-error">{validationErrors.foodAndHydrationNotes}</p>}
+
                 <div className="form-group">
-                    <textarea name="generalRecommendations" value={formData.itineraryDetail.generalRecommendations} onChange={handleChange} placeholder="Recomendaciones Generales (Ropa, Dificultad, entre otros.)" rows="3" className={validationErrors.generalRecommendations ? 'input-error' : ''} />
+                    <label htmlFor="generalRecommendations">Recomendaciones Generales</label>
+                    <textarea id="generalRecommendations" name="generalRecommendations" value={formData.itineraryDetail.generalRecommendations} onChange={handleChange} placeholder="Recomendaciones Generales (Ropa, Dificultad, entre otros.)" rows="3" className={validationErrors.generalRecommendations ? 'input-error' : ''} />
+                    {validationErrors.generalRecommendations && <p className="validation-error">{validationErrors.generalRecommendations}</p>}
                 </div>
-                {validationErrors.generalRecommendations && <p className="validation-error">{validationErrors.generalRecommendations}</p>}
 
                 <h3>Imágenes del Paquete</h3>
                 {(formData.imageDetails || []).map((img, index) => (
@@ -313,6 +319,7 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                     </div>
                 ))}
                 {validationErrors.imageDetails && <p className="validation-error">{validationErrors.imageDetails}</p>}
+
                 <button
                     type="button"
                     onClick={handleAddImage}
@@ -322,7 +329,6 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                     <Plus size={18} />
                     Añadir Imagen
                 </button>
-
                 <button type="submit" className={`btn ${isEditing ? 'btn-warning' : 'btn-success'} mt-4`}>
                     {isEditing ? 'Actualizar Paquete' : 'Registrar Producto'}
                 </button>

@@ -2,33 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { apiGetPackages, apiDeletePackage } from '../service/PackageTravelService';
 import { AdminPackageForm, initialFormData } from './AdminPackageForm';
 import '../style/AdminPackageList.css';
-import { Pencil, X, Plus, Laptop } from 'lucide-react';
+import { Pencil, X, Plus, ArrowLeft, ArrowRight, Home } from 'lucide-react';
+import Swal from 'sweetalert2';
 
+const ITEMS_PER_PAGE = 4;
 
-export const AdminPackageList = () => {
+export const AdminPackageList = ({ onBackToMenu }) => {
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [packageToEdit, setPackageToEdit] = useState(null);
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const loadPackages = async () => {
         setLoading(true);
         setError(null);
         try {
-            if (!isMobile) {
-                const data = await apiGetPackages('/paquetes/admin');
-                setPackages(data);
-            }
+            const data = await apiGetPackages('/paquetes/admin');
+            setPackages(data);
+
         } catch (err) {
             setError('Error al cargar la lista de paquetes.');
             console.error(err);
@@ -38,31 +30,60 @@ export const AdminPackageList = () => {
     };
 
     useEffect(() => {
-        if (!isMobile) {
-            loadPackages();
-        }
-    }, [isMobile]);
-
-    useEffect(() => {
         loadPackages();
     }, []);
 
+    const totalPages = Math.ceil(packages.length / ITEMS_PER_PAGE);
+    const lastItemIndex = currentPage * ITEMS_PER_PAGE;
+    const firstItemIndex = lastItemIndex - ITEMS_PER_PAGE;
+    const currentPackages = packages.slice(firstItemIndex, lastItemIndex);
+
+    const goToNextPage = () => {
+        setCurrentPage(prev => (prev < totalPages ? prev + 1 : prev));
+    };
+
+    const goToPrevPage = () => {
+        setCurrentPage(prev => (prev > 1 ? prev - 1 : prev));
+    };
+
+    const goToHomePage = () => {
+        setCurrentPage(1);
+    };
 
     const handleDelete = async (packageId, packageName) => {
-        const isConfirmed = window.confirm(
-            `¿Estás seguro de que deseas eliminar el paquete "${packageName}"? Esta acción es irreversible.`
-        );
-        if (isConfirmed) {
+
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            html: `Estás a punto de eliminar el paquete: <strong>${packageName}</strong>. <br> ¡Esta acción es irreversible!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, ¡Eliminar!',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+            confirmButtonColor: '#B85C38',
+            cancelButtonColor: '#1A531A',
+        });
+
+        if (result.isConfirmed) {
             try {
                 await apiDeletePackage(packageId);
-                loadPackages();
-                alert(`Paquete "${packageName}" eliminado con éxito.`);
+                await loadPackages();
+                Swal.fire({
+                    title: '¡Eliminado!',
+                    text: `El paquete "${packageName}" ha sido eliminado con éxito.`,
+                    icon: 'success',
+                    confirmButtonColor: '#1A531A'
+                });
+
             } catch (err) {
-                alert('Error al eliminar el paquete. Intente de nuevo.');
+                Swal.fire({
+                    title: 'Error al Eliminar',
+                    text: 'Ocurrió un problema al intentar eliminar el paquete. Intente de nuevo.',
+                    icon: 'error',
+                    confirmButtonColor: '#1A531A'
+                });
                 console.error(err);
             }
-        } else {
-            console.log('Eliminación cancelada.');
         }
     };
 
@@ -78,22 +99,6 @@ export const AdminPackageList = () => {
     if (loading) return <div>Cargando lista de paquetes...</div>;
     if (error) return <div className="error">{error}</div>;
 
-    if (isMobile) {
-        return (
-            <div className="mobile-access-denied-container">
-                <div className="mobile-access-card">
-                    <Laptop size={64} style={{ color: '#1A531A', marginBottom: '15px' }} />
-                    <h2>Acceso Restringido</h2>
-                    <p>
-                        La sección de <strong>Administración de Paquetes</strong> requiere una interfaz de escritorio para su correcta gestión y visualización de tablas.
-                    </p>
-                    <p>
-                        Por favor, acceda desde una <strong>computadora o laptop</strong> para continuar.
-                    </p>
-                </div>
-            </div>
-        );
-    }
 
     if (packageToEdit) {
         return (
@@ -106,57 +111,121 @@ export const AdminPackageList = () => {
 
     return (
         <div className="admin-list-container">
-            <h2>Panel de Administración de Paquetes</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Destino</th>
-                        <th>Precio Base</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {packages.map((pkg) => (
-                        <tr key={pkg.id}>
-                            <td>{pkg.id}</td>
-                            <td>{pkg.name}</td>
-                            <td>{pkg.destination}</td>
-                            <td>{pkg.basePrice.toFixed(2)}</td>
-                            <td>
-                                <button
-                                    className="btn btn-warning me-2"
-                                    onClick={() => handleEdit(pkg)}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-                                >
-                                    <Pencil size={16} />
-                                    Editar
-                                </button>
-
-                                <button
-                                    className="btn btn-danger"
-                                    onClick={() => handleDelete(pkg.id, pkg.name)}
-                                    style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-                                >
-
-                                    <X size={16} />
-                                    Eliminar
-                                </button>
-                            </td>
+            <div className="button-header-row">
+                <button
+                    type="button"
+                    className="btn btn-secondary mb-3"
+                    onClick={onBackToMenu}
+                    style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                    }}
+                >
+                    <ArrowLeft size={18} />
+                    Volver al Menú Principal
+                </button>
+                <button
+                    className="btn btn-primary"
+                    onClick={() => setPackageToEdit(initialFormData)}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                >
+                    <Plus size={18} />
+                    Registrar Nuevo Paquete
+                </button>
+            </div>
+            <div className="admin-list-container">
+                <h2>Panel de Administración de Paquetes</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Destino</th>
+                            <th>Precio Base</th>
+                            <th>Acciones</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <button
-                className="btn btn-primary mt-3"
-                onClick={() => setPackageToEdit(initialFormData)}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-            >
-                <Plus size={18} />
-                Registrar Nuevo Paquete
-            </button>
+                    </thead>
+                    <tbody>
+                        {currentPackages.map((pkg) => (
+                            <tr key={pkg.id}>
+                                <td>{pkg.id}</td>
+                                <td>{pkg.name}</td>
+                                <td>{pkg.destination}</td>
+                                <td>{(pkg.price || pkg.basePrice || 0).toFixed(2)}</td>
+                                <td>
+                                    <button
+                                        className="btn btn-warning me-2"
+                                        onClick={() => handleEdit(pkg)}
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                    >
+                                        <Pencil size={16} />
+                                        Editar
+                                    </button>
 
+                                    <button
+                                        className="btn btn-danger"
+                                        onClick={() => handleDelete(pkg.id, pkg.name)}
+                                        style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                    >
+
+                                        <X size={16} />
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                {packages.length > ITEMS_PER_PAGE && (
+                    <div className="d-flex flex-column align-items-center mt-3">
+
+                        <nav aria-label="Navegación de páginas">
+                            <ul className="pagination justify-content-center">
+
+                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                    <a
+                                        className="page-link"
+                                        href="#"
+                                        onClick={(e) => { e.preventDefault(); goToPrevPage(); }}
+                                    >
+                                        <ArrowLeft size={16} style={{ marginRight: '5px' }} /> Anterior
+                                    </a>
+                                </li>
+
+                                {[...Array(totalPages)].map((_, index) => {
+                                    const pageNum = index + 1;
+                                    return (
+                                        <li
+                                            key={pageNum}
+                                            className={`page-item ${currentPage === pageNum ? 'active' : ''}`}
+                                        >
+                                            <a
+                                                className="page-link"
+                                                href="#"
+                                                onClick={(e) => { e.preventDefault(); setCurrentPage(pageNum); }}
+                                            >
+                                                {pageNum}
+                                            </a>
+                                        </li>
+                                    );
+                                })}
+
+                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                    <a
+                                        className="page-link"
+                                        href="#"
+                                        onClick={(e) => { e.preventDefault(); goToNextPage(); }}
+                                    >
+                                        Siguiente <ArrowRight size={16} style={{ marginLeft: '5px' }} />
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                )}
+
+            </div>
         </div>
     );
 };

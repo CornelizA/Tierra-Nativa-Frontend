@@ -1,27 +1,39 @@
 .row-detailed {
     background-size: cover;
-    width: 100vw;
+    width: 100%;
 
     .description-column {
         padding-top: 16px;
+        padding-right: 15px;
+        padding-left: 15px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 
-        .card-body {
-            padding-left: 30px;
-        }
+    .card-body {
+        padding-left: 30px;
+    }
 
-        .card-header {
-            margin-top: 20px;
-            padding-bottom: 20px !important;
-            margin-bottom: 24px;
-        }
+    .card-header {
+        margin-top: 20px;
+        padding-bottom: 20px !important;
+        margin-bottom: 24px;
     }
 }
 
+
 .detail-header-block {
-    width: 100vw;
     background-color: #1A531A;
     padding: 20px 0px;
     margin-bottom: 20px;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+
 }
 
 .header-content-wrapper {
@@ -208,12 +220,32 @@
     }
 }
 
+.product-details-section .top-cards-row {
+    display: flex;
+    align-items: stretch;
+    margin: 0 auto 20px auto;
+    max-width: 100%;
+}
+
 .product-details-section .card {
     background-color: #fff;
     border-radius: 8px;
-    margin-bottom: 25px;
+    margin-bottom: 0px;
     overflow: hidden;
-    height: 430px;
+    height: auto;
+    width: 100%;
+}
+
+.product-details-section .card-top {
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-details-section .card-bottom {
+    height: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .product-details-section .card-header {
@@ -228,6 +260,10 @@
 
 .product-details-section .card-body {
     padding: 0px 20px 20px 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .product-details-section .itinerary-label {
@@ -279,7 +315,6 @@
     color: #333;
     font-size: 1.1rem;
 }
-
 
 .card-body p {
     align-items: center;

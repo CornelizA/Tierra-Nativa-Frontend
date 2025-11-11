@@ -98,7 +98,6 @@ export const Home = () => {
           <div className="slider-column">
             <DestinationComponent />
           </div>
-
           <div className="map-column">
             <div className="map-image-container">
               <img
@@ -111,11 +110,8 @@ export const Home = () => {
               Tu viaje nativo comienza aquí
             </p>
           </div>
-
         </div>
       </section>
-
-
     </>
   );
 };

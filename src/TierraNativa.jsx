@@ -1,11 +1,11 @@
 import { Route, Routes } from 'react-router-dom';
 import { NavBarComponent } from './component/NavBarComponent';
-import { Home } from './pages/home';
+import { Home } from './pages/Home.jsx';
 import { PackageDetailed } from './pages/PackageDetailed.jsx'
 import { useEffect, useState } from 'react';
 import { FooterComponent } from './component/FooterComponent.jsx';
 import { useLocation } from 'react-router-dom';
-import { AdminPackageList } from './component/AdminPackageList.jsx';
+import { AdminDashboard } from './component/AdminDashboard.jsx';
 
 export const TierraNativa = () => {
     const SCROLL_THRESHOLD = 500;
@@ -46,7 +46,7 @@ export const TierraNativa = () => {
                             <Route path='/' element={<Home />}></Route>
                             <Route path='/paquetes' element={<Home />}></Route>
                             <Route path='/detallePaquete/:id' element={<PackageDetailed />}></Route>
-                            <Route path="/paquetes/admin" element={<AdminPackageList />}></Route>
+                            <Route path="/paquetes/admin" element={<AdminDashboard />}></Route>
                         </Routes>
                     </div>
                 </div>

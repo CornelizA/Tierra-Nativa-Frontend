@@ -31,7 +31,6 @@ export const PackageDetailed = () => {
     return <div className="loading-container"><h2>Cargando detalles del paquete...</h2></div>;
   }
 
-
   const allImageObjects = Array.isArray(packageTravel.images) ? packageTravel.images : [];
 
   const principalImageObject = allImageObjects.find(img => img.principal === true)
@@ -131,9 +130,9 @@ export const PackageDetailed = () => {
 
         <section className="product-details-section">
           <div className="details-content">
-            <div className="row-detailed row">
+            <div className="row-detailed row top-cards-row">
               <div className="col-md-5 description-column">
-                <div className="card">
+                <div className="card card-top">
                   <h2 className="card-header">Resumen del Itinerario</h2>
                   <div className="card-body">
                     <p >
@@ -156,12 +155,12 @@ export const PackageDetailed = () => {
                       <span className="itinerary-label">Alimentación e Hidratación: </span>
                       <span className="itinerary-value">{itinerary.foodAndHydrationNotes}</span>
                     </p>
-
                   </div>
                 </div>
               </div>
+
               <div className="col-md-5 description-column">
-                <div className="card">
+                <div className="card card-top">
                   <h2 className="card-header">Planificación día por día</h2>
                   <div className="card-body">
                     <ul className="day-list">
@@ -199,9 +198,11 @@ export const PackageDetailed = () => {
                   </div>
                 </div>
               </div>
-              {itinerary.generalRecommendations && (
+            </div>
+            {itinerary.generalRecommendations && (
+              <div className="row-detailed row bottom-card-row">
                 <div className="col-md-10 description-column">
-                  <div className="card">
+                  <div className="card card-bottom">
                     <h2 className="card-header">Recomendaciones Generales</h2>
                     <div className="card-body">
                       {recommendationsList.length > 0 ? (
@@ -224,11 +225,10 @@ export const PackageDetailed = () => {
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </section>
-
       </main>
     </>
   )

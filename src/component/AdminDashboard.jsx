@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { AdminMenu } from './AdminMenu';
-import { AdminPackageList } from './AdminPackageList'; 
+import { AdminPackageList } from './AdminPackageList';
 import { AdminPackageForm, initialFormData } from './AdminPackageForm';
+import { AdminUserList } from './AdminUserList';
 
 export const AdminDashboard = () => {
     const [currentView, setCurrentView] = useState('MENU');
-    
+
     const handleViewChange = (view) => {
         setCurrentView(view);
     };
@@ -17,7 +18,6 @@ export const AdminDashboard = () => {
     const renderContent = () => {
         switch (currentView) {
             case 'LIST':
-    
                 return (
                     <AdminPackageList
                         onBackToMenu={() => handleViewChange('MENU')}
@@ -32,9 +32,17 @@ export const AdminDashboard = () => {
                     />
                 );
 
+            case 'LIST_USERS':
+                return (
+                    <AdminUserList
+                        onBackToMenu={() => handleViewChange('MENU')}
+                    />
+                );
+
             case 'MENU':
             default:
                 return <AdminMenu onViewChange={handleViewChange} />;
+
         }
     };
 

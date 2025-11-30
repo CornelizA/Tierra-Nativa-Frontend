@@ -20,6 +20,12 @@
     padding: 20px 0 40px 0;
 }
 
+.text-4xl{
+text-align: center;
+margin-right: auto;
+margin-left: auto;
+}
+
 .row {
     flex-direction: row;
     width: 100%;

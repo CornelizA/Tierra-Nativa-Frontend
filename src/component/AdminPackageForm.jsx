@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { apiPostPackage, apiUpdatePackage } from '../service/PackageTravelService';
 import '../style/AdminPackageForm.css';
 import { Plus, ArrowLeft } from 'lucide-react';
-import Swal from 'sweetalert2';
 
 export const initialFormData = {
     name: '',
@@ -169,11 +168,19 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
             };
 
             let response;
+            let finalPackageId;
 
             if (isEditing) {
                 response = await apiUpdatePackage(dataToSend);
+                finalPackageId = id;
             } else {
                 response = await apiPostPackage(dataToSend);
+
+                if (response && response.id) {
+                    finalPackageId = response.id;
+                } else {
+                    throw new Error("El paquete fue registrado, pero no se recibió el ID para confirmar.");
+                }
             }
 
             Swal.fire({

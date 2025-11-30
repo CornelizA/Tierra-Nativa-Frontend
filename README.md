@@ -1,5 +1,3 @@
-![main page](./public/images/TIERRA%20NATIVA.jpg)
-
 # ✈️ Tierra Nativa - Paquetes de Viaje
 
 Aplicación web especializada en la gestión y visualización de paquetes turísticos en Argentina. Permite a los usuarios explorar destinos y detalles de itinerario. Los administradores disponen de un completo **CRUD** con una interfaz optimizada y totalmente **responsiva**.
@@ -37,7 +35,7 @@ Aplicación web especializada en la gestión y visualización de paquetes turís
 ### 📦 Cloná el repositorio
 
 ```bash
-git clone [URL_DEL_REPOSITORIO]
+git clone [https://github.com/CornelizA/Tierra-Nativa-Frontend.git]
 cd Tierra-Nativa
 ```
 

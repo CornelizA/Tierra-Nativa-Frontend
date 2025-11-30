@@ -1,0 +1,109 @@
+.p-4 {
+    padding: 20px;
+    margin-top: 55px;
+}
+
+.p-3 {
+    width: 100%;
+}
+
+.text-3xl {
+    margin-top: 0px;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: bold;
+    color: #1A531A;
+}
+
+.mb-6 {
+    margin-bottom: 24px;
+    margin-top: 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 5px 15px;
+}
+
+
+.mb-5 {
+    background-color: #A49989;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 15px 5px 15px;
+    text-align: center;
+    width: 100%;
+    margin: auto;
+
+}
+svg.bi.flex-shrink-0.mr-2{
+    width: 18px;
+    height: 18px;
+  margin-right: 10px;
+}
+
+.input-search-icon {
+    position: relative;
+    color: #888;
+    bottom: 42px;
+    left: 8px;
+}
+
+.w-full {
+    text-indent: 25px;
+}
+
+.icons-svg {
+    color: #FAF8F0;
+    background-color: #1A531A;
+    font-family: "Inter", sans-serif;
+    font-size: 1rem;
+    text-align: center;
+    padding: 10px 5px;
+}
+
+.inline-block {
+    color: #FAF8F0;
+}
+
+.action {
+    width: 100%;
+    text-align: center;
+}
+
+td {
+    color: #333;
+    font-family: "Inter", sans-serif;
+    font-size: 1rem;
+    padding: 5px 15px;
+    border-bottom: 1px solid #DEDEDE;
+    text-align: center;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #FAF8F0;
+}
+
+tbody tr:hover {
+    background-color: #f3ede9d8;
+}
+
+button.submit {
+    color: #FAF8F0;
+    background-color: #1A531A;
+    border: none;
+}
+
+button.remove {
+    color: #FAF8F0;
+    background-color: #B85C38;
+    border: none;
+
+}
+
+button.remove:hover {
+    background-color: #9e4c30;
+}
+
+button.submit :hover {
+    background-color: #1A531A90
+}

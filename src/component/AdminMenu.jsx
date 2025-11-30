@@ -92,7 +92,12 @@ export const AdminMenu = ({ onViewChange }) => {
                     description="Registrar un nuevo paquete de viaje al catálogo."
                     onClick={() => handleNavigation('CREATE_FORM')}
                 />
-
+                <MenuItem
+                    icon={List}
+                    title="Gestionar Permisos de Usuarios"
+                    description="Listar usuarios registrados y gestionar permisos."
+                    onClick={() => handleNavigation('LIST_USERS')}
+                />
                 <MenuItem
                     icon={Settings}
                     title="Configuración General"

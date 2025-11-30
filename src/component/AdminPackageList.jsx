@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { apiGetPackages, apiDeletePackage } from '../service/PackageTravelService';
+import { apiGetPackagesAdmin, apiDeletePackage } from '../service/PackageTravelService';
 import { AdminPackageForm, initialFormData } from './AdminPackageForm';
 import '../style/AdminPackageList.css';
 import { Pencil, X, Plus, ArrowLeft, ArrowRight, Home } from 'lucide-react';
@@ -18,7 +18,7 @@ export const AdminPackageList = ({ onBackToMenu }) => {
         setLoading(true);
         setError(null);
         try {
-            const data = await apiGetPackages('/paquetes/admin');
+            const data = await apiGetPackagesAdmin('/paquetes/admin');
             setPackages(data);
 
         } catch (err) {

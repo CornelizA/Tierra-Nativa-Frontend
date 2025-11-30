@@ -49,7 +49,7 @@ export const Home = () => {
         </div>
       </div>
       <div className="container mt-6 mx-auto">
-        <h2 className="text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-green-500 pb-2">
+        <h2 className="text-4xl pb-2">
           Paquetes Destacados (
           {selectedDestination
             ? packagesToDisplay.length

@@ -1,24 +1,32 @@
 import { PackageTravelContext } from './PackageTravelContext';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { apiGetPackages } from "../service/PackageTravelService.js";
+import { apiGetPackagesPublic } from "../service/PackageTravelService.js";
 
 export const PackageTravelProvider = ({ children }) => {
 
     const [packageTravel, setPackageTravel] = useState([]);
 
-    const fetchPackageTravel = async () => {
 
-        try {
-            const data = await apiGetPackages();
-            setPackageTravel(data);
-        }
-        catch (error) {
+    const fireErrorAlert = () => {
+        if (typeof Swal !== 'undefined') {
             Swal.fire({
                 icon: 'error',
                 title: '¡Error!',
                 text: 'No se pudo cargar los paquetes de viaje.',
             });
+        } else {
+            console.error('Error al cargar paquetes. (Swal no disponible)');
+        }
+    };
+
+    const fetchPackageTravel = async () => {
+        try {
+            const data = await apiGetPackagesPublic();
+            setPackageTravel(data);
+        }
+        catch (error) {
+            fireErrorAlert();
             console.error(error);
         }
     };

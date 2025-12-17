@@ -1,27 +1,32 @@
-import { useContext } from 'react';
-import { PackageTravelContext } from '../context/PackageTravelContext';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import '../style/NavBarComponent.css';
 
-export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout }) => {
-
-    const { packageTravel } = useContext(PackageTravelContext);
+export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout, categories = [] }) => {
     const navClasses = `navbar navbar-expand-lg tn-navbar navbar-fixed ${shouldBeSolid || isScrolled ? 'navbar-solid' : 'navbar-transparent'}`;
-    const navigate = useNavigate();
-    const userRole = sessionStorage.getItem('userRole');
+
+    const slugify = (text) => {
+        if (!text) return '';
+        return text.toString().toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-')
+            .replace(/^-+/, '')
+            .replace(/-+$/, '');
+    };
 
     const getInitials = (firstName, lastName) => {
-        if (!firstName || !lastName) return '';
-        return `${firstName.charAt(0).toUpperCase()}${lastName.charAt(0).toUpperCase()}`;
+        const f = (firstName || '').trim();
+        const l = (lastName || '').trim();
+        return `${f.charAt(0) || ''}${l.charAt(0) || ''}`.toUpperCase();
     };
 
     const UserAvatar = () => {
         const firstName = user?.firstName || '';
         const lastName = user?.lastName || '';
         const role = user?.role || 'USER';
-
         const initials = getInitials(firstName, lastName);
-        const displayName = firstName;
         const avatarColor = role === 'ADMIN' ? 'btn-warning text-gray-900' : 'btn-success text-gray-900';
 
         return (
@@ -33,12 +38,8 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout }) =
                     aria-expanded="false"
                     style={{ padding: '5px 12px', borderRadius: '50px', fontWeight: 600 }}
                 >
-                    <span 
-                    className={`initials d-flex items-center justify-center me-2 font-bold`} 
-                    >
-                        {initials} 
-                    </span>
-                    <span className="fw-bold d-none d-md-inline me-1">{displayName}</span> 
+                    <span className={`initials d-flex items-center justify-center me-2 font-bold`}>{initials}</span>
+                    <span className="fw-bold d-none d-md-inline me-1">{firstName}</span>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end">
                     <li className="dropdown-item-text small px-3">
@@ -49,15 +50,11 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout }) =
                     <li><hr className="dropdown-divider" /></li>
                     {role === 'ADMIN' && (
                         <li>
-                            <NavLink to="/paquetes/admin" className="dropdown-item">
-                                Panel Admin
-                            </NavLink>
+                            <NavLink to="/paquetes/admin" className="dropdown-item">Panel Admin</NavLink>
                         </li>
                     )}
                     <li>
-                        <button onClick={onLogout} className="dropdown-item text">
-                            Cerrar Sesión
-                        </button>
+                        <button onClick={onLogout} className="dropdown-item text">Cerrar Sesión</button>
                     </li>
                 </ul>
             </div>
@@ -65,41 +62,23 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout }) =
     };
 
     const AuthButtons = () => {
-        if (user) {
-            return <UserAvatar />;
-        } else {
-            return (
-                <div className="dropdown">
-                    <button className="btn btn-secondary dropdown-toggle bg-green-600 hover:bg-green-700 text-white transition rounded-lg px-3 py-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Mi cuenta
-                    </button>
-                    <ul className="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <Link className="dropdown-item" to="/login">
-                                <strong>Iniciar Sesión</strong>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link className="dropdown-item" to="/register">
-                                <strong>Crear Cuenta</strong>
-                            </Link>
-                        </li>
-                    </ul>
-                </div>
-            );
-        }
+        if (user) return <UserAvatar />;
+        return (
+            <div className="dropdown">
+                <button className="btn btn-secondary dropdown-toggle bg-green-600 hover:bg-green-700 text-white transition rounded-lg px-3 py-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">Mi cuenta</button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                    <li><Link className="dropdown-item" to="/login"><strong>Iniciar Sesión</strong></Link></li>
+                    <li><Link className="dropdown-item" to="/register"><strong>Crear Cuenta</strong></Link></li>
+                </ul>
+            </div>
+        );
     };
+
     return (
         <nav className={navClasses}>
             <div className="container-fluid">
-                <NavLink to='/home' className="navbar-brand d-flex align-items-center">
-                    <img
-                        src={shouldBeSolid || isScrolled ?
-                            "/images/LOGO TIERRA NATIVA.png"
-                            : "/images/LOGO TIERRA NATIVA BLANCO.png"}
-                        alt="Logo de Tierra Nativa"
-                        className='logo'
-                    />
+                <NavLink to="/home" className="navbar-brand d-flex align-items-center">
+                    <img src={shouldBeSolid || isScrolled ? "/images/LOGO TIERRA NATIVA.png" : "/images/LOGO TIERRA NATIVA BLANCO.png"} alt="Logo de Tierra Nativa" className='logo' />
                     <p className='d-inline ms-2 fw-bold'>Tierra Nativa</p>
                 </NavLink>
 
@@ -108,29 +87,22 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout }) =
                 </button>
 
                 <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul className="navbar-nav">
-
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Aventura</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Ecoturismo</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Relajación</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Geopaisajes</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="#">Litoral</a>
-                        </li>
+                    <ul className="navbar-nav me-3">
+                        {categories.map((cat, index) => {
+                            const safeSlug = cat?.slug || slugify(cat?.title || '');
+                            const title = cat?.title || safeSlug || 'Categoría';
+                            return (
+                                <li key={index} className="nav-item">
+                                    <Link to={`/categories/categoria/${safeSlug}`} className="nav-link">{title}</Link>
+                                </li>
+                            );
+                        })}
                     </ul>
                     <div className="ms-3">
                         <AuthButtons />
                     </div>
                 </div>
-            </div >
-        </nav >
-    )
+            </div>
+        </nav>
+    );
 };

@@ -99,6 +99,12 @@ export const AdminMenu = ({ onViewChange }) => {
                     onClick={() => handleNavigation('LIST_USERS')}
                 />
                 <MenuItem
+                    icon={List}
+                    title="Gestionar Categorias"
+                    description="Registrar, editar y eliminar categorias."
+                    onClick={() => handleNavigation('LIST_CATEGORY')}
+                />
+                <MenuItem
                     icon={Settings}
                     title="Configuración General"
                     description="Gestionar usuarios, y ajustes del sitio."

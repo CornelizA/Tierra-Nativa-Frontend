@@ -64,6 +64,7 @@
     padding: 20px;
     display: flex;
     border: 2px solid rgb(231, 224, 199);
+    margin-top: 5px;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
@@ -73,6 +74,7 @@
 .back-title {
     font-size: 1.563rem;
     font-weight: bold;
+    margin-top: 15px;
     margin-bottom: 10px;
     color: #1A531A;
     border-bottom: 3px solid #B85C38;
@@ -96,14 +98,12 @@
     align-self: center;
 }
 
-.back-destination,
-.back-category {
+.back-destination, .back-categories {
     font-size: 0.938rem;
-    margin: 5px 0;
-    color: #333;
+    color: #1A531A;
 }
 
-.inline-block {
+.inline-block-p {
     vertical-align: middle;
     margin-right: 8px;
     color: #B85C38;

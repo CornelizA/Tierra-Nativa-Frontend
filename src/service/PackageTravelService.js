@@ -5,6 +5,7 @@ const BASE_URL = 'http://localhost:8080';
 const API_URL_PACKAGES = `${BASE_URL}/paquetes`;
 const API_URL_AUTH = `${BASE_URL}/auth`;
 const API_URL_ADMIN = `${BASE_URL}/admin`;
+const API_URL_CATEGORY = `${BASE_URL}/categories`;
 
 const getAuthHeader = () => {
     const token = sessionStorage.getItem('jwtToken');
@@ -21,12 +22,39 @@ const jsonHeaders = () => ({
 });
 
 
-export const fireAlert = (title, text, icon = 'info') => {
+// export const fireAlert = (title, text, icon = 'info') => {
+//     if (typeof Swal !== 'undefined') {
+//         Swal.fire({ icon, title, text, confirmButtonText: 'Aceptar' });
+//     } else {
+//         console.log(`[ALERTA - ${icon.toUpperCase()}] ${title}: ${text}`);
+//     }
+// };
+export const fireAlert = (title, text, icon = 'info', isConfirm = false) => {
     if (typeof Swal !== 'undefined') {
-        Swal.fire({ icon, title, text, confirmButtonText: 'Aceptar' });
+        const config = { 
+            icon, 
+            title, 
+            text, 
+            confirmButtonText: 'Aceptar',
+            showCancelButton: isConfirm,
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true, 
+            customClass: {
+                confirmButton: 'btn btn-danger mx-2', 
+                cancelButton: 'btn btn-secondary mx-2'
+            },
+            buttonsStyling: false 
+        };
+
+        if (isConfirm) {
+            return Swal.fire(config);
+        }
+        
+        Swal.fire(config);
     } else {
         console.log(`[ALERTA - ${icon.toUpperCase()}] ${title}: ${text}`);
     }
+    return { isConfirmed: false };
 };
 
 export const apiHandleErrorAlert = (error, defaultMessage) => {
@@ -131,15 +159,18 @@ export const apiDeletePackage = async (packageId) => {
     }
 };
 
-export const apiGetPackageByCategory = async (category) => {
+export const apiGetCategoriesByCategory = async (categorySlug) => {
+
     try {
-        const response = await axios.get(`${API_URL_PACKAGES}/categoria/${category}`);
+        const response = await axios.get(`${API_URL_CATEGORY}/categoria/${categorySlug.toUpperCase()}`);
         return response.data;
     } catch (error) {
-        apiHandleErrorAlert(error, `Error al buscar los paquetes de la categoría ${category}.`);
+        apiHandleErrorAlert(error, `Error al buscar los paquetes de la categoría ${categorySlug}.`);
         throw error;
     }
 };
+
+
 
 export const apiRegister = async (apiData) => {
     try {
@@ -200,6 +231,66 @@ export const apiUpdateUserRole = async (emailToPromote, newRole) => {
         fireAlert('¡Éxito!', `Rol del usuario ${emailToPromote} actualizado a ${newRole}.`, 'success');
         return { success: true, data: response.data };
     } catch (error) {
+        throw error;
+    }
+};
+
+export const apiGetCategories = async () => {
+    try {
+        const headers = getAuthHeader();
+        const response = await axios.get(API_URL_CATEGORY, { headers });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, 'Error al obtener la lista de categorías del Administrador. (Revisa si tienes un token de ADMIN válido)');
+        throw error;
+    }
+};
+
+export const apiGetCategoriesPublic = async () => {
+    try {
+        const response = await axios.get(`${API_URL_CATEGORY}/public`);
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, `Error al obtener la lista de categorías.`);
+        throw error;
+    }
+};
+
+export const apiPostCategory = async (categoryData) => {
+    try {
+        const response = await axios.post(API_URL_CATEGORY, categoryData, {
+            headers: jsonAuthHeaders()
+        });
+        fireAlert('¡Categoría Creada!', `La categoría ${categoryData.title} ha sido registrada.`, 'success');
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al registrar la nueva categoría. Verifica que el título no esté duplicado.");
+        throw error;
+    }
+};
+
+
+export const apiUpdateCategory = async (categoryData) => {
+    try {
+        const response = await axios.put(API_URL_CATEGORY, categoryData, {
+            headers: jsonAuthHeaders()
+        });
+        fireAlert('¡Actualizada!', `Categoría ${categoryData.title} actualizada correctamente.`, 'success');
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al actualizar la categoría.");
+        throw error;
+    }
+};
+
+
+export const apiDeleteCategory = async (id) => {
+    try {
+        await axios.delete(`${API_URL_CATEGORY}/${id}`, { headers: getAuthHeader() });
+        fireAlert('¡Categoría Eliminada!', `Categoría con ID ${id} eliminada.`, 'success');
+        return true;
+    } catch (error) {
+        apiHandleErrorAlert(error, `Error al eliminar la categoría con ID ${id}.`);
         throw error;
     }
 };

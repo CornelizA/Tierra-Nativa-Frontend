@@ -77,7 +77,7 @@ export const Home = () => {
                   shortDescription={pkg.shortDescription}
                   basePrice={pkg.basePrice}
                   destination={pkg.destination}
-                  category={pkg.category}
+                  categories={pkg.categories}
                   imageUrl={mainCardImageUrl}
                 />
                 <Link to={`/detallePaquete/${pkg.id}`} className="btn btn-primary">

@@ -8,6 +8,9 @@ import { useLocation } from 'react-router-dom';
 import { AdminDashboard } from './component/AdminDashboard.jsx';
 import { LoginView } from './component/LoginView.jsx';
 import { RegisterView } from './component/RegisterView.jsx';
+import { AdminCategory } from './component/AdminCategory.jsx';
+import { apiGetCategoriesPublic } from './service/PackageTravelService';
+import { CategoryPackagesPage } from './pages/CategoryPackagesPage'
 
 export const TierraNativa = () => {
     const SCROLL_THRESHOLD = 500;
@@ -15,13 +18,19 @@ export const TierraNativa = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const [categories, setCategories] = useState([]);
+
     const isDetailedPage = location.pathname.startsWith('/detallePaquete/') &&
         location.pathname.split('/').length === 3;
 
     const isAdminPage = location.pathname.startsWith('/paquetes/admin');
-    const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
-    const shouldBeSolid = isDetailedPage || isAdminPage || isAuthPage;
+    const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+    
+    const isCategoryPage = location.pathname.startsWith('/categories/categoria/') && 
+                           location.pathname.split('/').length > 3;
+
+    const shouldBeSolid = isDetailedPage || isAdminPage || isAuthPage || isCategoryPage ;
 
     const [user, setUser] = useState(() => {
         const storedUser = sessionStorage.getItem('user');
@@ -47,7 +56,7 @@ export const TierraNativa = () => {
         setIsScrolled(false);
 
         if (typeof Swal !== 'undefined') {
-            Swal.fire('Sesión cerrada.','¡Regresa pronto!', 'info');
+            Swal.fire('Sesión cerrada.', '¡Regresa pronto!', 'info');
         }
         navigate('/home');
     };
@@ -67,6 +76,19 @@ export const TierraNativa = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [shouldBeSolid]);
 
+      useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const fetchedCategories = await apiGetCategoriesPublic();
+                setCategories(fetchedCategories);
+            } catch (error) {
+                console.error("No se pudieron cargar las categorías públicas:", error);
+                setCategories([]);
+            }
+        };
+        loadCategories();
+    }, []); 
+
     return (
         <>
             <div className="app-wrapper">
@@ -76,15 +98,18 @@ export const TierraNativa = () => {
                         shouldBeSolid={shouldBeSolid}
                         user={user}
                         onLogout={handleLogout}
+                        categories={categories}
                     />
                     <div className={`container ${isAuthPage ? 'pt-20' : ''} ${!isAuthPage && shouldBeSolid ? 'pt-80' : ''}`}>
                         <Routes>
                             <Route path='/home' element={<Home />}></Route>
                             <Route path='/paquetes' element={<Home />}></Route>
                             <Route path='/detallePaquete/:id' element={<PackageDetailed />}></Route>
-                            <Route path='/paquetes/admin' element={<AdminDashboard onLogout={handleLogout}/>}></Route>
+                            <Route path='/paquetes/admin' element={<AdminDashboard onLogout={handleLogout} />}></Route>
                             <Route path='/login' element={<LoginView onAuthSuccess={onAuthSuccess} />}></Route>
                             <Route path='/register' element={<RegisterView onAuthSuccess={onAuthSuccess} />}></Route>
+                            <Route path='/categories/categoria/:categorySlug/*'  element={<CategoryPackagesPage />} />
+                            <Route path='/categories' element={<AdminCategory />}></Route>
                         </Routes>
                     </div>
                 </div>

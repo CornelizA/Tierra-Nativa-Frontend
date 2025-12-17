@@ -8,7 +8,7 @@ export const initialFormData = {
     shortDescription: '',
     basePrice: '',
     destination: '',
-    category: 'GEOPAISAJES',
+    category: '',
     itineraryDetail: {
         duration: '',
         lodgingType: '',
@@ -275,14 +275,14 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
 
                 <div className="form-group">
                     <label htmlFor="category">Categoría</label>
-                    <select id="category" name="category" value={formData.category} onChange={handleChange} className={validationErrors.category ? 'input-error' : ''} >
+                    <select id="category" name="category" value={formData.categories} onChange={handleChange} className={validationErrors.categories ? 'input-error' : ''} >
                         <option value="GEOPAISAJES">Geopaisajes</option>
                         <option value="AVENTURA">Aventura</option>
                         <option value="ECOTURISMO">Ecoturismo</option>
                         <option value="LITORAL">Litoral</option>
                         <option value="RELAJACION">Relajación</option>
                     </select>
-                    {validationErrors.category && <p className="validation-error">{validationErrors.category}</p>}
+                    {validationErrors.categories && <p className="validation-error">{validationErrors.categories}</p>}
                 </div>
 
                 <h3>Detalles del Itinerario </h3>

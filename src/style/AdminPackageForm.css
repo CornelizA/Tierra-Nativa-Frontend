@@ -10,14 +10,16 @@
 
 }
 
-.admin-form-container h2 {
+.admin-form-container .title-admin-form {
     color: #FAF8F0;
     background-color: #1A531A;
     font-weight: bolder;
+    text-align: center;
     border-bottom: 1px solid #B85C38;
-    padding-bottom: 20px;
+    padding: 25px;
+    margin-top: 10px;
     margin-bottom: 20px;
-    font-size: 30px;
+    font-size: 1.9rem;
     width: 107.2%;
     margin-left: -30px;
 }
@@ -30,9 +32,7 @@
     font-weight: bolder;
 }
 
-.container {
-    margin: 0 auto !important;
-}
+
 
 .package-form .form-group {
     margin-bottom: 15px;
@@ -154,6 +154,39 @@
     background-color: #e0a800;
 }
 
+
+.select-all-button {
+        border-radius: 5px;
+        transition: all 0.2s;
+    }
+
+    .select-all-button:hover {
+        border-color: #155724;
+        box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
+        outline: none;
+        background-color: #f0fdf4;
+    }
+
+    .characteristic-button {
+        border-radius: 5px;
+        transition: all 0.2s;
+        border-width: 1px;
+    }
+
+    .characteristic-button.active {
+        border-color: #155724;
+        box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
+        outline: none;
+        background-color: #f0fdf4;
+        color: #155724;
+    }
+
+    .characteristic-button:hover {
+        border-color: #155724;
+        box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
+        outline: none;
+    }
+
 @media (max-width: 768px) {
     .admin-form-container {
         margin: 20px;
@@ -165,10 +198,7 @@
         gap: 0;
     }
 
-    .container {
-        margin: 0 auto !important;
-    }
-
+   
     .mobile-access-denied-container {
         margin-top: 30px;
 

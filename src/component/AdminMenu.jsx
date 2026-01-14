@@ -1,11 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { List, Plus, Settings, Laptop } from 'lucide-react';
 import '../style/AdminMenu.css';
+import { Plane, Plus, Users, Tags, Settings2, ShieldAlert, Laptop, } from 'lucide-react';
 
 export const AdminMenu = ({ onViewChange }) => {
 
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [showMobileDenied, setShowMobileDenied] = useState(false);
+    const [isAuthorized, setIsAuthorized] = useState(null);
+
+    useEffect(() => {
+        const checkAuth = () => {
+            const userData = sessionStorage.getItem('user');
+
+            if (!userData) {
+                console.log("No hay usuario en sessionStorage, redirigiendo...");
+                window.location.href = '/login';
+                return;
+            }
+            try {
+                const user = JSON.parse(userData);
+
+                const hasAdminRole = user.role === 'ADMIN' ||
+                    (user.authorities && user.authorities.includes('ADMIN')) ||
+                    (Array.isArray(user.roles) && user.roles.includes('ADMIN'));
+
+                if (hasAdminRole) {
+                    setIsAuthorized(true);
+                } else {
+                    setIsAuthorized(false);
+                    setTimeout(() => {
+                        window.location.href = '/home';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error("Error validando permisos", error);
+                window.location.href = '/home';
+            }
+        };
+
+        checkAuth();
+    }, []);
 
     useEffect(() => {
         if (isMobile) {
@@ -75,13 +109,35 @@ export const AdminMenu = ({ onViewChange }) => {
     if (showMobileDenied) {
         return <MobileDeniedCard />;
     }
+
+    const UnauthorizedMessage = () => (
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-50">
+            <ShieldAlert size={80} className="text-red-600 mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900">Acceso Denegado</h1>
+            <p className="text-gray-600 max-w-xs mx-auto">No tienes permisos de administrador para visualizar esta sección.</p>
+            <p className="text-sm text-gray-400 mt-4 animate-pulse">Redirigiendo al inicio automáticamente...</p>
+        </div>
+    );
+
+    if (isAuthorized === null) {
+        return <div className="flex items-center justify-center min-h-screen">Verificando credenciales...</div>;
+    }
+
+    if (isAuthorized === false) {
+        return <UnauthorizedMessage />;
+    }
+
+    if (showMobileDenied) {
+        return <MobileDeniedCard />;
+    }
+
     return (
         <div className="admin-menu-container">
-            <h2>Menú de Administrador</h2>
+            <h2 className="admin-title">Menú de Administrador</h2>
             <h3 className="admin-subtitle"> Selecciona una opción para gestionar el contenido de Tierra Nativa</h3>
             <div className="admin-menu-grid">
                 <MenuItem
-                    icon={List}
+                    icon={Plane}
                     title="Gestionar Paquetes"
                     description="Editar, eliminar y ver el listado completo de viajes."
                     onClick={() => handleNavigation('LIST')}
@@ -93,22 +149,22 @@ export const AdminMenu = ({ onViewChange }) => {
                     onClick={() => handleNavigation('CREATE_FORM')}
                 />
                 <MenuItem
-                    icon={List}
+                    icon={Users}
                     title="Gestionar Permisos de Usuarios"
                     description="Listar usuarios registrados y gestionar permisos."
                     onClick={() => handleNavigation('LIST_USERS')}
                 />
                 <MenuItem
-                    icon={List}
-                    title="Gestionar Categorias"
+                    icon={Tags}
+                    title="Gestionar Categorías"
                     description="Registrar, editar y eliminar categorias."
                     onClick={() => handleNavigation('LIST_CATEGORY')}
                 />
                 <MenuItem
-                    icon={Settings}
-                    title="Configuración General"
-                    description="Gestionar usuarios, y ajustes del sitio."
-                    isWIP={true}
+                    icon={Settings2}
+                    title="Gestionar Características"
+                    description="Registrar, editar y eliminar características."
+                    onClick={() => handleNavigation('LIST_CHARACTERISTICS')}
                 />
             </div>
         </div>

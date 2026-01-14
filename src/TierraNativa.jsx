@@ -100,7 +100,7 @@ export const TierraNativa = () => {
                         onLogout={handleLogout}
                         categories={categories}
                     />
-                    <div className={`container ${isAuthPage ? 'pt-20' : ''} ${!isAuthPage && shouldBeSolid ? 'pt-80' : ''}`}>
+                    <div className={`container-pages ${isAuthPage ? 'pt-20' : ''} ${!isAuthPage && shouldBeSolid ? 'pt-80' : ''}`}>
                         <Routes>
                             <Route path='/home' element={<Home />}></Route>
                             <Route path='/paquetes' element={<Home />}></Route>

@@ -4,6 +4,7 @@ import { AdminPackageList } from './AdminPackageList';
 import { AdminPackageForm, initialFormData } from './AdminPackageForm';
 import { AdminUserList } from './AdminUserList';
 import { AdminCategory } from './AdminCategory';
+import { AdminCharacteristic } from './AdminCharacteristic';
 
 export const AdminDashboard = () => {
     const [currentView, setCurrentView] = useState('MENU');
@@ -43,6 +44,13 @@ export const AdminDashboard = () => {
             case 'LIST_CATEGORY':
                 return (
                     <AdminCategory
+                        onBackToMenu={() => handleViewChange('MENU')}
+                    />
+                );
+
+            case 'LIST_CHARACTERISTICS':
+                return (
+                    <AdminCharacteristic
                         onBackToMenu={() => handleViewChange('MENU')}
                     />
                 );

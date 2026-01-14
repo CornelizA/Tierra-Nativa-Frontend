@@ -2,43 +2,99 @@ import { PackageTravelContext } from "../context/PackageTravelContext";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import '../style/PackageDetailed.css';
-import { Clock, Tent, Car, Utensils, Circle } from 'lucide-react';
+import { Clock, Tent, Car, Utensils, Circle, Star } from 'lucide-react';
+import { IconLibrary } from '../component/AdminCharacteristic';
+import { apiGetCharacteristicsPublic, apiGetPackageById, fireAlert } from "../service/PackageTravelService";
 
 export const PackageDetailed = () => {
 
-  const { id: packageTravelId } = useParams();
+  const params = useParams();
+  const packageTravelId = params?.id || params?.packageId || null;
   const { packageTravel: allPackages } = useContext(PackageTravelContext);
   const navigate = useNavigate();
 
   const [packageTravel, setPackageTravel] = useState(null);
+  const [allCharacteristics, setAllCharacteristics] = useState([]);
   const [showGallery, setShowGallery] = useState(false);
-
+  
   const FALLBACK_URL = 'https://placehold.co/800x600/CCCCCC/000000?text=SIN+IMAGEN';
 
   useEffect(() => {
-    if (allPackages.length > 0 && packageTravelId) {
-      const foundPackages = allPackages.find(pkg => pkg.id === parseInt(packageTravelId));
-
-      if (foundPackages) {
-        setPackageTravel(foundPackages);
-      } else {
-        console.warn(`Paquete con ID ${packageTravelId} no encontrado en el contexto.`);
+    const fetchCharacteristics = async () => {
+      try {
+        const data = await apiGetCharacteristicsPublic();
+        const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
+        setAllCharacteristics(list);
+      } catch (error) {
+        console.warn('Error al obtener características maestros:', error);
       }
+    };
+    fetchCharacteristics();
+  }, []);
+
+
+  useEffect(() => {
+    if (!packageTravelId) return;
+    const tryUseList = async () => {
+      if (allPackages && allPackages.length > 0) {
+        const found = allPackages.find(pkg => Number(pkg.id) === Number(packageTravelId));
+        if (found) {
+          setPackageTravel(found);
+          const hasIds = (Array.isArray(found.characteristicIds) && found.characteristicIds.length > 0) ||
+            (Array.isArray(found.characteristics) && found.characteristics.length > 0);
+          if (!hasIds) {
+            try {
+              const detail = await apiGetPackageById(packageTravelId);
+              if (detail) setPackageTravel(detail);
+            } catch (e) {
+            }
+          }
+          return;
+        }
+      }
+      try {
+        const detail = await apiGetPackageById(packageTravelId);
+        if (detail) setPackageTravel(detail);
+      } catch (e) {
+        fireAlert('Error', 'No se pudo cargar los detalles del paquete.');
+        setPackageTravel(null);
+      }
+    };
+    tryUseList();
+  }, [allPackages, packageTravelId]);
+
+  if (!packageTravel) return <div className="p-10 text-center font-bold text-slate-400">Cargando detalles...</div>;
+
+  const idsFromPackage = (() => {
+    if (!packageTravel) return [];
+    if (Array.isArray(packageTravel.characteristicIds) && packageTravel.characteristicIds.length) {
+      return packageTravel.characteristicIds.map(i => Number(i?.id ?? i)).filter(Boolean);
     }
-  }, [packageTravelId, allPackages, navigate]);
+    if (Array.isArray(packageTravel.characteristics) && packageTravel.characteristics.length) {
+      return packageTravel.characteristics.map(c => Number(c?.id ?? c)).filter(Boolean);
+    }
+    return [];
+  })();
 
-  if (!packageTravel) {
-    return <div className="loading-container"><h2>Cargando detalles del paquete...</h2></div>;
-  }
+  const packageFeatures = allCharacteristics.filter(masterChar => {
+    const masterId = Number(masterChar.id);
+    if (idsFromPackage.includes(masterId)) return true;
 
-  const allImageObjects = Array.isArray(packageTravel.images) ? packageTravel.images : [];
+    const pkgsField = masterChar.packages || masterChar.packageIds || masterChar.packageId;
+    if (Array.isArray(pkgsField) && pkgsField.length) {
+      return pkgsField.some(p => Number(p?.id ?? p) === Number(packageTravel.id));
+    }
 
-  const principalImageObject = allImageObjects.find(img => img.principal === true)
-    || allImageObjects[0];
+    return false;
+  });
+
+  const allImageObjects = Array.isArray(packageTravel.imageDetails) ? packageTravel.imageDetails : [];
+
+  const principalImageObject = allImageObjects.find(img => img.principal === true) || allImageObjects[0];
 
   const calculatedMainImageUrl = (principalImageObject && principalImageObject.url && principalImageObject.url.trim())
     ? principalImageObject.url.trim()
-    : packageTravel.imageUrl;
+    : (packageTravel.imageUrl || null);
 
   const mainImage = calculatedMainImageUrl || FALLBACK_URL;
   const filterUrl = calculatedMainImageUrl;
@@ -64,6 +120,7 @@ export const PackageDetailed = () => {
   const recommendationsList = itinerary.generalRecommendations
     ? formatRecommendations(itinerary.generalRecommendations)
     : [];
+
 
   return (
     <>
@@ -133,9 +190,39 @@ export const PackageDetailed = () => {
           )}
         </section>
 
+      <section className="section-characteristic  p-8 md:p-12 shadow-sm ">
+          <div className="mb-10">
+            <h2 className="title-detailed-characteristic">Características del Paquete</h2>
+            <p className="text-detailed-characteristic">Servicios y comodidades que incluye esta experiencia.</p>
+          </div>
+
+          <ul className="list-group list-group-horizontal flex-wrap gap-2 justify-center">
+            {packageFeatures && packageFeatures.length > 0 ? (
+              packageFeatures.map((item) => {
+                const IconComponent = IconLibrary[item.icon?.toLowerCase()] || Star;
+                return (
+                  <li key={item.id} className="list-group-item flex items-center rounded-2xl">
+                    <div className="icon-group rounded-md bg-slate-50 flex items-center justify-center text-blue-600">
+                      <IconComponent size={20} strokeWidth={2} />
+                    </div>
+                    <span className="font-semibold text-slate-800">{item.title}</span>
+                  </li>
+                );
+              })
+            ) : (
+              <li className="list-group-item w-full text-center text-slate-400 py-6 border-2 border-dashed rounded-3xl">
+                {allCharacteristics.length === 0 
+                  ? 'Cargando catálogo de servicios...' 
+                  : 'Este paquete no tiene características vinculadas.'}
+              </li>
+            )}
+          </ul>
+        </section>
+
+
         <section className="product-details-section">
           <div className="details-content">
-            <div className="row-detailed row top-cards-row">
+            <div className="row-detailed row top-cards-row ">
               <div className="col-md-6 col-lg-5 description-column">
                 <div className="card card-top">
                   <h2 className="card-header">Resumen del Itinerario</h2>

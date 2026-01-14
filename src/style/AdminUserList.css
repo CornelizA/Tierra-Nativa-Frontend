@@ -1,19 +1,20 @@
-.p-4 {
-    padding: 20px;
+.container-p-4 {
+    padding: 40px;
     margin-top: 55px;
-}
-
-.p-3 {
-    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px;
 }
 
 .text-3xl {
     margin-top: 0px;
     margin-bottom: 20px;
+    padding-bottom: 15px;
     font-size: 2rem;
     text-align: center;
     font-weight: bold;
     color: #1A531A;
+    border-bottom: 1px solid #DEDEDE;
 }
 
 .mb-6 {
@@ -22,23 +23,13 @@
     border-radius: 5px;
     font-weight: bold;
     padding: 5px 15px;
-}
-
-
-.mb-5 {
-    background-color: #A49989;
-    color: #fff;
-    font-weight: bold;
-    padding: 10px 15px 5px 15px;
-    text-align: center;
     width: 100%;
-    margin: auto;
-
 }
-svg.bi.flex-shrink-0.mr-2{
+
+svg.bi.flex-shrink-0.mr-2 {
     width: 18px;
     height: 18px;
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .input-search-icon {
@@ -48,8 +39,10 @@ svg.bi.flex-shrink-0.mr-2{
     left: 8px;
 }
 
-.w-full {
+.search-user {
     text-indent: 25px;
+    border-radius: 8px;
+    width: 100%;
 }
 
 .icons-svg {
@@ -77,6 +70,7 @@ td {
     padding: 5px 15px;
     border-bottom: 1px solid #DEDEDE;
     text-align: center;
+
 }
 
 tbody tr:nth-child(even) {

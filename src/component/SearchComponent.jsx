@@ -3,15 +3,24 @@ import { useContext, useEffect, useState } from "react";
 import '../style/SearchComponent.css';
 import { Search } from "lucide-react";
 
-function getUniqueDestinations(packages) {
-  const uniqueDestinations = [];
-  return packages.filter(pkg => {
-    if (!uniqueDestinations.includes(pkg.destination.toLowerCase())) {
-      uniqueDestinations.push(pkg.destination.toLowerCase());
-      return true;
+function getUniqueDestinations(packagesParam) {
+  const pkgs = Array.isArray(packagesParam)
+    ? packagesParam
+    : (packagesParam && Array.isArray(packagesParam.packages) ? packagesParam.packages : []);
+
+  const seen = new Set();
+  const result = [];
+
+  pkgs.forEach((pkg, idx) => {
+    const dest = (pkg && pkg.destination) ? String(pkg.destination).trim() : '';
+    const key = dest.toLowerCase();
+    if (dest && !seen.has(key)) {
+      seen.add(key);
+      result.push({ id: pkg && pkg.id ? pkg.id : `dest-${key}-${idx}`, destination: dest });
     }
-    return false;
   });
+
+  return result;
 }
 
 export const SearchComponent = ({ onFilter }) => {
@@ -22,11 +31,14 @@ export const SearchComponent = ({ onFilter }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
-    let filtered = packageTravel;
+
+    const pkgs = Array.isArray(packageTravel)
+      ? packageTravel
+      : (packageTravel && Array.isArray(packageTravel.packages) ? packageTravel.packages : []);
+
+    let filtered = pkgs;
     if (searchTerm.length > 0) {
-      filtered = packageTravel.filter(pkg =>
-        pkg.destination.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filtered = pkgs.filter(pkg => (pkg.destination || '').toLowerCase().includes(searchTerm.toLowerCase()));
     }
     setSuggestions(getUniqueDestinations(filtered));
   }, [searchTerm, packageTravel]);
@@ -95,9 +107,9 @@ export const SearchComponent = ({ onFilter }) => {
       </form>
       {showSuggestions && suggestions.length > 0 && (
         <ul className="suggestions-list">
-          {suggestions.map(pkg => (
-            <li key={pkg.id} onClick={() => handleSuggestionClick(pkg.destination)}>
-              <span>{pkg.destination}</span>
+          {suggestions.map(item => (
+            <li key={item.id} onClick={() => handleSuggestionClick(item.destination)}>
+              <span>{item.destination}</span>
             </li>
           ))}
         </ul>

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
-import { apiGetCategoriesByCategory } from '../service/PackageTravelService';
+import { apiGetCategoriesByCategory, fireAlert } from '../service/PackageTravelService';
 import { PackageTravelCard } from '../component/PackageTravelCard';
-import { MapPin, RefreshCcw } from 'lucide-react';
+import { MapPin, RefreshCcw,Compass,Info} from 'lucide-react';
 import { Link } from "react-router-dom";
 
 import '../style/CategoryPackagesPage.css';
@@ -23,7 +23,6 @@ export const CategoryPackagesPage = () => {
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
     const [categoryInfo, setCategoryInfo] = useState(initialCategoryInfo);
 
     const capitalizeFirstLetter = (string) => {
@@ -81,7 +80,6 @@ export const CategoryPackagesPage = () => {
 
 
         } catch (err) {
-            console.error("Error al cargar paquetes de categoría:", err);
             if (err && err.response && err.response.status === 401) {
                 setError('Error 401: Acceso no autorizado. Inicia sesión como administrador si intentas acceder a datos restringidos.');
             } else {
@@ -96,7 +94,6 @@ export const CategoryPackagesPage = () => {
     useEffect(() => {
         if (categorySlug) {
             setLoading(true);
-            setError(null);
             setCategoryInfo(prev => ({
                 ...initialCategoryInfo,
                 title: capitalizeFirstLetter(categorySlug),
@@ -109,89 +106,90 @@ export const CategoryPackagesPage = () => {
         }
     }, [categorySlug, fetchPackages]);
 
-
     return (
-        <div className="min-h-screen bg-gray-50">
-
-            <div
-                className="relative w-full h-[50vh] flex items-center justify-center pt-24 md:h-[60vh] bg-cover bg-center shadow-xl"
+        <div className="container-category bg-gray-50">
+            <div className="background-category w-full h-screen flex overflow-hidden"
                 style={{
-                    backgroundImage: `url(${categoryInfo.imageUrl})`,
-                    backgroundColor: '#1E3A8A'
+                   backgroundImage: `url(${categoryInfo.imageUrl})`,
                 }}
             >
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
                 <div className="relative text-center p-6 max-w-4xl mx-auto z-10">
-                    <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-4 drop-shadow-lg [text-shadow:0_4px_6px_rgba(0,0,0,0.5)]">
+                    <h1 className="display-title text-5xl md:text-7xl font-extrabold text-white mb-4 drop-shadow-lg [text-shadow:0_4px_6px_rgba(0,0,0,0.5)]">
                         <MapPin size={48} className="mr-4 text-blue-300 inline-block align-middle" />
                         {displayTitle}
                     </h1>
+   </div>
+          
+                    {!loading && !error && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
 
-                    <button
+                            <div className="bg-black/40 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-2xl  mx-auto">
+                                <p className="category-description md:text-2xl text-gray-100 leading-relaxed font-light italic">
+                                    {categoryInfo.description}
+                                </p>
+                            </div>
+
+                            {packages.length === 0 && (
+                                <div className="error-message text-center p-8 bg-white/10 backdrop-blur-sm rounded-2xl mb-8 max-w-2xl mx-auto">
+                                
+                                    <p className="text-2xl text-white font-bold">
+                                        ¡Parece que aún no hay paquetes en la categoría "{displayTitle}"! 
+                                    </p>
+                                   
+                                    
+                                 
+                                </div>
+                            )}
+  <button
                         onClick={() => fetchPackages(categorySlug)}
                         disabled={loading}
-                        className="flex items-center mx-auto px-6 py-2 text-base font-bold rounded-full text-white bg-blue-600 hover:bg-blue-700 transition duration-150 disabled:opacity-50 shadow-lg mt-4"
+                        className="btn btn-light mx-auto flex items-center justify-center mt-[7vh] "
                     >
                         <RefreshCcw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                         {loading ? 'Cargando...' : 'Recargar Paquetes'}
                     </button>
-                </div>
-            </div>
-
-            <div className="container mx-auto max-w-7xl p-4 md:p-8">
+                    </div>
+                    )}
+                    
+               </div>
 
                 {loading && (
-                    <div className="text-center p-10 bg-white rounded-xl shadow-lg mt-10">
-                        <p className="text-xl text-blue-500 font-semibold">Cargando paquetes y detalles de categoría...</p>
-                        <p className="text-sm text-gray-500">Buscando en la categoría {displayTitle}...</p>
+                    <div className="load-text text-center p-10 bg-white rounded-xl shadow-lg mt-10">
+                        <p className="text-xl text-blue-500 font-semibold">Cargando paquetes y detalles de la categoría {displayTitle}</p>
                     </div>
                 )}
 
                 {error && (
                     <div className="text-center p-10 bg-red-50 border border-red-300 rounded-xl shadow-lg mt-10">
                         <p className="text-xl text-red-700 font-semibold">{error}</p>
-                        {(/401|no autorizado|acceso denegado/i).test(error) && (
-                            <div className="mt-4">
-                                <p className="text-sm text-gray-600 mb-2">Para ver esta información necesitas iniciar sesión con una cuenta con permisos adecuados.</p>
-                                <Link to="/login" className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg">Ir a Iniciar Sesión</Link>
-                            </div>
-                        )}
+                        <div className="mt-4">
+                            <p className="text-sm text-gray-600 mb-2">Para ver esta información necesitas iniciar sesión con una cuenta con permisos adecuados.</p>
+                            <Link to="/login" className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg">Ir a Iniciar Sesión</Link>
+                        </div>
                     </div>
                 )}
-
-                {!loading && !error && (
-                    <section className="mt-12">
-
-                        <div className="bg-black p-6 md:p-10 rounded-xl shadow-xl mb-12">
-                            <h2 className="text-3xl font-extrabold mb-4 text-gray-800 border-b pb-2 border-blue-100">
-                                Acerca de {displayTitle}
-                            </h2>
-                            <p className="text-lg text-gray-600 leading-relaxed">
-                                {categoryInfo.description}
-                            </p>
-                        </div>
-
-                        {packages.length === 0 && (
-                            <div className="text-center p-10 bg-black-100 rounded-xl border border-dashed border-gray-300 mb-12">
-                                <p className="text-2xl text-gray-700 font-semibold">
-                                    ¡Parece que aún no hay paquetes en la categoría "{displayTitle}"!
-                                </p>
-                                <p className="text-base text-gray-500 mt-3">Estamos trabajando para añadir emocionantes viajes pronto. Vuelve a recargar en unos minutos.</p>
-                            </div>
-                        )}
-
-
+                            
                         {packages.length > 0 && (
-                            <div className="w-full">
-                                <h2 className="text-4xl font-extrabold mb-8 text-blue-700">
-                                    Explora nuestros Viajes ({packages.length})
+                            <div className="packages-section mt-8">
+                                <h2 className="package-text text-4xl font-extrabold">
+                                    Nuestras Propuestas 
+                                    <p className='package-paragraph'>Encontramos {packages.length} experiencias para ti</p>
                                 </h2>
 
-                                <div className="row">
+                                <div className="package-card row">
                                     {packages.map((pkg) => {
 
-                                        const imageDetails = Array.isArray(pkg.imageDetails) ? pkg.imageDetails : [];
+                                        const cardCategories = (Array.isArray(pkg.categories) && pkg.categories.length > 0)
+                                            ? pkg.categories
+                                            : (categoryInfo && categoryInfo.title)
+                                                ? [{ title: categoryInfo.title }]
+                                                : [];
+
+                                        const imageDetails = Array.isArray(pkg.imageDetails)
+                                            ? pkg.imageDetails
+                                            : (Array.isArray(pkg.images) ? pkg.images : []);
                                         const principalImageObj = imageDetails.find(img => img.principal === true);
                                         const mainCardImageUrl = (principalImageObj && principalImageObj.url)
                                             ? principalImageObj.url.trim()
@@ -207,7 +205,8 @@ export const CategoryPackagesPage = () => {
                                                     shortDescription={pkg.shortDescription}
                                                     basePrice={pkg.basePrice}
                                                     destination={pkg.destination}
-                                                    categories={pkg.categories}
+                                                    categories={cardCategories}
+                                                    categoryId={pkg.categoryId}
                                                     imageUrl={mainCardImageUrl}
                                                 />
                                                 <Link to={`/detallePaquete/${pkg.id}`} className="btn btn-primary">Ver Detalle</Link>
@@ -217,9 +216,8 @@ export const CategoryPackagesPage = () => {
                                 </div>
                             </div>
                         )}
-                    </section>
-                )}
             </div>
-        </div>
-    );
-};
+      ) }
+
+
+

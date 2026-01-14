@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { apiPostPackage, apiUpdatePackage } from '../service/PackageTravelService';
+import React, { useState, useEffect, useContext } from 'react';
+import { apiPostPackage, apiUpdatePackage, apiGetCategoriesPublic, apiGetCharacteristicsPublic, fireAlert} from '../service/PackageTravelService';
+import { PackageTravelContext } from '../context/PackageTravelContext';
 import '../style/AdminPackageForm.css';
-import { Plus, ArrowLeft } from 'lucide-react';
+import  { IconLibrary } from '../component/AdminCharacteristic.jsx';
+import { Plus, ArrowLeft, Star,Check} from 'lucide-react';
 
 export const initialFormData = {
     name: '',
     shortDescription: '',
     basePrice: '',
     destination: '',
-    category: '',
     itineraryDetail: {
         duration: '',
         lodgingType: '',
@@ -18,19 +19,33 @@ export const initialFormData = {
         generalRecommendations: ''
     },
     imageDetails: [{ url: '', principal: true }],
+    characteristicIds: [],
+    category: ''
 };
 
 function mapPackageToFormData(pkg) {
     let imageDetails = [];
 
-    if (Array.isArray(pkg.images) && pkg.images.length > 0) {
-        imageDetails = pkg.images.map((img, i) => ({
+    const imagesToMap = Array.isArray(pkg.imageDetails) && pkg.imageDetails.length > 0
+        ? pkg.imageDetails
+        : (Array.isArray(pkg.images) && pkg.images.length > 0 ? pkg.images : []);
+
+    if (imagesToMap.length > 0) {
+        imageDetails = imagesToMap.map((img, i) => ({
             url: img.url || '',
-            principal: i === 0
+            principal: (i === 0) || (img.principal === true)
         }));
     } else {
         imageDetails = [{ url: '', principal: true }];
     }
+
+    const characteristicIds = Array.isArray(pkg.characteristicIds)
+        ? pkg.characteristicIds
+        : (Array.isArray(pkg.characteristics) ? pkg.characteristics.map(c => c.id).filter(Boolean) : []);
+
+    const categoryValue = Array.isArray(pkg.categoryId) && pkg.categoryId.length > 0
+        ? String(pkg.categoryId[0])
+        : (pkg.category ? String(pkg.category) : (pkg.categoryId ? String(pkg.categoryId) : ''));
 
     return {
         id: pkg.id,
@@ -40,11 +55,15 @@ function mapPackageToFormData(pkg) {
             ...initialFormData.itineraryDetail,
             ...(pkg.itineraryDetail || {})
         },
-        imageDetails
+            imageDetails,
+            characteristicIds,
+            category: categoryValue
     };
 }
 
 export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
+
+    const { fetchPackageTravel, addPackageTravel, updatePackageTravel } = useContext(PackageTravelContext) || {};
 
     const [formData, setFormData] = useState(() => {
         if (packageToEdit) {
@@ -55,6 +74,25 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
 
     const isEditing = formData.id != null;
     const [validationErrors, setValidationErrors] = useState({});
+    const [categoriesList, setCategoriesList] = useState([]);
+    const [characteristicsList, setCharacteristicsList] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const cats = await apiGetCategoriesPublic();
+                setCategoriesList(Array.isArray(cats) ? cats : (cats?.data || []));
+            } catch (e) {
+             fireAlert('Error de Operación', 'Hubo un error al cargar las categorías.', 'error');
+            }
+            try {
+                const chars = await apiGetCharacteristicsPublic();
+                setCharacteristicsList(Array.isArray(chars) ? chars : (chars?.data || []));
+            } catch (e) {
+                 fireAlert('Error de Operación', 'Hubo un error al cargar las características.', 'error');
+            }
+        })();
+    }, []);
 
     const validateForm = () => {
         const errors = {};
@@ -64,6 +102,9 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         if (!formData.basePrice || isNaN(basePriceValue) || basePriceValue <= 0) {
             errors.basePrice = 'El precio base es obligatorio y debe ser un número positivo.';
         }
+        if(!formData.category) { errors.categories = 'La categoría es obligatoria.'; }
+        if(!formData.characteristicIds || formData.characteristicIds.length === 0) { errors.characteristics = 'Las características son obligatorias.'; }
+
         if (!formData.destination.trim()) { errors.destination = 'El destino es obligatorio.'; }
 
         const itinerary = formData.itineraryDetail;
@@ -96,6 +137,23 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
+    };
+
+    const handleCharacteristicToggle = (id) => {
+        setFormData(prev => {
+            const existing = Array.isArray(prev.characteristicIds) ? prev.characteristicIds : [];
+            const asNum = Number(id);
+            if (existing.includes(asNum)) {
+                return { ...prev, characteristicIds: existing.filter(x => x !== asNum) };
+            }
+            return { ...prev, characteristicIds: [...existing, asNum] };
+        });
+    };
+
+    const handleSelectAllCharacteristics = () => {
+        if (!Array.isArray(characteristicsList) || characteristicsList.length === 0) return;
+        const allIds = characteristicsList.map(c => Number(c.id));
+        setFormData(prev => ({ ...prev, characteristicIds: allIds }));
     };
 
     const handleImageChange = (index, value) => {
@@ -131,6 +189,15 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         setFormData({ ...formData, imageDetails: newImages });
     };
 
+      const handleToggleAllCharacteristics = () => {
+        if (formData.characteristicIds.length === characteristicsList.length) {
+            setFormData(prev => ({ ...prev, characteristicIds: [] }));
+        } else {
+            const allIds = characteristicsList.map(c => Number(c.id));
+            setFormData(prev => ({ ...prev, characteristicIds: allIds }));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const isValid = validateForm();
@@ -142,6 +209,18 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 confirmButtonText: 'Aceptar'
             });
             return;
+        }
+        if (isEditing) {
+            const token = sessionStorage.getItem('jwtToken');
+            if (!token) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sesión Requerida',
+                    text: 'Para editar paquetes, debes iniciar sesión como administrador.',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
         }
 
         Swal.fire({
@@ -159,12 +238,15 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 ...(isEditing && { id: id }),
                 ...restOfFormData,
                 basePrice: parseFloat(restOfFormData.basePrice),
-                images: (imageDetails || [])
+                imageDetails: (imageDetails || [])
                     .filter(img => img.url.trim() !== '')
                     .map(img => ({
                         url: img.url,
                         principal: img.principal
-                    }))
+                    })),
+
+                categoryId: formData.category ? [Number(formData.category)] : (formData.categoryId || []),
+                characteristicIds: Array.isArray(formData.characteristicIds) ? formData.characteristicIds.map(Number) : []
             };
 
             let response;
@@ -191,6 +273,28 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 timer: 2000
             });
 
+
+            const merged = { ...response };
+            if ((!merged.imageDetails || merged.imageDetails.length === 0) && Array.isArray(dataToSend.imageDetails) && dataToSend.imageDetails.length) {
+                merged.imageDetails = dataToSend.imageDetails;
+                merged.images = dataToSend.imageDetails;
+            }
+            if ((!merged.characteristicIds || merged.characteristicIds.length === 0) && Array.isArray(dataToSend.characteristicIds) && dataToSend.characteristicIds.length) {
+                merged.characteristicIds = dataToSend.characteristicIds;
+            }
+
+            try {
+                if (isEditing) {
+                    if (updatePackageTravel) updatePackageTravel(merged);
+                    else if (fetchPackageTravel) await fetchPackageTravel();
+                } else {
+                    if (addPackageTravel) addPackageTravel(merged);
+                    else if (fetchPackageTravel) await fetchPackageTravel();
+                }
+            } catch (e) {
+                console.warn('Error updating package list after save:', e);
+            }
+
             setTimeout(onActionComplete, 1500);
         }
         catch (error) {
@@ -203,7 +307,10 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
             const status = errorResponse?.status;
             const errorBody = errorResponse?.data;
 
-            if (status === 409) {
+            if (status === 401) {
+                displayErrorTitle = 'Sesión Expirada o No Autorizado';
+                displayErrorMessage = 'Tu sesión ha expirado o no tienes permisos para realizar esta acción. Por favor, inicia sesión nuevamente como administrador.';
+            } else if (status === 409) {
 
                 const apiMessage = typeof errorBody === 'string' ? errorBody : (errorBody?.message || '');
 
@@ -233,7 +340,7 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
     return (
         <div className="admin-form-container">
 
-            <h2>{isEditing ? 'Editar Paquete Existente' : 'Registrar Nuevo Paquete de Viaje'}</h2>
+            <h2 className='title-admin-form'> {isEditing ? 'Editar Paquete Existente' : 'Registrar Nuevo Paquete de Viaje'}</h2>
 
             <button
                 type="button"
@@ -274,16 +381,52 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="category">Categoría</label>
-                    <select id="category" name="category" value={formData.categories} onChange={handleChange} className={validationErrors.categories ? 'input-error' : ''} >
-                        <option value="GEOPAISAJES">Geopaisajes</option>
-                        <option value="AVENTURA">Aventura</option>
-                        <option value="ECOTURISMO">Ecoturismo</option>
-                        <option value="LITORAL">Litoral</option>
-                        <option value="RELAJACION">Relajación</option>
+                      <h3 className="text-sm font-bold uppercase tracking-widest text-blue-600">Categoría</h3>
+                    <select id="category" name="category" value={formData.category} onChange={handleChange} className={validationErrors.categories ? 'input-error' : ''}>
+                        <option value="">-- Seleccione una categoría --</option>
+                        {categoriesList.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.title || cat.name}</option>
+                        ))}
                     </select>
                     {validationErrors.categories && <p className="validation-error">{validationErrors.categories}</p>}
                 </div>
+
+                <div className="form-group">
+                 
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-blue-600">Características</h3>
+                        <button 
+                            type="button" 
+                            onClick={handleToggleAllCharacteristics}
+                            className="select-all-button text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full hover:bg-blue-600 hover:text-white transition uppercase"
+                        >
+                            {formData.characteristicIds.length === characteristicsList.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
+                        </button>
+                    </div>
+                     <label className="inline-flex items-center gap-2 p-2">
+                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2  ">
+                        {characteristicsList.map(ch => {
+                            const Icon = IconLibrary[ch.icon] || Star;
+                            const isSelected = formData.characteristicIds.includes(Number(ch.id));
+                            return (
+                                <button
+                                    key={ch.id}
+                                    type="button"
+                                    onClick={() => handleCharacteristicToggle(ch.id)}
+                                    className={`characteristic-button flex items-center gap-2 p-1.5 px-2 rounded-md border transition-all text-left ${
+                                        isSelected ? 'active' : 'border-slate-200 text-slate-500'
+                                    }`}
+                                >
+                                    <Icon size={14} className={isSelected ? 'text-blue-600' : 'text-slate-300'} />
+                                    <span className="text-[11px] font-semibold truncate leading-none">{ch.title}</span>
+                                    {isSelected && <Check size={12} className="ml-auto text-blue-600 shrink-0" />}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    {validationErrors.characteristics && <p className="validation-error">{validationErrors.characteristics}</p>}
+                   </label>
+                   </div>
 
                 <h3>Detalles del Itinerario </h3>
                 <div className="form-group-inline">

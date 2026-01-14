@@ -6,6 +6,7 @@ const API_URL_PACKAGES = `${BASE_URL}/paquetes`;
 const API_URL_AUTH = `${BASE_URL}/auth`;
 const API_URL_ADMIN = `${BASE_URL}/admin`;
 const API_URL_CATEGORY = `${BASE_URL}/categories`;
+const API_URL_CHARACTERISTICS = `${BASE_URL}/characteristics`;
 
 const getAuthHeader = () => {
     const token = sessionStorage.getItem('jwtToken');
@@ -22,34 +23,27 @@ const jsonHeaders = () => ({
 });
 
 
-// export const fireAlert = (title, text, icon = 'info') => {
-//     if (typeof Swal !== 'undefined') {
-//         Swal.fire({ icon, title, text, confirmButtonText: 'Aceptar' });
-//     } else {
-//         console.log(`[ALERTA - ${icon.toUpperCase()}] ${title}: ${text}`);
-//     }
-// };
 export const fireAlert = (title, text, icon = 'info', isConfirm = false) => {
     if (typeof Swal !== 'undefined') {
-        const config = { 
-            icon, 
-            title, 
-            text, 
+        const config = {
+            icon,
+            title,
+            text,
             confirmButtonText: 'Aceptar',
             showCancelButton: isConfirm,
             cancelButtonText: 'Cancelar',
-            reverseButtons: true, 
+            reverseButtons: true,
             customClass: {
-                confirmButton: 'btn btn-danger mx-2', 
-                cancelButton: 'btn btn-secondary mx-2'
+                confirmButton: 'btn btn-outline-success border mx-2',
+                cancelButton: 'btn btn-outline-danger border mx-2'
             },
-            buttonsStyling: false 
+            buttonsStyling: false
         };
 
         if (isConfirm) {
             return Swal.fire(config);
         }
-        
+
         Swal.fire(config);
     } else {
         console.log(`[ALERTA - ${icon.toUpperCase()}] ${title}: ${text}`);
@@ -159,18 +153,6 @@ export const apiDeletePackage = async (packageId) => {
     }
 };
 
-export const apiGetCategoriesByCategory = async (categorySlug) => {
-
-    try {
-        const response = await axios.get(`${API_URL_CATEGORY}/categoria/${categorySlug.toUpperCase()}`);
-        return response.data;
-    } catch (error) {
-        apiHandleErrorAlert(error, `Error al buscar los paquetes de la categoría ${categorySlug}.`);
-        throw error;
-    }
-};
-
-
 
 export const apiRegister = async (apiData) => {
     try {
@@ -256,6 +238,18 @@ export const apiGetCategoriesPublic = async () => {
     }
 };
 
+
+export const apiGetCategoriesByCategory = async (categorySlug) => {
+
+    try {
+        const response = await axios.get(`${API_URL_CATEGORY}/categoria/${categorySlug.toUpperCase()}`);
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, `Error al buscar los paquetes de la categoría ${categorySlug}.`);
+        throw error;
+    }
+};
+
 export const apiPostCategory = async (categoryData) => {
     try {
         const response = await axios.post(API_URL_CATEGORY, categoryData, {
@@ -291,6 +285,64 @@ export const apiDeleteCategory = async (id) => {
         return true;
     } catch (error) {
         apiHandleErrorAlert(error, `Error al eliminar la categoría con ID ${id}.`);
+        throw error;
+    }
+};
+
+export const apiGetCharacteristicsPublic = async () => {
+    try {
+        const response = await axios.get(`${API_URL_CHARACTERISTICS}/public`);
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, `Error al obtener la lista de características.`);
+        throw error;
+    }
+};
+
+export const apiGetCharacteristics = async () => {
+    try {
+        const headers = getAuthHeader();
+        const response = await axios.get(API_URL_CHARACTERISTICS, { headers });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, 'Error al obtener la lista de características del Administrador. (Revisa si tienes un token de ADMIN válido)');
+        throw error;
+    }
+};
+
+export const apiPostCharacteristic = async (characteristicData) => {
+    try {
+        const response = await axios.post(API_URL_CHARACTERISTICS, characteristicData, {
+            headers: jsonAuthHeaders()
+        });
+        fireAlert('¡Característica Creada!', `La característica ${characteristicData.name} ha sido registrada.`, 'success');
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al registrar la nueva característica. Verifica que el nombre no esté duplicado.");
+        throw error;
+    }
+};
+
+export const apiUpdateCharacteristic = async (characteristicData) => {
+    try {
+        const response = await axios.put(API_URL_CHARACTERISTICS, characteristicData, {
+            headers: jsonAuthHeaders()
+        });
+        fireAlert('¡Actualizada!', `Característica ${characteristicData.name} actualizada correctamente.`, 'success');
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al actualizar la característica.");
+        throw error;
+    }
+};
+
+export const apiDeleteCharacteristic = async (id) => {
+    try {
+        await axios.delete(`${API_URL_CHARACTERISTICS}/${id}`, { headers: getAuthHeader() });
+        fireAlert('¡Característica Eliminada!', `Característica con ID ${id} eliminada.`, 'success');
+        return true;
+    } catch (error) {
+        apiHandleErrorAlert(error, `Error al eliminar la característica con ID ${id}.`);
         throw error;
     }
 };

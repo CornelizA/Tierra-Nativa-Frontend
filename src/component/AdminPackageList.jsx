@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { apiGetPackagesAdmin, apiDeletePackage } from '../service/PackageTravelService';
+import { apiGetPackagesAdmin, apiDeletePackage, fireAlert} from '../service/PackageTravelService';
 import { AdminPackageForm, initialFormData } from './AdminPackageForm';
 import '../style/AdminPackageList.css';
-import { Pencil, X, Plus, ArrowLeft, ArrowRight, Home } from 'lucide-react';
-import Swal from 'sweetalert2';
+import { Pencil, X, Plus, ArrowLeft, ArrowRight} from 'lucide-react';
 
 const ITEMS_PER_PAGE = 4;
 
@@ -46,23 +45,10 @@ export const AdminPackageList = ({ onBackToMenu }) => {
         setCurrentPage(prev => (prev > 1 ? prev - 1 : prev));
     };
 
-    const goToHomePage = () => {
-        setCurrentPage(1);
-    };
 
     const handleDelete = async (packageId, packageName) => {
-
-        const result = await Swal.fire({
-            title: '¿Estás seguro?',
-            html: `Estás a punto de eliminar el paquete: <strong>${packageName}</strong>. <br> ¡Esta acción es irreversible!`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, ¡Eliminar!',
-            cancelButtonText: 'Cancelar',
-            reverseButtons: true,
-            confirmButtonColor: '#B85C38',
-            cancelButtonColor: '#1A531A',
-        });
+        
+        const result = await fireAlert('Confirmar Eliminación', `¿Estás seguro de eliminar el paquete "${packageName}"? Esta acción es irreversible.`, 'warning', true);
 
         if (result.isConfirmed) {
             try {
@@ -123,7 +109,7 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                     }}
                 >
                     <ArrowLeft size={18} />
-                    Volver al Menú Principal
+                    Volver al Menú
                 </button>
                 <button
                     className="btn btn-primary"
@@ -131,11 +117,11 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                     style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                 >
                     <Plus size={18} />
-                    Registrar Nuevo Paquete
+                    Nuevo Paquete
                 </button>
             </div>
             <div className="admin-list-container">
-                <h2>Panel de Administración de Paquetes</h2>
+                <h2 className='title-package-admin'>Administración de Paquetes</h2>
                 <table>
                     <thead>
                         <tr>

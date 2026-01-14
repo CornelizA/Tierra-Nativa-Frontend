@@ -11,17 +11,20 @@ const FALLBACK_CARD_URL = 'https://placehold.co/400x300/CCCCCC/000000?text=SIN+I
 
 export const Home = () => {
 
-  const { packageTravel } = useContext(PackageTravelContext);
-  const loading = !packageTravel || packageTravel.length === 0;
+  const { packageTravel, isLoaded } = useContext(PackageTravelContext);
+  const basePackages = Array.isArray(packageTravel)
+    ? packageTravel
+    : (packageTravel && Array.isArray(packageTravel.packages) ? packageTravel.packages : []);
+  const loading = !isLoaded;
 
   const [selectedDestination, setSelectedDestination] = useState(null);
 
   const packagesToDisplay = useMemo(() => {
     if (!selectedDestination) {
-      return sampleArray(packageTravel, 6);
+      return sampleArray(basePackages, 6);
     }
-    return packageTravel.filter(pkg =>
-      pkg.destination.toLowerCase() === selectedDestination.toLowerCase()
+    return basePackages.filter(pkg =>
+      (pkg.destination || '').toLowerCase() === selectedDestination.toLowerCase()
     );
   }, [selectedDestination, packageTravel]);
 
@@ -48,44 +51,46 @@ export const Home = () => {
           </div>
         </div>
       </div>
-      <div className="container mt-6 mx-auto">
-        <h2 className="text-4xl pb-2">
-          Paquetes Destacados (
+      <div className="featured-container mt-6 mx-auto">
+        <h2 className="package-featured text-4xl pb-2">
+          Paquetes Destacados 
+          <br />
+          <span className="text-lg text-gray-600 font-normal"> 
           {selectedDestination
             ? packagesToDisplay.length
-            : packageTravel.length
-          })
-          <br />
-          <span className="text-lg text-gray-600 font-normal"> Experiencias imperdibles que conectan con tu esencia</span>
+            : basePackages.length
+          } Experiencias imperdibles que conectan con tu esencia</span>
         </h2>
 
-        <div className="row">
-          {packagesToDisplay.map((pkg) => {
+        <div className="package-home row">
+            {packagesToDisplay.map((pkg) => {
 
-            const allImages = Array.isArray(pkg.images) ? pkg.images : [];
-            const principalImage = allImages.find(img => img.principal === true) || allImages[0];
-
-            const mainCardImageUrl = (principalImage && principalImage.url)
-              ? principalImage.url.trim()
-              : pkg.imageUrl || FALLBACK_CARD_URL;
-
-            return (
-              <div key={pkg.id} className="col-md-4 mb-3">
-                <PackageTravelCard
-                  id={pkg.id}
-                  name={pkg.name}
-                  shortDescription={pkg.shortDescription}
-                  basePrice={pkg.basePrice}
-                  destination={pkg.destination}
-                  categories={pkg.categories}
-                  imageUrl={mainCardImageUrl}
-                />
-                <Link to={`/detallePaquete/${pkg.id}`} className="btn btn-primary">
-                  Ver Detalle
-                </Link>
-              </div>
-            );
-          })}
+                const imageDetails = Array.isArray(pkg.imageDetails) ? pkg.imageDetails : [];
+                const principalImageObj = imageDetails.find(img => img.principal === true);
+                const mainCardImageUrl = (principalImageObj && principalImageObj.url)
+                  ? principalImageObj.url.trim()
+                  : (imageDetails.length > 0 && imageDetails[0].url)
+                    ? imageDetails[0].url.trim()
+                    : FALLBACK_CARD_URL;
+                return (
+                  <div key={pkg.id ?? `pkg-${pkg.name}-${Math.random()}`} className="col-md-4 mb-3">
+                    <PackageTravelCard
+                      id={pkg.id}
+                      name={pkg.name}
+                      shortDescription={pkg.shortDescription}
+                      basePrice={pkg.basePrice}
+                      destination={pkg.destination}
+                      categories={pkg.categories}
+                      categoryId={pkg.categoryId}
+                      imageUrl={mainCardImageUrl}
+                    />
+                    <Link to={`/detallePaquete/${pkg.id}`} className="btn btn-primary">
+                      Ver Detalle
+                    </Link>
+                  </div>
+                );
+              })
+            }
         </div>
       </div>
 

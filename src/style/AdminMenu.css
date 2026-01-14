@@ -1,22 +1,24 @@
 .admin-menu-container {
-    padding: 40px 80px;
+    padding: 100px 80px;
     width: 100%;
-    margin: 30px 0;
+    margin: auto;
     font-family: 'Inter', sans-serif;
 }
 
-.admin-menu-container h2 {
+.admin-menu-container .admin-title {
     font-size: 2.5rem;
     font-weight: 800;
     color: #FAF8F0;
-     width: 100%;
-    margin-bottom: 8px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    margin-top: 15px;
 }
 
 .admin-menu-container .admin-subtitle {
     font-size: 1.5rem;
-    color:#FAF8F0;
-    margin-bottom: 30px;
+    color: #FAF8F0;
+    margin-bottom: 60px;
     text-align: center;
     font-weight: 400;
     margin-top: 5px;
@@ -24,21 +26,22 @@
 
 .admin-menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
 }
 
 .admin-menu-item {
     background-color: #fff;
     border: 2px solid #E0E0E0;
     border-radius: 12px;
-    padding: 35px;
+    padding: 45px;
+    height: 200px;
     text-align: left;
     transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     cursor: pointer;
     display: flex;
     align-items: flex-start;
-    width: 100%;
+    width: 95%;
 }
 
 .admin-menu-item:hover {
@@ -59,23 +62,24 @@
 .admin-menu-item .text-content h3 {
     margin-top: 0;
     margin-bottom: 5px;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #1A531A;
 }
 
 .admin-menu-item .text-content p {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: #333;
     line-height: 1.4;
 }
+
 .admin-menu-item.wip {
     background-color: #e0e0e0;
     border-color: #bbb;
     cursor: not-allowed;
     opacity: 0.7;
-    pointer-events: all; 
+    pointer-events: all;
 }
 
 .admin-menu-item.wip:hover {
@@ -83,6 +87,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transform: none;
 }
+
 .admin-menu-item.wip .icon-wrapper {
     color: #888;
 }
@@ -121,7 +126,7 @@
     font-size: 1.1rem;
     text-align: justify;
     text-indent: 10px;
-    
+
 }
 
 .mobile-access-card strong {

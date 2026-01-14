@@ -1,11 +1,12 @@
 .row-detailed {
     background-size: cover;
     width: 100%;
+    padding: 0 40px 30px 40px;
+    justify-content:center;
 
     .description-column {
-        padding-top: 16px;
-        padding-right: 15px;
-        padding-left: 15px;
+        
+        padding: 16px 15px 16px 15px;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -19,8 +20,10 @@
         margin-top: 20px;
         padding-bottom: 20px !important;
         margin-bottom: 24px;
+        text-align: center;
     }
 }
+
 
 .detail-header-block {
     background-color: #1A531A;
@@ -200,6 +203,7 @@
     align-items: stretch;
     margin: 0 auto 20px auto;
     max-width: 100%;
+    justify-content: space-evenly
 }
 
 .product-details-section .card {
@@ -328,6 +332,41 @@
     line-height: 1.4;
     text-align: justify;
     text-indent: 10px;
+}
+
+.section-characteristic {
+   margin: 40px auto 40px auto;
+   padding: 30px 100px 30px 100px;
+   background-color: #faf8f035;
+   border-radius: 8px;
+    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.8);
+    border: none;
+}
+.title-detailed-characteristic{
+color: #FAF8F0;
+font-weight: bolder;
+font-size: 2rem;
+}
+
+.text-detailed-characteristic{
+    color: #FAF8F0;
+    font-size: 1.3rem;
+}
+
+.list-group-item{
+color: #FAF8F0;
+font-weight: bolder;
+height: 45px;
+border-radius: 8px;
+background-color: #faf8f035;
+
+}
+
+.icon-group{
+    width: 40px;
+    height: 40px;
+    display: inline;
+    margin-right: 10px;
 }
 
 @media (max-width: 575px) {

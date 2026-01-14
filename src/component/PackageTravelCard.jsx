@@ -1,19 +1,62 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { formatCurrency } from '../helpers/FormatCurrency';
 import '../style/PackageTravelCard.css';
 import { MapPin, Globe } from 'lucide-react';
+import { PackageTravelContext } from '../context/PackageTravelContext';
 
-export const PackageTravelCard = ({ name, shortDescription, basePrice, destination, categories, imageUrl }) => {
+export const PackageTravelCard = ({ name, shortDescription, basePrice, destination, categories, imageUrl, categoryId }) => {
 
-    const categoriesTitle =
-        Array.isArray(categories) && categories.length > 0
-            ? categories[0].title
-            : 'Sin categoría';
+      let formattedCategories = 'Sin categoría';
 
-    const formattedCategories =
-        categoriesTitle !== 'Sin categoría'
-            ? categoriesTitle.charAt(0).toUpperCase() + categoriesTitle.slice(1).toLowerCase()
-            : categoriesTitle;
+    if (Array.isArray(categories) && categories.length > 0) {
+        const titles = categories
+            .map(c => (c && (c.title || c.name)) ? (c.title || c.name) : (typeof c === 'string' ? c : ''))
+            .filter(Boolean)
+            .map(t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
+
+        if (titles.length > 0) {
+            formattedCategories = titles.join(', ');
+        }
+    } else if (categories && typeof categories === 'object' && (categories.title || categories.name)) {
+        const t = categories.title || categories.name;
+        formattedCategories = t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+    } else if (typeof categories === 'string' && categories.trim().length > 0) {
+        const t = categories.trim();
+        formattedCategories = t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+    }
+
+    const { categoryMap } = useContext(PackageTravelContext) || {};
+    if ((formattedCategories === 'Sin categoría' || !formattedCategories) && (categoryId !== undefined)) {
+        const resolveLookup = (raw) => {
+            if (raw === null || raw === undefined) return null;
+            if (typeof raw === 'object') {
+                if (raw.id !== undefined) return raw.id;
+                if (raw._id !== undefined) return raw._id;
+                if (raw.value !== undefined) return raw.value;
+                return null;
+            }
+            return raw;
+        };
+
+        if (Array.isArray(categoryId) && categoryId.length > 0) {
+            const titles = categoryId.map(entry => {
+                const key = resolveLookup(entry);
+                if (key === null || key === undefined) return null;
+                const lookup = (categoryMap && (categoryMap[key] || categoryMap[String(key)])) || null;
+                return lookup;
+            }).filter(Boolean)
+                .map(t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase())
+                .slice(0, 3);
+
+            if (titles.length) formattedCategories = titles.join(', ');
+        } else {
+            const key = resolveLookup(categoryId);
+            if (key !== null && key !== undefined) {
+                const t = (categoryMap && (categoryMap[key] || categoryMap[String(key)])) || null;
+                if (t) formattedCategories = t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+            }
+        }
+    }
 
     return (
         <>

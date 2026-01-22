@@ -13,7 +13,6 @@ export const AdminMenu = ({ onViewChange }) => {
             const userData = sessionStorage.getItem('user');
 
             if (!userData) {
-                console.log("No hay usuario en sessionStorage, redirigiendo...");
                 window.location.href = '/login';
                 return;
             }
@@ -28,13 +27,26 @@ export const AdminMenu = ({ onViewChange }) => {
                     setIsAuthorized(true);
                 } else {
                     setIsAuthorized(false);
+                    fireAlert(
+                        'Acceso Denegado',
+                        'No tienes permisos de administrador para ver esta sección.',
+                        'error'
+                    );
                     setTimeout(() => {
                         window.location.href = '/home';
                     }, 2000);
                 }
             } catch (error) {
-                console.error("Error validando permisos", error);
-                window.location.href = '/home';
+                fireAlert(
+                    'Error de Sesión',
+                    'Hubo un problema al validar tus credenciales. Por favor, inicia sesión de nuevo.',
+                    'warning'
+                );
+
+                sessionStorage.clear();
+                setTimeout(() => {
+                    window.location.href = '/home';
+                }, 2500);
             }
         };
 
@@ -111,11 +123,10 @@ export const AdminMenu = ({ onViewChange }) => {
     }
 
     const UnauthorizedMessage = () => (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-50">
+        <div className="message-error-user d-block items-center justify-center min-h-screen p-4 text-center bg-gray-50">
             <ShieldAlert size={80} className="text-red-600 mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900">Acceso Denegado</h1>
-            <p className="text-gray-600 max-w-xs mx-auto">No tienes permisos de administrador para visualizar esta sección.</p>
-            <p className="text-sm text-gray-400 mt-4 animate-pulse">Redirigiendo al inicio automáticamente...</p>
+            <h1 className="text-2xl mb-20 font-bold text-gray-900">Acceso Denegado</h1><br />
+            <p className="text-gray-600 mt-20 max-w-xs mx-auto">No tienes permisos de administrador para visualizar esta sección.</p>
         </div>
     );
 

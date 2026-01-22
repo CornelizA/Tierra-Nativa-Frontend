@@ -16,7 +16,7 @@ export const PackageDetailed = () => {
   const [packageTravel, setPackageTravel] = useState(null);
   const [allCharacteristics, setAllCharacteristics] = useState([]);
   const [showGallery, setShowGallery] = useState(false);
-  
+
   const FALLBACK_URL = 'https://placehold.co/800x600/CCCCCC/000000?text=SIN+IMAGEN';
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export const PackageDetailed = () => {
         const list = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : []);
         setAllCharacteristics(list);
       } catch (error) {
-        console.warn('Error al obtener características maestros:', error);
+        setAllCharacteristics([]);
       }
     };
     fetchCharacteristics();
@@ -84,7 +84,6 @@ export const PackageDetailed = () => {
     if (Array.isArray(pkgsField) && pkgsField.length) {
       return pkgsField.some(p => Number(p?.id ?? p) === Number(packageTravel.id));
     }
-
     return false;
   });
 
@@ -190,7 +189,7 @@ export const PackageDetailed = () => {
           )}
         </section>
 
-      <section className="section-characteristic  p-8 md:p-12 shadow-sm ">
+        <section className="section-characteristic  p-8 md:p-12 shadow-sm ">
           <div className="mb-10">
             <h2 className="title-detailed-characteristic">Características del Paquete</h2>
             <p className="text-detailed-characteristic">Servicios y comodidades que incluye esta experiencia.</p>
@@ -211,8 +210,8 @@ export const PackageDetailed = () => {
               })
             ) : (
               <li className="list-group-item w-full text-center text-slate-400 py-6 border-2 border-dashed rounded-3xl">
-                {allCharacteristics.length === 0 
-                  ? 'Cargando catálogo de servicios...' 
+                {allCharacteristics.length === 0
+                  ? 'Cargando catálogo de servicios...'
                   : 'Este paquete no tiene características vinculadas.'}
               </li>
             )}

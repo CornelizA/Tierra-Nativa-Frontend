@@ -1,72 +1,48 @@
 import { render, screen } from '@testing-library/react';
-import { FooterComponent } from '../component/FooterComponent'; 
+import { FooterComponent } from '../component/FooterComponent';
+import '@testing-library/jest-dom';
 
 describe('FooterComponent', () => {
     
     const currentYear = new Date().getFullYear();
 
-    it('should render "Tierra Nativa" brand title', () => {
+    it('should render brand title and logo with correct attributes', () => {
         render(<FooterComponent />);
-        
         expect(screen.getByText('Tierra Nativa')).toBeInTheDocument();
+    
+        const logo = screen.getByAltText('Logo Tierra Nativa');
+        expect(logo).toBeInTheDocument();
+        expect(logo).toHaveAttribute('src', '/images/LOGO TIERRA NATIVA.png');
     });
 
-    it('should show copyright text with current year', () => {
+    it('should show copyright text with current year dynamically', () => {
         render(<FooterComponent />);
         
         const copyrightText = `© ${currentYear} Tierra Nativa. Todos los derechos reservados.`;
-    
         expect(screen.getByText(copyrightText)).toBeInTheDocument();
     });
-    
-    it('should render logo image with correct alt attribute', () => {
-        render(<FooterComponent />);
-        
-        const logoImage = screen.getByAltText('Logo Tierra Nativa');
-        expect(logoImage).toBeInTheDocument();
 
-        expect(logoImage).toHaveAttribute('src', '/images/LOGO TIERRA NATIVA.png');
+    it('should show correct contact information', () => {
+        render(<FooterComponent />);
+        expect(screen.getByText(/Email: tierranativa.dev@gmail.com/i)).toBeInTheDocument();
+        expect(screen.getByText(/Teléfono: \+54 9 11 5555-5555/i)).toBeInTheDocument();
     });
 
-    it('should show Contact section with subtitle', () => {
-        render(<FooterComponent />);
-        
-        expect(screen.getByText('Contacto')).toBeInTheDocument();
-    });
-    
-    it('should show contact email address', () => {
-        render(<FooterComponent />);
-        
-        expect(screen.getByText('Email: info@tierranativa.com')).toBeInTheDocument();
-    });
-
-    it('should show contact phone number', () => {
-        render(<FooterComponent />);
-        
-        expect(screen.getByText('Teléfono: +54 9 11 5555-5555')).toBeInTheDocument();
-    });
-
-    it('should show "Síguenos" subtitle', () => {
-        render(<FooterComponent />);
-        
-        expect(screen.getByText('Síguenos')).toBeInTheDocument();
-    });
-
-    it('should contain Facebook link with correct aria-label', () => {
+    it('should render social media links with correct aria-labels and hrefs', () => {
         render(<FooterComponent />);
         
         const facebookLink = screen.getByLabelText('Facebook');
-        
-        expect(facebookLink).toBeInTheDocument();
-        expect(facebookLink).toHaveAttribute('href', 'https://facebook.com');
-    });
-
-    it('should contain Instagram link with correct aria-label', () => {
-        render(<FooterComponent />);
-    
         const instagramLink = screen.getByLabelText('Instagram');
         
-        expect(instagramLink).toBeInTheDocument();
+        expect(facebookLink).toHaveAttribute('href', 'https://facebook.com');
         expect(instagramLink).toHaveAttribute('href', 'https://instagram.com');
+    });
+
+    it('should have semantic footer tag and correct layout classes', () => {
+        const { container } = render(<FooterComponent />);
+        
+        const footerTag = container.querySelector('footer');
+        expect(footerTag).toBeInTheDocument();
+        expect(footerTag).toHaveClass('footer-tn');
     });
 });

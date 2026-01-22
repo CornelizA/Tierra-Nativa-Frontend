@@ -3,7 +3,7 @@ import { apiGetAdminUsers, apiUpdateUserRole, apiHandleErrorAlert,fireAlert } fr
 import { Search, User, Mail, Shield, ArrowLeft } from 'lucide-react';
 import '../style/AdminUserList.css';
 
-const SUPERUSER_EMAIL = 'admin@tierranativa.com';
+const SUPERUSER_EMAIL = 'tierranativa.dev@gmail.com';
 
 export const AdminUserList = ({ onLogout, onBackToMenu }) => {
     const [users, setUsers] = useState([]);
@@ -13,15 +13,12 @@ export const AdminUserList = ({ onLogout, onBackToMenu }) => {
 
     const currentUserData = JSON.parse(sessionStorage.getItem('user'));
     const currentUserEmail = currentUserData?.email;
-    const currentUserRole = currentUserData?.role;
-
     const isSuperuser = currentUserEmail === SUPERUSER_EMAIL;
     const canModifyRoles = isSuperuser;
 
     const loadUsers = async () => {
 
         if (!sessionStorage.getItem('jwtToken') || isLoggingOut) {
-            console.warn("loadUsers detenido: Sesión ausente o cerrando.");
             setLoading(false);
             setUsers([]);
             return;
@@ -31,7 +28,6 @@ export const AdminUserList = ({ onLogout, onBackToMenu }) => {
             const data = await apiGetAdminUsers();
             setUsers(data);
         } catch (error) {
-            console.error("Error al cargar usuarios:", error);
             if (error.response && error.response.status === 403) {
                 if (typeof onLogout === 'function') {
                     setIsLoggingOut(true);
@@ -66,7 +62,10 @@ export const AdminUserList = ({ onLogout, onBackToMenu }) => {
 
         if (typeof Swal !== 'undefined') {
 
-            const result = await fireAlert('Confirmar cambio de rol', `¿Estás seguro de cambiar el rol de ${userToModify.firstName} a ${newRole}?`, 'warning', true);
+            const result = await fireAlert('Confirmar cambio de rol', 
+                `¿Estás seguro de cambiar el rol de ${userToModify.firstName} a ${newRole}?`, 
+                'warning', 
+                true);
 
             if (!result.isConfirmed) {
                 return;
@@ -76,10 +75,9 @@ export const AdminUserList = ({ onLogout, onBackToMenu }) => {
         }
         try {
             await apiUpdateUserRole(userToModify.email, newRole);
-            loadUsers();
+            await loadUsers();
         } catch (error) {
             apiHandleErrorAlert(error, "No se pudo cambiar el rol. Error de red o permisos insuficientes.");
-            console.error("Error al cambiar rol:", error);
         }
     };
 

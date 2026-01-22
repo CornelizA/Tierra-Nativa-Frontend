@@ -1,9 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { AdminMenu } from '../component/AdminMenu';
 
 global.alert = jest.fn();
 
-describe('AdminMenu Navigation and Responsiveness', () => {
+describe('AdminMenu Navigation and Authorization', () => {
     const mockOnViewChange = jest.fn();
 
     const setWindowWidth = (width) => {
@@ -12,68 +12,71 @@ describe('AdminMenu Navigation and Responsiveness', () => {
     };
 
     beforeEach(() => {
-        mockOnViewChange.mockClear();
-        global.alert.mockClear();
+        jest.clearAllMocks();
         setWindowWidth(1024);
+        
+        const adminUser = JSON.stringify({ email: 'tierranativa.dev@gmail.com', role: 'ADMIN' });
+        Storage.prototype.getItem = jest.fn(() => adminUser);
     });
 
-    it('should render main menu in desktop mode', () => {
-        render(<AdminMenu onViewChange={mockOnViewChange} />);
+    it('should render all menu items including new ones (Users, Categories, Characteristics)', async () => {
+        await act(async () => {
+            render(<AdminMenu onViewChange={mockOnViewChange} />);
+        });
 
-        expect(screen.getByText('Menú de Administrador')).toBeInTheDocument();
         expect(screen.getByText('Gestionar Paquetes')).toBeInTheDocument();
-        expect(screen.getByText('Crear Nuevo Paquete')).toBeInTheDocument();
-        expect(screen.queryByText('Acceso Restringido')).not.toBeInTheDocument();
+        expect(screen.getByText('Gestionar Permisos de Usuarios')).toBeInTheDocument();
+        expect(screen.getByText('Gestionar Categorías')).toBeInTheDocument();
+        expect(screen.getByText('Gestionar Características')).toBeInTheDocument();
     });
 
-    it('should apply WIP style to "Configuración General" item and show alert on click', () => {
-        render(<AdminMenu onViewChange={mockOnViewChange} />);
-        const settingsButton = screen.getByRole('button', { name: /Configuración General/i });
-        expect(settingsButton).toHaveClass('wip');
-        expect(settingsButton).not.toBeDisabled();
-        fireEvent.click(settingsButton);
-        expect(global.alert).toHaveBeenCalledWith('Configuración General en desarrollo.');
+    it('should call onViewChange with "LIST_USERS" when clicking user management', async () => {
+        await act(async () => {
+            render(<AdminMenu onViewChange={mockOnViewChange} />);
+        });
+
+        fireEvent.click(screen.getByText('Gestionar Permisos de Usuarios'));
+        expect(mockOnViewChange).toHaveBeenCalledWith('LIST_USERS');
     });
 
-    it('should call onViewChange("LIST") when clicking "Gestionar Paquetes"', () => {
-        render(<AdminMenu onViewChange={mockOnViewChange} />);
 
-        fireEvent.click(screen.getByText('Gestionar Paquetes'));
+    it('should show Access Denied if user role is not ADMIN', async () => {
+  
+        const normalUser = JSON.stringify({ email: 'user@test.com', role: 'USER' });
+        Storage.prototype.getItem = jest.fn(() => normalUser);
 
-        expect(mockOnViewChange).toHaveBeenCalledWith('LIST');
+        await act(async () => {
+            render(<AdminMenu onViewChange={mockOnViewChange} />);
+        });
+
+        expect(screen.getByText('Acceso Denegado')).toBeInTheDocument();
+        expect(screen.queryByText('Menú de Administrador')).not.toBeInTheDocument();
     });
 
-    it('should call onViewChange("CREATE_FORM") when clicking "Crear Nuevo Paquete"', () => {
-        render(<AdminMenu onViewChange={mockOnViewChange} />);
+    it('should redirect to login if no user is found in sessionStorage', async () => {
+        const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+        Storage.prototype.getItem = jest.fn(() => null);
 
-        fireEvent.click(screen.getByText('Crear Nuevo Paquete'));
+        await act(async () => {
+            render(<AdminMenu onViewChange={mockOnViewChange} />);
+        });
 
-        expect(mockOnViewChange).toHaveBeenCalledWith('CREATE_FORM');
+        expect(logSpy).toHaveBeenCalledWith("No hay usuario en sessionStorage, redirigiendo...");
+        logSpy.mockRestore();
     });
 
-    it('should show "Acceso Restringido" card on start if mobile', () => {
-        setWindowWidth(500);
-
-        const { rerender } = render(<AdminMenu onViewChange={mockOnViewChange} />);
+    it('should show mobile restriction and block navigation on small screens', async () => {
+        setWindowWidth(500); 
+        
+        await act(async () => {
+            render(<AdminMenu onViewChange={mockOnViewChange} />);
+        });
 
         expect(screen.getByText('Acceso Restringido')).toBeInTheDocument();
-        expect(screen.queryByText('Gestionar Paquetes')).not.toBeInTheDocument();
-    });
-
-    it('should deny navigation and show restriction if in mobile mode', () => {
-        setWindowWidth(500);
-        render(<AdminMenu onViewChange={mockOnViewChange} />);
-
-        const restrictedMessage = screen.getByText('Acceso Restringido');
-        expect(restrictedMessage).toBeInTheDocument();
-        expect(mockOnViewChange).not.toHaveBeenCalled();
-
         fireEvent.click(screen.getByText('Aceptar'));
-
-        expect(screen.queryByText('Acceso Restringido')).not.toBeInTheDocument();
-
-        const managePackagesButton = screen.getByRole('button', { name: /Gestionar Paquetes/i });
-        fireEvent.click(managePackagesButton);
+        
+        const packageBtn = screen.getByText('Gestionar Paquetes');
+        fireEvent.click(packageBtn);
 
         expect(mockOnViewChange).not.toHaveBeenCalled();
         expect(screen.getByText('Acceso Restringido')).toBeInTheDocument();

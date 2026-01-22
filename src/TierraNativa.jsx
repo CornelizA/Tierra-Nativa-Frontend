@@ -8,9 +8,11 @@ import { useLocation } from 'react-router-dom';
 import { AdminDashboard } from './component/AdminDashboard.jsx';
 import { LoginView } from './component/LoginView.jsx';
 import { RegisterView } from './component/RegisterView.jsx';
+import { VerifyEmailView } from './component/VerifyEmailView.jsx';
 import { AdminCategory } from './component/AdminCategory.jsx';
 import { apiGetCategoriesPublic } from './service/PackageTravelService';
 import { CategoryPackagesPage } from './pages/CategoryPackagesPage'
+import Swal from 'sweetalert2'
 
 export const TierraNativa = () => {
     const SCROLL_THRESHOLD = 500;
@@ -18,24 +20,51 @@ export const TierraNativa = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const [categories, setCategories] = useState([]);
-
-    const isDetailedPage = location.pathname.startsWith('/detallePaquete/') &&
-        location.pathname.split('/').length === 3;
-
-    const isAdminPage = location.pathname.startsWith('/paquetes/admin');
-
-    const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
-    
-    const isCategoryPage = location.pathname.startsWith('/categories/categoria/') && 
-                           location.pathname.split('/').length > 3;
-
-    const shouldBeSolid = isDetailedPage || isAdminPage || isAuthPage || isCategoryPage ;
-
     const [user, setUser] = useState(() => {
         const storedUser = sessionStorage.getItem('user');
         return storedUser ? JSON.parse(storedUser) : null;
     });
+
+    useEffect(() => {
+        const checkTokenExpiry = () => {
+            const expiry = sessionStorage.getItem('token_expiry');
+            const token = sessionStorage.getItem('jwtToken');
+
+            if (token && expiry) {
+                const now = Date.now();
+
+                if (now >= parseInt(expiry)) {
+
+                    sessionStorage.clear();
+                    setUser(null);
+
+                    Swal.fire({
+                        title: 'Sesión Finalizada',
+                        text: 'Por seguridad, tu sesión se ha cerrado automáticamente.',
+                        icon: 'info',
+                        confirmButtonText: 'Aceptar',
+                        confirmButton: 'btn btn-outline-success border mx-2',
+                        allowOutsideClick: false
+                    }).then(() => {
+                        window.location.href = '/home?session=expired';
+                    });
+                }
+            }
+        };
+
+        const interval = setInterval(checkTokenExpiry, 1000);
+        return () => clearInterval(interval);
+    }, [navigate]);
+
+
+
+    const [categories, setCategories] = useState([]);
+    const isDetailedPage = location.pathname.startsWith('/detallePaquete/') && location.pathname.split('/').length === 3;
+    const isAdminPage = location.pathname.startsWith('/paquetes/admin');
+    const isAuthPage = location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/verify-email';
+    const isCategoryPage = location.pathname.startsWith('/categories/categoria/') && location.pathname.split('/').length > 3;
+    const shouldBeSolid = isDetailedPage || isAdminPage || isAuthPage || isCategoryPage;
+
 
     const onAuthSuccess = (userData) => {
         sessionStorage.setItem('jwtToken', userData.token);
@@ -50,13 +79,23 @@ export const TierraNativa = () => {
         sessionStorage.setItem('user', JSON.stringify(simplifiedUser));
         setUser(simplifiedUser);
     };
+
     const handleLogout = () => {
         sessionStorage.clear();
         setUser(null);
         setIsScrolled(false);
 
         if (typeof Swal !== 'undefined') {
-            Swal.fire('Sesión cerrada.', '¡Regresa pronto!', 'info');
+            Swal.fire({
+                title: 'Sesión cerrada.',
+                text: '¡Regresa pronto!',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                    confirmButton: 'btn btn-outline-success border mx-2'
+                },
+                buttonsStyling: false 
+            });
         }
         navigate('/home');
     };
@@ -76,18 +115,17 @@ export const TierraNativa = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [shouldBeSolid]);
 
-      useEffect(() => {
+    useEffect(() => {
         const loadCategories = async () => {
             try {
                 const fetchedCategories = await apiGetCategoriesPublic();
                 setCategories(fetchedCategories);
             } catch (error) {
-                console.error("No se pudieron cargar las categorías públicas:", error);
                 setCategories([]);
             }
         };
         loadCategories();
-    }, []); 
+    }, []);
 
     return (
         <>
@@ -100,7 +138,7 @@ export const TierraNativa = () => {
                         onLogout={handleLogout}
                         categories={categories}
                     />
-                    <div className={`container-pages ${isAuthPage ? 'pt-20' : ''} ${!isAuthPage && shouldBeSolid ? 'pt-80' : ''}`}>
+                    <div className={`container-pages ${isAuthPage ? 'pt-24' : (shouldBeSolid ? 'pt-80' : '')}`}>
                         <Routes>
                             <Route path='/home' element={<Home />}></Route>
                             <Route path='/paquetes' element={<Home />}></Route>
@@ -108,7 +146,8 @@ export const TierraNativa = () => {
                             <Route path='/paquetes/admin' element={<AdminDashboard onLogout={handleLogout} />}></Route>
                             <Route path='/login' element={<LoginView onAuthSuccess={onAuthSuccess} />}></Route>
                             <Route path='/register' element={<RegisterView onAuthSuccess={onAuthSuccess} />}></Route>
-                            <Route path='/categories/categoria/:categorySlug/*'  element={<CategoryPackagesPage />} />
+                            <Route path='/verify-email' element={<VerifyEmailView />}></Route>
+                            <Route path='/categories/categoria/:categorySlug/*' element={<CategoryPackagesPage />} />
                             <Route path='/categories' element={<AdminCategory />}></Route>
                         </Routes>
                     </div>

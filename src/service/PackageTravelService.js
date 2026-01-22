@@ -8,20 +8,29 @@ const API_URL_ADMIN = `${BASE_URL}/admin`;
 const API_URL_CATEGORY = `${BASE_URL}/categories`;
 const API_URL_CHARACTERISTICS = `${BASE_URL}/characteristics`;
 
-const getAuthHeader = () => {
-    const token = sessionStorage.getItem('jwtToken');
-    return token ? { Authorization: `Bearer ${token}` } : {};
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            if (!error.config.url.includes('/auth/login')) {
+                sessionStorage.clear();
+                if (window.location.pathname !== '/login' && window.location.pathname !== '/home') {
+                    window.location.href = '/home?session=expired';
+                }
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
+const getHeaders = (needsAuth = true) => {
+    const headers = { 'Content-Type': 'application/json' };
+    if (needsAuth) {
+        const token = sessionStorage.getItem('jwtToken');
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+    }
+    return headers;
 };
-
-const jsonAuthHeaders = () => ({
-    'Content-Type': 'application/json',
-    ...getAuthHeader()
-});
-
-const jsonHeaders = () => ({
-    'Content-Type': 'application/json'
-});
-
 
 export const fireAlert = (title, text, icon = 'info', isConfirm = false) => {
     if (typeof Swal !== 'undefined') {
@@ -43,45 +52,56 @@ export const fireAlert = (title, text, icon = 'info', isConfirm = false) => {
         if (isConfirm) {
             return Swal.fire(config);
         }
+        return Swal.fire(config);
 
-        Swal.fire(config);
-    } else {
-        console.log(`[ALERTA - ${icon.toUpperCase()}] ${title}: ${text}`);
     }
-    return { isConfirmed: false };
 };
 
 export const apiHandleErrorAlert = (error, defaultMessage) => {
     let message = defaultMessage;
 
-    if (error.response) {
-        if (error.response.status === 403) {
-            const isPublicPackageRoute = error.config.url.includes(API_URL_PACKAGES) && !error.config.url.includes('/admin');
+    if (error.response && error.response.data) {
+        const serverData = error.response.data;
 
-            if (isPublicPackageRoute) {
-                message = "Error 403: La API REST está negando el acceso a la lista de paquetes públicos. Debes configurar tu servidor backend (Spring Security) para que permita el acceso sin autenticar a la ruta /paquetes.";
-            } else {
-                message = "Acceso denegado. No tienes permisos para realizar esta acción.";
+        if (typeof serverData === 'object') {
+            if (serverData.error) {
+                message = serverData.error;
+            } else if (serverData.message) {
+                message = serverData.message;
             }
-        } else if (error.response.data && error.response.data.message) {
-            message = error.response.data.message;
-        } else if (error.response.status === 404) {
-            message = `Error 404: El recurso no fue encontrado en la ruta: ${error.config.url}`;
-        } else if (error.response.status === 401) {
-            message = "Error 401: Credenciales inválidas o token expirado.";
+        } else if (typeof serverData === 'string' && serverData.length > 0) {
+            message = serverData;
         }
-    } else if (error.request) {
-        message = "Error de conexión. Asegúrate de que el servidor está activo en localhost:8080.";
+    }
+    if (message === defaultMessage && error.response) {
+        const status = error.response.status;
+
+        switch (status) {
+            case 401:
+                message = "Credenciales inválidas o sesión expirada.";
+                break;
+            case 403:
+                message = "Acceso denegado. No tienes permisos para realizar esta acción.";
+                break;
+            case 404:
+                message = "El recurso solicitado no fue encontrado.";
+                break;
+            case 409:
+                message = "El correo electrónico ya está en uso.";
+                break;
+            case 500:
+                message = "Error interno en el servidor de Tierra Nativa. Intente más tarde.";
+                break;
+            default:
+                message = defaultMessage;
+                break;
+        }
+    }
+    if (!error.response && error.request) {
+        message = "No se pudo conectar con el servidor. Revisa tu conexión a internet.";
     }
     fireAlert('Operación Fallida', message, 'error');
 
-    if (error.response && error.response.data) {
-        throw {
-            response: error.response,
-            message: error.response.data.message || message,
-            status: error.response.status
-        };
-    }
     throw error;
 };
 
@@ -97,7 +117,7 @@ export const apiGetPackagesPublic = async () => {
 
 export const apiGetPackagesAdmin = async () => {
     try {
-        const response = await axios.get(`${API_URL_PACKAGES}/admin`, { headers: getAuthHeader() });
+        const response = await axios.get(`${API_URL_PACKAGES}/admin`, { headers: getHeaders() });
         return response.data;
     } catch (error) {
         apiHandleErrorAlert(error, 'Error al obtener el listado de paquetes (Acceso ADMIN).');
@@ -118,7 +138,7 @@ export const apiGetPackageById = async (id) => {
 export const apiPostPackage = async (packageData) => {
     try {
         const response = await axios.post(API_URL_PACKAGES, packageData, {
-            headers: jsonAuthHeaders()
+            headers: getHeaders()
         });
         fireAlert('¡Éxito!', 'Paquete registrado correctamente.', 'success');
         return response.data;
@@ -128,10 +148,11 @@ export const apiPostPackage = async (packageData) => {
     }
 };
 
-export const apiUpdatePackage = async (packageData) => {
+export const apiUpdatePackage = async (id, packageData) => {
+    const cleanId = typeof id === 'object' ? id.id : id;
     try {
-        const response = await axios.put(API_URL_PACKAGES, packageData, {
-            headers: jsonAuthHeaders()
+        const response = await axios.put(`${API_URL_PACKAGES}/${cleanId}`, packageData, {
+            headers: getHeaders()
         });
         fireAlert('¡Éxito!', 'Paquete actualizado correctamente.', 'success');
         return response.data || packageData;
@@ -142,25 +163,25 @@ export const apiUpdatePackage = async (packageData) => {
 };
 
 export const apiDeletePackage = async (packageId) => {
+    const cleanId = typeof packageId === 'object' ? packageId.id : packageId;
     try {
-        await axios.delete(`${API_URL_PACKAGES}/${packageId}`, { headers: getAuthHeader() });
-
-        fireAlert('¡Eliminado!', `Paquete con ID ${packageId} eliminado.`, 'success');
+        await axios.delete(`${API_URL_PACKAGES}/${cleanId}`, {
+            headers: getHeaders()
+        });
+        fireAlert('¡Eliminado!', `Paquete con ID ${cleanId} eliminado.`, 'success');
         return true;
     } catch (error) {
-        apiHandleErrorAlert(error, `Error al eliminar el paquete con ID ${packageId}.`);
+        apiHandleErrorAlert(error, `Error al eliminar el paquete con ID ${cleanId}.`);
         throw error;
     }
 };
 
-
 export const apiRegister = async (apiData) => {
     try {
         const response = await axios.post(`${API_URL_AUTH}/register`, apiData, {
-            headers: jsonHeaders()
+            headers: getHeaders()
         });
-
-        fireAlert('¡Registro Exitoso!', 'Bienvenido a Tierra Nativa', 'success');
+        fireAlert('¡Registro Exitoso!', 'Se ha enviado un correo de verificación a tu dirección de correo. Por favor, verifica tu email para completar el registro.', 'success');
         return response.data;
     } catch (error) {
         apiHandleErrorAlert(error, 'Error al intentar registrar el usuario.');
@@ -171,13 +192,15 @@ export const apiRegister = async (apiData) => {
 export const apiLogin = async (credentials) => {
     try {
         const response = await axios.post(`${API_URL_AUTH}/login`, credentials, {
-            headers: jsonHeaders()
+            headers: getHeaders()
         });
-        const token = response.data.jwtToken;
+        const token = response.data.jwtToken || response.data.token;
         if (token) {
             sessionStorage.setItem('jwtToken', token);
+            const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+            const expiryTime = Date.now() + SIX_HOURS_MS;
+            sessionStorage.setItem('token_expiry', expiryTime.toString());
         }
-
         fireAlert('¡Bienvenido!', 'Sesión iniciada correctamente', 'success');
         return response.data;
     } catch (error) {
@@ -188,12 +211,13 @@ export const apiLogin = async (credentials) => {
 
 export const apiLogout = () => {
     sessionStorage.removeItem('jwtToken');
+    sessionStorage.removeItem('token_expiry');
     return true;
 };
 
 export const apiGetAdminUsers = async () => {
     try {
-        const response = await axios.get(API_URL_ADMIN, { headers: getAuthHeader() });
+        const response = await axios.get(API_URL_ADMIN, { headers: getHeaders() });
         return response.data;
     } catch (error) {
         if (!error.response || error.response.status !== 403) {
@@ -201,29 +225,31 @@ export const apiGetAdminUsers = async () => {
         }
         throw error;
     }
-}
+};
+
 export const apiUpdateUserRole = async (emailToPromote, newRole) => {
     try {
         const payload = { email: emailToPromote, newRole };
 
         const response = await axios.put(`${API_URL_ADMIN}/role`, payload, {
-            headers: jsonAuthHeaders()
+            headers: getHeaders()
         });
 
         fireAlert('¡Éxito!', `Rol del usuario ${emailToPromote} actualizado a ${newRole}.`, 'success');
         return { success: true, data: response.data };
     } catch (error) {
+        apiHandleErrorAlert(error, "Error al actualizar el rol.");
         throw error;
     }
 };
 
 export const apiGetCategories = async () => {
     try {
-        const headers = getAuthHeader();
+        const headers = getHeaders();
         const response = await axios.get(API_URL_CATEGORY, { headers });
         return response.data;
     } catch (error) {
-        apiHandleErrorAlert(error, 'Error al obtener la lista de categorías del Administrador. (Revisa si tienes un token de ADMIN válido)');
+        apiHandleErrorAlert(error, 'Error al obtener la lista de categorías del Administrador.');
         throw error;
     }
 };
@@ -237,7 +263,6 @@ export const apiGetCategoriesPublic = async () => {
         throw error;
     }
 };
-
 
 export const apiGetCategoriesByCategory = async (categorySlug) => {
 
@@ -253,21 +278,20 @@ export const apiGetCategoriesByCategory = async (categorySlug) => {
 export const apiPostCategory = async (categoryData) => {
     try {
         const response = await axios.post(API_URL_CATEGORY, categoryData, {
-            headers: jsonAuthHeaders()
+            headers: getHeaders()
         });
         fireAlert('¡Categoría Creada!', `La categoría ${categoryData.title} ha sido registrada.`, 'success');
         return response.data;
     } catch (error) {
-        apiHandleErrorAlert(error, "Error al registrar la nueva categoría. Verifica que el título no esté duplicado.");
+        apiHandleErrorAlert(error, "Error al registrar la nueva categoría.");
         throw error;
     }
 };
 
-
 export const apiUpdateCategory = async (categoryData) => {
     try {
         const response = await axios.put(API_URL_CATEGORY, categoryData, {
-            headers: jsonAuthHeaders()
+            headers: getHeaders()
         });
         fireAlert('¡Actualizada!', `Categoría ${categoryData.title} actualizada correctamente.`, 'success');
         return response.data;
@@ -277,10 +301,9 @@ export const apiUpdateCategory = async (categoryData) => {
     }
 };
 
-
 export const apiDeleteCategory = async (id) => {
     try {
-        await axios.delete(`${API_URL_CATEGORY}/${id}`, { headers: getAuthHeader() });
+        await axios.delete(`${API_URL_CATEGORY}/${id}`, { headers: getHeaders() });
         fireAlert('¡Categoría Eliminada!', `Categoría con ID ${id} eliminada.`, 'success');
         return true;
     } catch (error) {
@@ -301,11 +324,10 @@ export const apiGetCharacteristicsPublic = async () => {
 
 export const apiGetCharacteristics = async () => {
     try {
-        const headers = getAuthHeader();
-        const response = await axios.get(API_URL_CHARACTERISTICS, { headers });
+        const response = await axios.get(API_URL_CHARACTERISTICS, { headers: getHeaders() });
         return response.data;
     } catch (error) {
-        apiHandleErrorAlert(error, 'Error al obtener la lista de características del Administrador. (Revisa si tienes un token de ADMIN válido)');
+        apiHandleErrorAlert(error, 'Error al obtener la lista de características del Administrador.');
         throw error;
     }
 };
@@ -313,12 +335,12 @@ export const apiGetCharacteristics = async () => {
 export const apiPostCharacteristic = async (characteristicData) => {
     try {
         const response = await axios.post(API_URL_CHARACTERISTICS, characteristicData, {
-            headers: jsonAuthHeaders()
+            headers: getHeaders()
         });
-        fireAlert('¡Característica Creada!', `La característica ${characteristicData.name} ha sido registrada.`, 'success');
+        fireAlert('¡Característica Creada!', `La característica ${characteristicData.title} ha sido registrada.`, 'success');
         return response.data;
     } catch (error) {
-        apiHandleErrorAlert(error, "Error al registrar la nueva característica. Verifica que el nombre no esté duplicado.");
+        apiHandleErrorAlert(error, "Error al registrar la nueva característica.");
         throw error;
     }
 };
@@ -326,9 +348,9 @@ export const apiPostCharacteristic = async (characteristicData) => {
 export const apiUpdateCharacteristic = async (characteristicData) => {
     try {
         const response = await axios.put(API_URL_CHARACTERISTICS, characteristicData, {
-            headers: jsonAuthHeaders()
+            headers: getHeaders()
         });
-        fireAlert('¡Actualizada!', `Característica ${characteristicData.name} actualizada correctamente.`, 'success');
+        fireAlert('¡Actualizada!', `Característica ${characteristicData.title} actualizada correctamente.`, 'success');
         return response.data;
     } catch (error) {
         apiHandleErrorAlert(error, "Error al actualizar la característica.");
@@ -338,11 +360,42 @@ export const apiUpdateCharacteristic = async (characteristicData) => {
 
 export const apiDeleteCharacteristic = async (id) => {
     try {
-        await axios.delete(`${API_URL_CHARACTERISTICS}/${id}`, { headers: getAuthHeader() });
+        await axios.delete(`${API_URL_CHARACTERISTICS}/${id}`, { headers: getHeaders() });
         fireAlert('¡Característica Eliminada!', `Característica con ID ${id} eliminada.`, 'success');
         return true;
     } catch (error) {
         apiHandleErrorAlert(error, `Error al eliminar la característica con ID ${id}.`);
+        throw error;
+    }
+};
+
+export const apiResendVerificationEmail = async (email) => {
+    try {
+        const response = await axios.post(`${API_URL_AUTH}/resend-email`, { email }, {
+            headers: getHeaders()
+        });
+        fireAlert('¡Enviado!', 'Se ha reenviado el correo de verificación.', 'success');
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, 'Error al reenviar el correo de verificación.');
+        throw error;
+    }
+};
+
+export const apiVerifyEmail = async (token) => {
+    try {
+        const response = await axios.get(`${API_URL_AUTH}/verify-email`, {
+            params: { token },
+            headers: getHeaders()
+        });
+        fireAlert('¡Correo Verificado!', 'Tu correo ha sido verificado correctamente. Ahora puedes iniciar sesión.', 'success');
+        return response.data;
+    } catch (error) {
+        let errorMessage = 'Error al verificar el correo. El enlace puede haber expirado.';
+        if (error.response?.status === 400) {
+            errorMessage = error.response?.data?.error || errorMessage;
+        }
+        fireAlert('Operación Fallida', errorMessage, 'error');
         throw error;
     }
 };

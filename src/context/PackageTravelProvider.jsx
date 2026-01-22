@@ -39,15 +39,12 @@ export const PackageTravelProvider = ({ children }) => {
                         : [];
 
                     const safeCategories = Array.isArray(pkg.categories) ? pkg.categories : [];
-                    // Normalize images -> imageDetails (server may return 'images')
                     const images = Array.isArray(pkg.imageDetails) ? pkg.imageDetails : (Array.isArray(pkg.images) ? pkg.images : []);
 
-                    // Ensure characteristicIds exists as array of numbers
                     const characteristicIds = Array.isArray(pkg.characteristicIds)
                         ? pkg.characteristicIds.map(Number)
                         : (Array.isArray(pkg.characteristics) ? pkg.characteristics.map(c => Number(c?.id ?? c)).filter(Boolean) : []);
 
-                    // Ensure categoryId is an array
                     const categoryId = Array.isArray(pkg.categoryId) ? pkg.categoryId : (pkg.categoryId ? [pkg.categoryId] : (pkg.category ? [Number(pkg.category)] : []));
 
                     return { ...pkg, characteristics: safeCharacteristics, categories: safeCategories, imageDetails: images, images, characteristicIds, categoryId };

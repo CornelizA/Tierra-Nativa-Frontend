@@ -24,7 +24,6 @@
     width: 100%;
 }
 
-
 .admin-list-container table {
     width: 100%;
     border-collapse: collapse;
@@ -136,6 +135,7 @@
     cursor: not-allowed;
     background-color: #fff;
 }
+
 .page-counter {
     color: #333;
     font-size: 1.1em;

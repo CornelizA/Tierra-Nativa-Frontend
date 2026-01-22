@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Wifi, Utensils, ShieldCheck, Mountain, Camera, Bus, Apple, Map, Plane,
-    Ticket, Hotel, Star, MountainSnow, Pencil, X, Plus, Activity, ArrowLeft, ArrowRight, 
+    Ticket, Hotel, Star, MountainSnow, Pencil, X, Plus, Activity, ArrowLeft, ArrowRight,
 } from 'lucide-react';
 import { apiGetCharacteristics, apiPostCharacteristic, apiUpdateCharacteristic, apiDeleteCharacteristic, fireAlert } from '../service/PackageTravelService';
 import '../style/AdminCharacteristic.css';
@@ -31,16 +31,12 @@ const initialCharacteristicState = {
 
 const ITEMS_PER_PAGE = 4;
 
-
 export const AdminCharacteristic = ({ onBackToMenu }) => {
 
     const [characteristics, setCharacteristics] = useState([]);
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState(initialCharacteristicState);
     const [isEditing, setIsEditing] = useState(false);
-    const [currentId, setCurrentId] = useState(null);
-    const [title, setTitle] = useState('');
-    const [selectedIcon, setSelectedIcon] = useState('star');
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isAuto, setIsAuto] = useState(true);
@@ -96,13 +92,13 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-      const formatTitle = (text) => {
+    const formatTitle = (text) => {
         if (!text) return '';
         const lower = text.trim().toLowerCase();
         return lower.charAt(0).toUpperCase() + lower.slice(1);
     };
 
-   const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         if (e) e.preventDefault();
 
         if (!formData.title || !formData.icon) {
@@ -160,9 +156,9 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
     };
 
     const handleDelete = async (char) => {
-              const result = await fireAlert('Confirmar Eliminación', `¿Estás seguro de eliminar la característica "${char.title}"? Esta acción es irreversible.`, 'warning', true);
+        const result = await fireAlert('Confirmar Eliminación', `¿Estás seguro de eliminar la característica "${char.title}"? Esta acción es irreversible.`, 'warning', true);
 
-               setLoading(true);
+        setLoading(true);
         try {
             const token = sessionStorage.getItem('jwtToken');
             if (!token) {
@@ -175,7 +171,7 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                 await apiDeleteCharacteristic(char.id);
                 setCharacteristics(prev => prev.filter(c => c.id !== char.id));
                 await fetchData();
-                
+
                 fireAlert('Eliminado', 'La característica ha sido eliminada.', 'success');
             }
         } catch (error) {
@@ -190,24 +186,6 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
     };
 
 
-
-    const resetForm = () => {
-        setTitle('');
-        setSelectedIcon('star');
-        setIsEditing(false);
-        setCurrentId(null);
-        setIsAuto(true);
-    };
-
-    const startEdit = (char) => {
-        setIsEditing(true);
-        setCurrentId(char.id);
-        setTitle(char.title);
-        setSelectedIcon(char.icon);
-        setIsAuto(false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
     const totalPages = Math.ceil(characteristics.length / ITEMS_PER_PAGE);
     const lastItemIndex = currentPage * ITEMS_PER_PAGE;
     const firstItemIndex = lastItemIndex - ITEMS_PER_PAGE;
@@ -221,10 +199,6 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
         setCurrentPage(prev => (prev > 1 ? prev - 1 : prev));
     };
 
-
-    const IconPreview = IconLibrary[selectedIcon] || Star;
-
-
     return (
         <div className="container-admin-characteristic p-4 md:p-8 bg-slate-50 min-h-screen font-sans">
             <div className="button-header-row-characteristic flex flex-col md:flex-row justify-between items-center border-b-4 border-blue-600 pb-4 gap-4">
@@ -237,7 +211,6 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                     <ArrowLeft size={18} />
                     Volver al Menú
                 </button>
-
 
                 <button
                     onClick={() => handleOpenModal()}
@@ -262,8 +235,6 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                                 <h5 className="modal-title-characteristic fs-5" id="exampleModalLabel">
                                     {isEditing ? 'Editar Característica' : 'Nueva Característica'}
                                 </h5>
-
-
                             </div>
 
                             <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -293,7 +264,7 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                                         <div className="p-3 bg-white text-blue-600 ">
                                             {(() => {
                                                 const SelectedIconComp = IconLibrary[formData.icon] || Star;
-                                                return <SelectedIconComp size={35}/>
+                                                return <SelectedIconComp size={35} />
                                             })()}
                                         </div>
                                         <span className="title-icon-box font-bold text-slate-700 capitalize text-sm">{formData.icon}</span>
@@ -353,7 +324,7 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                     <table>
                         <thead>
                             <tr >
-                                <th style={{width: '380px'}}>Icono</th>
+                                <th style={{ width: '380px' }}>Icono</th>
                                 <th>Título</th>
                                 <th style={{ width: '400px' }}>Acciones</th>
                             </tr>

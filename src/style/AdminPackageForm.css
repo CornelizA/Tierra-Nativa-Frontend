@@ -32,8 +32,6 @@
     font-weight: bolder;
 }
 
-
-
 .package-form .form-group {
     margin-bottom: 15px;
 }
@@ -135,7 +133,6 @@
     background-color: #A4998980;
 }
 
-
 .btn-success {
     background-color: #1A531A;
     color: #FAF8F0;
@@ -154,38 +151,37 @@
     background-color: #e0a800;
 }
 
-
 .select-all-button {
-        border-radius: 5px;
-        transition: all 0.2s;
-    }
+    border-radius: 5px;
+    transition: all 0.2s;
+}
 
-    .select-all-button:hover {
-        border-color: #155724;
-        box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
-        outline: none;
-        background-color: #f0fdf4;
-    }
+.select-all-button:hover {
+    border-color: #155724;
+    box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
+    outline: none;
+    background-color: #f0fdf4;
+}
 
-    .characteristic-button {
-        border-radius: 5px;
-        transition: all 0.2s;
-        border-width: 1px;
-    }
+.characteristic-button {
+    border-radius: 5px;
+    transition: all 0.2s;
+    border-width: 1px;
+}
 
-    .characteristic-button.active {
-        border-color: #155724;
-        box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
-        outline: none;
-        background-color: #f0fdf4;
-        color: #155724;
-    }
+.characteristic-button.active {
+    border-color: #155724;
+    box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
+    outline: none;
+    background-color: #f0fdf4;
+    color: #155724;
+}
 
-    .characteristic-button:hover {
-        border-color: #155724;
-        box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
-        outline: none;
-    }
+.characteristic-button:hover {
+    border-color: #155724;
+    box-shadow: 0 0 0 0.2rem rgba(11, 89, 5, 0.25);
+    outline: none;
+}
 
 @media (max-width: 768px) {
     .admin-form-container {
@@ -198,7 +194,6 @@
         gap: 0;
     }
 
-   
     .mobile-access-denied-container {
         margin-top: 30px;
 

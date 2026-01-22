@@ -53,44 +53,44 @@ export const Home = () => {
       </div>
       <div className="featured-container mt-6 mx-auto">
         <h2 className="package-featured text-4xl pb-2">
-          Paquetes Destacados 
+          Paquetes Destacados
           <br />
-          <span className="text-lg text-gray-600 font-normal"> 
-          {selectedDestination
-            ? packagesToDisplay.length
-            : basePackages.length
-          } Experiencias imperdibles que conectan con tu esencia</span>
+          <span className="text-lg text-gray-600 font-normal">
+            {selectedDestination
+              ? packagesToDisplay.length
+              : basePackages.length
+            } Experiencias imperdibles que conectan con tu esencia</span>
         </h2>
 
         <div className="package-home row">
-            {packagesToDisplay.map((pkg) => {
+          {packagesToDisplay.map((pkg) => {
 
-                const imageDetails = Array.isArray(pkg.imageDetails) ? pkg.imageDetails : [];
-                const principalImageObj = imageDetails.find(img => img.principal === true);
-                const mainCardImageUrl = (principalImageObj && principalImageObj.url)
-                  ? principalImageObj.url.trim()
-                  : (imageDetails.length > 0 && imageDetails[0].url)
-                    ? imageDetails[0].url.trim()
-                    : FALLBACK_CARD_URL;
-                return (
-                  <div key={pkg.id ?? `pkg-${pkg.name}-${Math.random()}`} className="col-md-4 mb-3">
-                    <PackageTravelCard
-                      id={pkg.id}
-                      name={pkg.name}
-                      shortDescription={pkg.shortDescription}
-                      basePrice={pkg.basePrice}
-                      destination={pkg.destination}
-                      categories={pkg.categories}
-                      categoryId={pkg.categoryId}
-                      imageUrl={mainCardImageUrl}
-                    />
-                    <Link to={`/detallePaquete/${pkg.id}`} className="btn btn-primary">
-                      Ver Detalle
-                    </Link>
-                  </div>
-                );
-              })
-            }
+            const imageDetails = Array.isArray(pkg.imageDetails) ? pkg.imageDetails : [];
+            const principalImageObj = imageDetails.find(img => img.principal === true);
+            const mainCardImageUrl = (principalImageObj && principalImageObj.url)
+              ? principalImageObj.url.trim()
+              : (imageDetails.length > 0 && imageDetails[0].url)
+                ? imageDetails[0].url.trim()
+                : FALLBACK_CARD_URL;
+            return (
+              <div key={pkg.id ?? `pkg-${pkg.name}-${Math.random()}`} className="col-md-4 mb-3">
+                <PackageTravelCard
+                  id={pkg.id}
+                  name={pkg.name}
+                  shortDescription={pkg.shortDescription}
+                  basePrice={pkg.basePrice}
+                  destination={pkg.destination}
+                  categories={pkg.categories}
+                  categoryId={pkg.categoryId}
+                  imageUrl={mainCardImageUrl}
+                />
+                <Link to={`/detallePaquete/${pkg.id}`} className="btn btn-primary">
+                  Ver Detalle
+                </Link>
+              </div>
+            );
+          })
+          }
         </div>
       </div>
 

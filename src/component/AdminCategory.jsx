@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { apiGetCategories, apiPostCategory, apiUpdateCategory, apiDeleteCategory, fireAlert, } from '../service/PackageTravelService';
 import { Pencil, X, Plus, ArrowRight, ArrowLeft } from 'lucide-react';
 import '../style/AdminCategory.css';
@@ -76,8 +75,6 @@ export const AdminCategory = ({ onBackToMenu }) => {
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         fetchCategories();

@@ -9,6 +9,7 @@ export const LoginView = ({ onAuthSuccess }) => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+
     const isFormValid = credentials.email.length > 0 && credentials.password.length > 0;
 
     const handleChange = (e) => {

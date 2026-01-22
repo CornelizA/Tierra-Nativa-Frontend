@@ -8,11 +8,11 @@
 .background-category {
     padding-top: 100px;
     margin: 0;
-    height: 370px;
+    height: 400px;
     background-size: cover;
     box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.396);
     border-bottom: solid 10px #FAF8F0
-} 
+}
 
 .category-description {
     text-align: center;
@@ -65,7 +65,7 @@
     padding: 20px 70px;
 }
 
-.load-text{
+.load-text {
     font-size: 2rem;
     color: #1A531A;
     font-weight: bolder;
@@ -76,4 +76,37 @@
     font-size: 1.8rem;
     color: #FAF8F0;
     font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .package-text {
+        padding: 25px
+    }
+
+    .background-category {
+        height: 100vh;
+        padding-top: 50%;
+        border-bottom: none;
+    }
+
+    .package-card {
+        padding: 0px 24px 24px;
+        margin-top: -26px;
+    }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    .background-category {
+        height: 100vh;
+        padding-top: 25%;
+        border-bottom: none;
+    }
+}
+
+@media (orientation:landscape) {
+    .background-category {
+        height: 100vh;
+        padding-top: 20%;
+        border-bottom: none;
+    }
 }

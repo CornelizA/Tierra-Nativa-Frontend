@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { apiPostPackage, apiUpdatePackage, apiGetCategoriesPublic, apiGetCharacteristicsPublic, fireAlert} from '../service/PackageTravelService';
+import { apiPostPackage, apiUpdatePackage, apiGetCategoriesPublic, apiGetCharacteristicsPublic, fireAlert } from '../service/PackageTravelService';
 import { PackageTravelContext } from '../context/PackageTravelContext';
 import '../style/AdminPackageForm.css';
-import  { IconLibrary } from '../component/AdminCharacteristic.jsx';
-import { Plus, ArrowLeft, Star,Check} from 'lucide-react';
+import { IconLibrary } from '../component/AdminCharacteristic.jsx';
+import { Plus, ArrowLeft, Star, Check } from 'lucide-react';
 
 export const initialFormData = {
     name: '',
@@ -55,9 +55,9 @@ function mapPackageToFormData(pkg) {
             ...initialFormData.itineraryDetail,
             ...(pkg.itineraryDetail || {})
         },
-            imageDetails,
-            characteristicIds,
-            category: categoryValue
+        imageDetails,
+        characteristicIds,
+        category: categoryValue
     };
 }
 
@@ -83,13 +83,13 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 const cats = await apiGetCategoriesPublic();
                 setCategoriesList(Array.isArray(cats) ? cats : (cats?.data || []));
             } catch (e) {
-             fireAlert('Error de Operación', 'Hubo un error al cargar las categorías.', 'error');
+                fireAlert('Error de Operación', 'Hubo un error al cargar las categorías.', 'error');
             }
             try {
                 const chars = await apiGetCharacteristicsPublic();
                 setCharacteristicsList(Array.isArray(chars) ? chars : (chars?.data || []));
             } catch (e) {
-                 fireAlert('Error de Operación', 'Hubo un error al cargar las características.', 'error');
+                fireAlert('Error de Operación', 'Hubo un error al cargar las características.', 'error');
             }
         })();
     }, []);
@@ -102,8 +102,8 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         if (!formData.basePrice || isNaN(basePriceValue) || basePriceValue <= 0) {
             errors.basePrice = 'El precio base es obligatorio y debe ser un número positivo.';
         }
-        if(!formData.category) { errors.categories = 'La categoría es obligatoria.'; }
-        if(!formData.characteristicIds || formData.characteristicIds.length === 0) { errors.characteristics = 'Las características son obligatorias.'; }
+        if (!formData.category) { errors.categories = 'La categoría es obligatoria.'; }
+        if (!formData.characteristicIds || formData.characteristicIds.length === 0) { errors.characteristics = 'Las características son obligatorias.'; }
 
         if (!formData.destination.trim()) { errors.destination = 'El destino es obligatorio.'; }
 
@@ -189,7 +189,7 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         setFormData({ ...formData, imageDetails: newImages });
     };
 
-      const handleToggleAllCharacteristics = () => {
+    const handleToggleAllCharacteristics = () => {
         if (formData.characteristicIds.length === characteristicsList.length) {
             setFormData(prev => ({ ...prev, characteristicIds: [] }));
         } else {
@@ -250,10 +250,9 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
             };
 
             let response;
-            let finalPackageId;
 
             if (isEditing) {
-                response = await apiUpdatePackage(dataToSend);
+                response = await apiUpdatePackage(id, dataToSend);
                 finalPackageId = id;
             } else {
                 response = await apiPostPackage(dataToSend);
@@ -291,10 +290,8 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                     if (addPackageTravel) addPackageTravel(merged);
                     else if (fetchPackageTravel) await fetchPackageTravel();
                 }
-            } catch (e) {
-                console.warn('Error updating package list after save:', e);
+            } catch (listError) {
             }
-
             setTimeout(onActionComplete, 1500);
         }
         catch (error) {
@@ -381,7 +378,7 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 </div>
 
                 <div className="form-group">
-                      <h3 className="text-sm font-bold uppercase tracking-widest text-blue-600">Categoría</h3>
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-blue-600">Categoría</h3>
                     <select id="category" name="category" value={formData.category} onChange={handleChange} className={validationErrors.categories ? 'input-error' : ''}>
                         <option value="">-- Seleccione una categoría --</option>
                         {categoriesList.map(cat => (
@@ -392,41 +389,40 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 </div>
 
                 <div className="form-group">
-                 
+
                     <div className="flex justify-between items-center">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-blue-600">Características</h3>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             onClick={handleToggleAllCharacteristics}
                             className="select-all-button text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full hover:bg-blue-600 hover:text-white transition uppercase"
                         >
                             {formData.characteristicIds.length === characteristicsList.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
                         </button>
                     </div>
-                     <label className="inline-flex items-center gap-2 p-2">
-                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2  ">
-                        {characteristicsList.map(ch => {
-                            const Icon = IconLibrary[ch.icon] || Star;
-                            const isSelected = formData.characteristicIds.includes(Number(ch.id));
-                            return (
-                                <button
-                                    key={ch.id}
-                                    type="button"
-                                    onClick={() => handleCharacteristicToggle(ch.id)}
-                                    className={`characteristic-button flex items-center gap-2 p-1.5 px-2 rounded-md border transition-all text-left ${
-                                        isSelected ? 'active' : 'border-slate-200 text-slate-500'
-                                    }`}
-                                >
-                                    <Icon size={14} className={isSelected ? 'text-blue-600' : 'text-slate-300'} />
-                                    <span className="text-[11px] font-semibold truncate leading-none">{ch.title}</span>
-                                    {isSelected && <Check size={12} className="ml-auto text-blue-600 shrink-0" />}
-                                </button>
-                            );
-                        })}
-                    </div>
-                    {validationErrors.characteristics && <p className="validation-error">{validationErrors.characteristics}</p>}
-                   </label>
-                   </div>
+                    <label className="inline-flex items-center gap-2 p-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2  ">
+                            {characteristicsList.map(ch => {
+                                const Icon = IconLibrary[ch.icon] || Star;
+                                const isSelected = formData.characteristicIds.includes(Number(ch.id));
+                                return (
+                                    <button
+                                        key={ch.id}
+                                        type="button"
+                                        onClick={() => handleCharacteristicToggle(ch.id)}
+                                        className={`characteristic-button flex items-center gap-2 p-1.5 px-2 rounded-md border transition-all text-left ${isSelected ? 'active' : 'border-slate-200 text-slate-500'
+                                            }`}
+                                    >
+                                        <Icon size={14} className={isSelected ? 'text-blue-600' : 'text-slate-300'} />
+                                        <span className="text-[11px] font-semibold truncate leading-none">{ch.title}</span>
+                                        {isSelected && <Check size={12} className="ml-auto text-blue-600 shrink-0" />}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        {validationErrors.characteristics && <p className="validation-error">{validationErrors.characteristics}</p>}
+                    </label>
+                </div>
 
                 <h3>Detalles del Itinerario </h3>
                 <div className="form-group-inline">

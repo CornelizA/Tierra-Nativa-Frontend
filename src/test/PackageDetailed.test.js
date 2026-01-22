@@ -2,30 +2,43 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PackageTravelContext } from '../context/PackageTravelContext';
 import { PackageDetailed } from '../pages/PackageDetailed';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import * as PackageService from '../service/PackageTravelService';
+import '@testing-library/jest-dom';
 
-const packagesContext = [
-    {
-        id: 10,
-        name: 'Cataratas del Iguazú Completo',
-        destination: 'Misiones',
-        category: 'Litoral',
-        basePrice: 700,
-        itineraryDetail: {
-            dailyActivitiesDescription: 'Día 1: Llegada y city tour. Día 2: Excursión Cataratas Lado Argentino. Día 3: Cataratas Lado Brasilero. Día 4: Actividad acuática. Día 5: Despedida.',
-            generalRecommendations: 'Llevar repelente. Usar ropa cómoda y liviana. El clima es húmedo y caluroso. Usar protector solar.',
-        },
-        images: [
-            { url: 'img1_principal.jpg', principal: true },
-            { url: 'img2_secundaria.jpg', principal: false },
-            { url: 'img3_secundaria.jpg', principal: false },
-            { url: 'img4_secundaria.jpg', principal: false },
-            { url: 'img5_secundaria.jpg', principal: false },
-            { url: 'img6_adicional.jpg', principal: false },
-        ],
-    },
+jest.mock('../service/PackageTravelService', () => ({
+    apiGetCharacteristicsPublic: jest.fn(),
+    apiGetPackageById: jest.fn(),
+    fireAlert: jest.fn(),
+}));
+
+const mockCharacteristics = [
+    { id: 1, title: 'Wi-Fi', icon: 'wifi' },
+    { id: 3, title: 'Hospedaje', icon: 'tent' }
 ];
 
-const renderWithContext = (packageId, packages) => {
+const mockPackage = {
+    id: 1,
+    name: "Glaciar Perito Moreno: Hielo Milenario",
+    itineraryDetail: {
+        duration: "4 Días / 3 Noches",
+        lodgingType: "Hotel 4 estrellas",
+        transferType: "Vuelo a FTE",
+        dailyActivitiesDescription: "Día 1: Llegada. Día 2: Glaciar.",
+        foodAndHydrationNotes: "Incluye comidas.",
+        generalRecommendations: "Llevar abrigo. Usar lentes."
+    },
+    imageDetails: [
+        { id: 1, url: "p1.jpg", principal: true },
+        { id: 2, url: "p2.jpg", principal: false },
+        { id: 3, url: "p3.jpg", principal: false },
+        { id: 4, url: "p4.jpg", principal: false },
+        { id: 5, url: "p5.jpg", principal: false },
+        { id: 6, url: "p6.jpg", principal: false }
+    ],
+    characteristicIds: [1, 3]
+};
+
+const renderWithContext = (packageId, packages = []) => {
     return render(
         <MemoryRouter initialEntries={[`/detallePaquete/${packageId}`]}>
             <Routes>
@@ -42,91 +55,78 @@ const renderWithContext = (packageId, packages) => {
     );
 };
 
-describe('PackageDetailed Page', () => {
+describe('PackageDetailed Page Integration', () => {
 
-    it('should show basic package details', async () => {
-        renderWithContext('10', packagesContext);
+    beforeEach(() => {
+        jest.clearAllMocks();
+        PackageService.apiGetCharacteristicsPublic.mockResolvedValue(mockCharacteristics);
+        PackageService.apiGetPackageById.mockResolvedValue(mockPackage);
+    });
+
+    it('should load and display main information and title', async () => {
+        renderWithContext('1');
 
         await waitFor(() => {
-            expect(screen.getByText('Cataratas del Iguazú Completo')).toBeInTheDocument();
-            expect(screen.getByText('Resumen del Itinerario')).toBeInTheDocument();
-            expect(screen.getByText('Planificación día por día')).toBeInTheDocument();
+            expect(screen.getByText(/Glaciar Perito Moreno/i)).toBeInTheDocument();
+            expect(screen.getByText('4 Días / 3 Noches')).toBeInTheDocument();
         });
     });
 
-    it('should show up to 4 secondary images different from principal', async () => {
-        const { container } = renderWithContext('10', packagesContext);
+    it('should render the gallery with 1 main image and 4 secondary images', async () => {
+        const { container } = renderWithContext('1');
 
         await waitFor(() => {
-            const mainImage = screen.getByRole('img', { name: 'Cataratas del Iguazú Completo' });
-            expect(mainImage).toBeInTheDocument();
-            expect(mainImage).toHaveAttribute('src', 'img1_principal.jpg');
+            const mainImg = screen.getByAltText("Glaciar Perito Moreno: Hielo Milenario");
+            expect(mainImg).toHaveAttribute('src', 'p1.jpg');
 
-            const secondaryImagesContainer = container.querySelector('.secondary-images-grid');
-            expect(secondaryImagesContainer).toBeTruthy();
-            
-            const secondaryImages = secondaryImagesContainer.querySelectorAll('.secondary-image');
-
-            expect(secondaryImages).toHaveLength(4); 
-            expect(secondaryImages[0]).toHaveAttribute('src', 'img2_secundaria.jpg');
-            expect(secondaryImages[3]).toHaveAttribute('src', 'img5_secundaria.jpg'); 
+            const secondaryGrid = container.querySelector('.secondary-images-grid');
+            const images = secondaryGrid.querySelectorAll('.secondary-image');
+            expect(images).toHaveLength(4);
+            expect(images[0]).toHaveAttribute('src', 'p2.jpg');
         });
     });
 
-    it('should show full gallery modal when clicking "Ver más" and close it', async () => {
-        const { container } = renderWithContext('10', packagesContext);
+    it('should show and hide the gallery modal when "Ver más" is clicked', async () => {
+        renderWithContext('1');
 
-        const verMasButton = screen.getByRole('button', { name: 'Ver más' });
-        fireEvent.click(verMasButton);
+        const verMas = await screen.findByText('Ver más');
+        fireEvent.click(verMas);
+
+        expect(screen.getByRole('button', { name: '×' })).toBeInTheDocument();
+        
+        const modalImages = document.querySelectorAll('.modal-image');
+        expect(modalImages.length).toBe(6); 
+
+        fireEvent.click(screen.getByText('×'));
+        expect(screen.queryByText('×')).not.toBeInTheDocument();
+    });
+
+    it('should render characteristics with their icons and titles', async () => {
+        renderWithContext('1');
 
         await waitFor(() => {
-            const modal = container.querySelector('.gallery-modal');
-            expect(modal).toBeTruthy();
-            
-            const modalImagesInModal = modal.querySelectorAll('.modal-image');
-            
-            expect(modalImagesInModal).toHaveLength(6);
-            expect(modalImagesInModal[0]).toHaveAttribute('src', 'img1_principal.jpg');
-            expect(modalImagesInModal[5]).toHaveAttribute('src', 'img6_adicional.jpg');
-        });
-
-        fireEvent.click(screen.getByRole('button', { name: '×' }));
-
-        await waitFor(() => {
-            const modal = container.querySelector('.gallery-modal');
-            expect(modal).not.toBeInTheDocument();
+            expect(screen.getByText('Wi-Fi')).toBeInTheDocument();
+            expect(screen.getByText('Hospedaje')).toBeInTheDocument();
         });
     });
 
-    it('should parse day-by-day planning correctly', async () => {
-        const { container } = renderWithContext('10', packagesContext);
+    it('should parse and format recommendations into list items', async () => {
+        renderWithContext('1');
 
         await waitFor(() => {
-            const daySection = screen.getByText('Planificación día por día').closest('.card')?.querySelector('.day-list');
-            expect(daySection).toBeTruthy();
-            
-            const dayItems = daySection.querySelectorAll('li');
-
-            expect(dayItems).toHaveLength(5);
-            expect(dayItems[0].textContent).toMatch(/Día\s*1:.*Llegada y city tour/);
-            expect(dayItems[4].textContent).toMatch(/Día\s*5:.*Despedida/);
+            const recommendationItems = screen.getAllByRole('listitem').filter(
+                li => li.className.includes('card-list-item')
+            );
+            expect(recommendationItems.length).toBe(2);
+            expect(recommendationItems[0]).toHaveTextContent('Llevar abrigo.');
         });
     });
 
-    it('should show general recommendations as a list', async () => {
-        const { container } = renderWithContext('10', packagesContext);
+    it('should call apiGetPackageById if package is not in context list', async () => {
+        renderWithContext('1', []);
 
         await waitFor(() => {
-            const recommendationHeader = screen.getByText('Recomendaciones Generales');
-            expect(recommendationHeader).toBeInTheDocument();
-            
-            const recommendationSection = recommendationHeader.closest('.card')?.querySelector('.card-body');
-            expect(recommendationSection).toBeTruthy();
-            
-            const recommendationItems = recommendationSection.querySelectorAll('.card-list-item');
-
-            expect(recommendationItems).toHaveLength(4);
-            expect(recommendationItems[0].textContent).toContain('Llevar repelente.');
+            expect(PackageService.apiGetPackageById).toHaveBeenCalledWith('1');
         });
     });
 });

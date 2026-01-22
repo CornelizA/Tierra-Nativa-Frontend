@@ -17,12 +17,17 @@ export const AdminPackageList = ({ onBackToMenu }) => {
         setLoading(true);
         setError(null);
         try {
-            const data = await apiGetPackagesAdmin('/paquetes/admin');
+            const data = await apiGetPackagesAdmin();
             setPackages(data);
 
         } catch (err) {
-            setError('Error al cargar la lista de paquetes.');
-            console.error(err);
+            const friendlyMessage = 'No se pudo cargar la lista de paquetes. Por favor, verifica tu conexión o el estado del servidor.';
+            setError(friendlyMessage);
+            fireAlert(
+                'Error de Carga', 
+                friendlyMessage, 
+                'error'
+            );
         } finally {
             setLoading(false);
         }
@@ -48,7 +53,11 @@ export const AdminPackageList = ({ onBackToMenu }) => {
 
     const handleDelete = async (packageId, packageName) => {
         
-        const result = await fireAlert('Confirmar Eliminación', `¿Estás seguro de eliminar el paquete "${packageName}"? Esta acción es irreversible.`, 'warning', true);
+        const result = await fireAlert(
+            'Confirmar Eliminación', 
+            `¿Estás seguro de eliminar el paquete "${packageName}"? Esta acción es irreversible.`,
+             'warning', 
+             true);
 
         if (result.isConfirmed) {
             try {
@@ -62,13 +71,15 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                 });
 
             } catch (err) {
+             const errorMessage = err.response?.data?.message || 
+             'Ocurrió un problema al intentar eliminar el paquete. Intente de nuevo.';
+                
                 Swal.fire({
                     title: 'Error al Eliminar',
-                    text: 'Ocurrió un problema al intentar eliminar el paquete. Intente de nuevo.',
+                    text: errorMessage,
                     icon: 'error',
                     confirmButtonColor: '#1A531A'
                 });
-                console.error(err);
             }
         }
     };

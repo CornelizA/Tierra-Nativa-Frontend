@@ -1,12 +1,13 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { SearchComponent } from '../component/SearchComponent';
 import { PackageTravelContext } from '../context/PackageTravelContext';
+import '@testing-library/jest-dom';
 
 const MOCK_PACKAGES_CONTEXT = [
-    { id: 1, destination: 'Mendoza', name: 'A' },
-    { id: 2, destination: 'Mendoza', name: 'B' }, 
-    { id: 3, destination: 'Salta', name: 'C' },
-    { id: 4, destination: 'Buenos Aires', name: 'D' },
+    { id: 1, destination: 'Mendoza', name: 'Pack A' },
+    { id: 2, destination: 'Mendoza', name: 'Pack B' },
+    { id: 3, destination: 'Salta', name: 'Pack C' },
+    { id: 4, destination: 'Buenos Aires', name: 'Pack D' },
 ];
 
 const mockContextValue = {
@@ -21,113 +22,93 @@ const renderWithContext = (props) => {
     );
 };
 
-const setErrorMessage = jest.fn(); 
-
-describe('SearchComponent', () => {
+describe('SearchComponent Logic and Interaction', () => {
     const mockOnFilter = jest.fn();
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    beforeAll(() => {
-        jest.useFakeTimers();
-    });
-
-    afterAll(() => {
-        jest.useRealTimers();
-        consoleErrorSpy.mockRestore();
-    });
 
     beforeEach(() => {
+        jest.useFakeTimers();
         jest.clearAllMocks();
     });
 
-    it('should render search field', () => {
-        renderWithContext({ onFilter: mockOnFilter });
-        
-        expect(screen.getByPlaceholderText('Selecciona tu destino')).toBeInTheDocument();
+    afterEach(() => {
+        jest.useRealTimers();
     });
 
-    it('should show all unique suggestions when focusing input', () => {
+    it('should show unique suggestions (no duplicates) when focusing input', () => {
         renderWithContext({ onFilter: mockOnFilter });
         
         const searchInput = screen.getByPlaceholderText('Selecciona tu destino');
         fireEvent.focus(searchInput);
 
+        const items = screen.getAllByRole('listitem');
+        expect(items).toHaveLength(3); 
         expect(screen.getByText('Mendoza')).toBeInTheDocument();
         expect(screen.getByText('Salta')).toBeInTheDocument();
         expect(screen.getByText('Buenos Aires')).toBeInTheDocument();
-        expect(screen.getAllByRole('listitem')).toHaveLength(3);
     });
 
-    it('should filter suggestions when typing in input', () => {
+    it('should filter suggestions as the user types', () => {
+        renderWithContext({ onFilter: mockOnFilter });
+        
+        const searchInput = screen.getByPlaceholderText('Selecciona tu destino');
+        fireEvent.change(searchInput, { target: { value: 'Sal' } });
+
+        expect(screen.getByText('Salta')).toBeInTheDocument();
+        expect(screen.queryByText('Mendoza')).not.toBeInTheDocument();
+    });
+
+    it('should call onFilter and close list when a suggestion is clicked', async () => {
         renderWithContext({ onFilter: mockOnFilter });
         
         const searchInput = screen.getByPlaceholderText('Selecciona tu destino');
         fireEvent.focus(searchInput);
-        fireEvent.change(searchInput, { target: { value: 'm' } });
-
-        expect(screen.getByText('Mendoza')).toBeInTheDocument();
-        expect(screen.queryByText('Salta')).not.toBeInTheDocument();
-        expect(screen.getAllByRole('listitem')).toHaveLength(1);
-    });
-    
-    it('should call onFilter with selected destination when clicking a suggestion', () => {
-        renderWithContext({ onFilter: mockOnFilter });
         
-        const searchInput = screen.getByPlaceholderText('Selecciona tu destino');
-        fireEvent.focus(searchInput);
-        fireEvent.click(screen.getByText('Salta'));
+        const suggestion = screen.getByText('Mendoza');
+        fireEvent.click(suggestion);
 
-        expect(mockOnFilter).toHaveBeenCalledWith('Salta');
-        expect(searchInput).toHaveValue('Salta');
+        expect(mockOnFilter).toHaveBeenCalledWith('Mendoza');
+        expect(searchInput.value).toBe('Mendoza');
         expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
     });
 
-    it('should hide suggestions after delay when losing focus (onBlur)', () => {
+    it('should call onFilter(null) when input is cleared', () => {
         renderWithContext({ onFilter: mockOnFilter });
         
         const searchInput = screen.getByPlaceholderText('Selecciona tu destino');
-        fireEvent.focus(searchInput);
-        expect(screen.getAllByRole('listitem')).toHaveLength(3);
-        
-        fireEvent.blur(searchInput);
-        expect(screen.getAllByRole('listitem')).toHaveLength(3);
-
-        act(() => {
-            jest.runOnlyPendingTimers();
-        });
-        
-        expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
-    });
-
-    it('should call onFilter(null) if input is manually cleared', () => {
-        renderWithContext({ onFilter: mockOnFilter });
-        
-        const searchInput = screen.getByPlaceholderText('Selecciona tu destino');
-        
-        fireEvent.change(searchInput, { target: { value: 'salta' } });
+        fireEvent.change(searchInput, { target: { value: 'M' } });
         fireEvent.change(searchInput, { target: { value: '' } });
 
         expect(mockOnFilter).toHaveBeenCalledWith(null);
     });
-    
-    it('should call onFilter with first result when pressing Enter', async () => {
+
+    it('should hide suggestions after blur timeout', () => {
         renderWithContext({ onFilter: mockOnFilter });
         
         const searchInput = screen.getByPlaceholderText('Selecciona tu destino');
+        fireEvent.focus(searchInput);
 
-        fireEvent.change(searchInput, { target: { value: 'men' } });
+        const items = screen.getAllByRole('listitem');
+        expect(items.length).toBeGreaterThan(0);
+
+        fireEvent.blur(searchInput);
         
-        await waitFor(() => {
-            expect(screen.getByText('Mendoza')).toBeInTheDocument();
+        act(() => {
+            jest.advanceTimersByTime(200);
         });
+
+        expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
+    });
+
+    it('should select the first suggestion when form is submitted (Enter)', () => {
+        renderWithContext({ onFilter: mockOnFilter });
+        
+        const searchInput = screen.getByPlaceholderText('Selecciona tu destino');
+        fireEvent.change(searchInput, { target: { value: 'Bu' } });
 
         const form = screen.getByRole('search');
         fireEvent.submit(form);
 
-        await waitFor(() => {
-            expect(mockOnFilter).toHaveBeenCalledWith('Mendoza');
-        });
-        
-        expect(searchInput).toHaveValue('');
+        expect(mockOnFilter).toHaveBeenCalledWith('Buenos Aires');
+        expect(searchInput.value).toBe('');
     });
 });

@@ -132,3 +132,9 @@
 .mobile-access-card strong {
     font-weight: bold;
 }
+
+.message-error-user {
+  height: 400px;
+  padding: 40px;
+  margin-top: 80px;
+}

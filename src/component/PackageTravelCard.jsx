@@ -6,7 +6,7 @@ import { PackageTravelContext } from '../context/PackageTravelContext';
 
 export const PackageTravelCard = ({ name, shortDescription, basePrice, destination, categories, imageUrl, categoryId }) => {
 
-      let formattedCategories = 'Sin categoría';
+    let formattedCategories = 'Sin categoría';
 
     if (Array.isArray(categories) && categories.length > 0) {
         const titles = categories

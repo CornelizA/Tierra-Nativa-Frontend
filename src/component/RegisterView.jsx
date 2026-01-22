@@ -21,7 +21,6 @@ const PasswordValidationChecks = ({ password }) => {
             {VALIDATION_RULES.map((rule, index) => {
                 const isValid = rule.test(password);
                 return (
-
                     <div key={index} className={`flex items-center ${isValid ? 'text-green-600' : 'text-red-500'}`}>
                         {isValid ? (
                             <CheckCircleFill className="me-2" />
@@ -36,7 +35,7 @@ const PasswordValidationChecks = ({ password }) => {
     );
 };
 
-export const RegisterView = ({ onAuthSuccess }) => {
+export const RegisterView = () => {
 
     const [userData, setUserData] = useState({
         fullName: '', email: '', password: ''
@@ -81,25 +80,10 @@ export const RegisterView = ({ onAuthSuccess }) => {
 
         setLoading(true);
 
-  try {
-            const newUserData = await apiRegister(apiData); 
-            onAuthSuccess(newUserData);
-            navigate('/home');
+        try {
+            await apiRegister(apiData);
+            navigate('/verify-email', { state: { email: userData.email } });
         } catch (error) {
-
-            let errorTitle = "Error de Registro";
-            let errorMessage = "Fallo en el registro. Inténtalo de nuevo."
-
-            if (error.response && error.response.status === 403) {
-                errorMessage = "Ya existe una cuenta con este correo electrónico. Intenta iniciar sesión.";
-                errorTitle = "Cuenta Existente";
-            } else if (error.response && error.response.status === 400) {
-                 errorMessage = "Los datos enviados no son válidos (ej. formato de email incorrecto).";
-                 errorTitle = "Datos Inválidos";
-            } else if (error.message && error.message !== "Forbidden") {
-                errorMessage = error.message;
-            }
-            fireAlert(errorTitle, errorMessage);
         } finally {
             setLoading(false);
         }

@@ -24,7 +24,7 @@ export const FooterComponent = () => {
                     </div>
                     <div className="footer-section contact-info">
                         <h4 className="footer-subtitle">Contacto</h4>
-                        <p>Email: info@tierranativa.com</p>
+                        <p>Email: tierranativa.dev@gmail.com</p>
                         <p>Teléfono: +54 9 11 5555-5555</p>
                     </div>
                     <div className="footer-section social">

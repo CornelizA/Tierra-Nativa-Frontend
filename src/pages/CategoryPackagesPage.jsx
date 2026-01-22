@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { apiGetCategoriesByCategory, fireAlert } from '../service/PackageTravelService';
 import { PackageTravelCard } from '../component/PackageTravelCard';
-import { MapPin, RefreshCcw,Compass,Info} from 'lucide-react';
+import { MapPin, RefreshCcw } from 'lucide-react';
 import { Link } from "react-router-dom";
 
 import '../style/CategoryPackagesPage.css';
@@ -19,7 +19,6 @@ const initialCategoryInfo = {
 export const CategoryPackagesPage = () => {
 
     const { categorySlug } = useParams();
-    const location = useLocation();
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -78,7 +77,6 @@ export const CategoryPackagesPage = () => {
                 setPackages([]);
             }
 
-
         } catch (err) {
             if (err && err.response && err.response.status === 401) {
                 setError('Error 401: Acceso no autorizado. Inicia sesión como administrador si intentas acceder a datos restringidos.');
@@ -110,7 +108,7 @@ export const CategoryPackagesPage = () => {
         <div className="container-category bg-gray-50">
             <div className="background-category w-full h-screen flex overflow-hidden"
                 style={{
-                   backgroundImage: `url(${categoryInfo.imageUrl})`,
+                    backgroundImage: `url(${categoryInfo.imageUrl})`,
                 }}
             >
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
@@ -120,104 +118,101 @@ export const CategoryPackagesPage = () => {
                         <MapPin size={48} className="mr-4 text-blue-300 inline-block align-middle" />
                         {displayTitle}
                     </h1>
-   </div>
-          
-                    {!loading && !error && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                </div>
 
-                            <div className="bg-black/40 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-2xl  mx-auto">
-                                <p className="category-description md:text-2xl text-gray-100 leading-relaxed font-light italic">
-                                    {categoryInfo.description}
+                {!loading && !error && (
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+
+                        <div className="bg-black/40 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-2xl  mx-auto">
+                            <p className="category-description md:text-2xl text-gray-100 leading-relaxed font-light italic">
+                                {categoryInfo.description}
+                            </p>
+                        </div>
+
+                        {packages.length === 0 && (
+                            <div className="error-message text-center p-8 bg-white/10 backdrop-blur-sm rounded-2xl mb-8 max-w-2xl mx-auto">
+                                <p className="text-2xl text-white font-bold">
+                                    ¡Parece que aún no hay paquetes en la categoría "{displayTitle}"!
                                 </p>
                             </div>
-
-                            {packages.length === 0 && (
-                                <div className="error-message text-center p-8 bg-white/10 backdrop-blur-sm rounded-2xl mb-8 max-w-2xl mx-auto">
-                                
-                                    <p className="text-2xl text-white font-bold">
-                                        ¡Parece que aún no hay paquetes en la categoría "{displayTitle}"! 
-                                    </p>
-                                   
-                                    
-                                 
-                                </div>
-                            )}
-  <button
-                        onClick={() => fetchPackages(categorySlug)}
-                        disabled={loading}
-                        className="btn btn-light mx-auto flex items-center justify-center mt-[7vh] "
-                    >
-                        <RefreshCcw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                        {loading ? 'Cargando...' : 'Recargar Paquetes'}
-                    </button>
-                    </div>
-                    )}
-                    
-               </div>
-
-                {loading && (
-                    <div className="load-text text-center p-10 bg-white rounded-xl shadow-lg mt-10">
-                        <p className="text-xl text-blue-500 font-semibold">Cargando paquetes y detalles de la categoría {displayTitle}</p>
-                    </div>
-                )}
-
-                {error && (
-                    <div className="text-center p-10 bg-red-50 border border-red-300 rounded-xl shadow-lg mt-10">
-                        <p className="text-xl text-red-700 font-semibold">{error}</p>
-                        <div className="mt-4">
-                            <p className="text-sm text-gray-600 mb-2">Para ver esta información necesitas iniciar sesión con una cuenta con permisos adecuados.</p>
-                            <Link to="/login" className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg">Ir a Iniciar Sesión</Link>
-                        </div>
-                    </div>
-                )}
-                            
-                        {packages.length > 0 && (
-                            <div className="packages-section mt-8">
-                                <h2 className="package-text text-4xl font-extrabold">
-                                    Nuestras Propuestas 
-                                    <p className='package-paragraph'>Encontramos {packages.length} experiencias para ti</p>
-                                </h2>
-
-                                <div className="package-card row">
-                                    {packages.map((pkg) => {
-
-                                        const cardCategories = (Array.isArray(pkg.categories) && pkg.categories.length > 0)
-                                            ? pkg.categories
-                                            : (categoryInfo && categoryInfo.title)
-                                                ? [{ title: categoryInfo.title }]
-                                                : [];
-
-                                        const imageDetails = Array.isArray(pkg.imageDetails)
-                                            ? pkg.imageDetails
-                                            : (Array.isArray(pkg.images) ? pkg.images : []);
-                                        const principalImageObj = imageDetails.find(img => img.principal === true);
-                                        const mainCardImageUrl = (principalImageObj && principalImageObj.url)
-                                            ? principalImageObj.url.trim()
-                                            : (imageDetails.length > 0 && imageDetails[0].url)
-                                                ? imageDetails[0].url.trim()
-                                                : FALLBACK_CARD_URL;
-
-                                        return (
-                                            <div key={pkg.id} className="col-md-4 mb-3">
-                                                <PackageTravelCard
-                                                    id={pkg.id}
-                                                    name={pkg.name}
-                                                    shortDescription={pkg.shortDescription}
-                                                    basePrice={pkg.basePrice}
-                                                    destination={pkg.destination}
-                                                    categories={cardCategories}
-                                                    categoryId={pkg.categoryId}
-                                                    imageUrl={mainCardImageUrl}
-                                                />
-                                                <Link to={`/detallePaquete/${pkg.id}`} className="btn btn-primary">Ver Detalle</Link>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
                         )}
+                        <button
+                            onClick={() => fetchPackages(categorySlug)}
+                            disabled={loading}
+                            className="btn btn-light mx-auto flex items-center justify-center mt-[7vh] "
+                        >
+                            <RefreshCcw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                            {loading ? 'Cargando...' : 'Recargar Paquetes'}
+                        </button>
+                    </div>
+                )}
+
             </div>
-      ) }
+
+            {loading && (
+                <div className="load-text text-center p-10 bg-white rounded-xl shadow-lg mt-10">
+                    <p className="text-xl text-blue-500 font-semibold">Cargando paquetes y detalles de la categoría {displayTitle}</p>
+                </div>
+            )}
+
+            {error && (
+                <div className="text-center p-10 bg-red-50 border border-red-300 rounded-xl shadow-lg mt-10">
+                    <p className="text-xl text-red-700 font-semibold">{error}</p>
+                    <div className="mt-4">
+                        <p className="text-sm text-gray-600 mb-2">Para ver esta información necesitas iniciar sesión con una cuenta con permisos adecuados.</p>
+                        <Link to="/login" className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg">Ir a Iniciar Sesión</Link>
+                    </div>
+                </div>
+            )}
+
+            {packages.length > 0 && (
+                <div className="packages-section mt-8">
+                    <h2 className="package-text text-4xl font-extrabold">
+                        Nuestras Propuestas
+                        <p className='package-paragraph'>Encontramos {packages.length} experiencias para ti</p>
+                    </h2>
+
+                    <div className="package-card row">
+                        {packages.map((pkg) => {
+
+                            const cardCategories = (Array.isArray(pkg.categories) && pkg.categories.length > 0)
+                                ? pkg.categories
+                                : (categoryInfo && categoryInfo.title)
+                                    ? [{ title: categoryInfo.title }]
+                                    : [];
+
+                            const imageDetails = Array.isArray(pkg.imageDetails)
+                                ? pkg.imageDetails
+                                : (Array.isArray(pkg.images) ? pkg.images : []);
+                            const principalImageObj = imageDetails.find(img => img.principal === true);
+                            const mainCardImageUrl = (principalImageObj && principalImageObj.url)
+                                ? principalImageObj.url.trim()
+                                : (imageDetails.length > 0 && imageDetails[0].url)
+                                    ? imageDetails[0].url.trim()
+                                    : FALLBACK_CARD_URL;
+
+                            return (
+                                <div key={pkg.id} className="col-md-4 mb-3">
+                                    <PackageTravelCard
+                                        id={pkg.id}
+                                        name={pkg.name}
+                                        shortDescription={pkg.shortDescription}
+                                        basePrice={pkg.basePrice}
+                                        destination={pkg.destination}
+                                        categories={cardCategories}
+                                        categoryId={pkg.categoryId}
+                                        imageUrl={mainCardImageUrl}
+                                    />
+                                    <Link to={`/detallePaquete/${pkg.id}`} className="btn btn-primary">Ver Detalle</Link>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
 
 
 

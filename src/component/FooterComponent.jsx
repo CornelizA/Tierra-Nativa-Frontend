@@ -7,7 +7,6 @@ export const FooterComponent = () => {
             <path d={d} />
         </svg>
     );
-
     return (
         <footer className="footer-tn">
             <div className="footer-content-wrapper">
@@ -22,11 +21,13 @@ export const FooterComponent = () => {
                             &copy; {new Date().getFullYear()} Tierra Nativa. Todos los derechos reservados.
                         </div>
                     </div>
+
                     <div className="footer-section contact-info">
                         <h4 className="footer-subtitle">Contacto</h4>
                         <p>Email: tierranativa.dev@gmail.com</p>
                         <p>Teléfono: +54 9 11 5555-5555</p>
                     </div>
+
                     <div className="footer-section social">
                         <h4 className="footer-subtitle">Síguenos</h4>
                         <div className="social-links">
@@ -39,7 +40,6 @@ export const FooterComponent = () => {
                         </div>
                     </div>
                 </div>
-
             </div>
         </footer >
     );

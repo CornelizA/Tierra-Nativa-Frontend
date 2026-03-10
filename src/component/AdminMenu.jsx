@@ -18,7 +18,6 @@ export const AdminMenu = ({ onViewChange }) => {
             }
             try {
                 const user = JSON.parse(userData);
-
                 const hasAdminRole = user.role === 'ADMIN' ||
                     (user.authorities && user.authorities.includes('ADMIN')) ||
                     (Array.isArray(user.roles) && user.roles.includes('ADMIN'));
@@ -49,7 +48,6 @@ export const AdminMenu = ({ onViewChange }) => {
                 }, 2500);
             }
         };
-
         checkAuth();
     }, []);
 
@@ -77,7 +75,6 @@ export const AdminMenu = ({ onViewChange }) => {
             setShowMobileDenied(true);
             return;
         }
-
         onViewChange(view);
     };
 
@@ -133,11 +130,9 @@ export const AdminMenu = ({ onViewChange }) => {
     if (isAuthorized === null) {
         return <div className="flex items-center justify-center min-h-screen">Verificando credenciales...</div>;
     }
-
     if (isAuthorized === false) {
         return <UnauthorizedMessage />;
     }
-
     if (showMobileDenied) {
         return <MobileDeniedCard />;
     }

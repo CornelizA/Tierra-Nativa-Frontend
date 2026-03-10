@@ -8,19 +8,19 @@
     font-size: 3.125rem;
 }
 
-.package-featured {
+.featured-package {
     font-family: "Inter", sans-serif;
     font-weight: bold;
     color: #FAF8F0;
     text-align: center;
     margin-top: 40px;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
     font-size: 2.8rem;
     width: 100vw;
     padding: 20px 0 40px 0;
 }
 
-.text-4xl {
+.text-section-map {
     text-align: center;
     margin-right: auto;
     margin-left: auto;
@@ -32,15 +32,6 @@
     align-items: center;
     justify-content: center;
     padding: 20px 70px;
-}
-
-.text-lg {
-    color: #FAF8F0;
-    font-family: "Inter", sans-serif;
-    font-weight: bold;
-    font-size: 2.5rem;
-    text-align: center;
-    margin-bottom: 50px;
 }
 
 .hero-section {
@@ -60,6 +51,17 @@
     right: 50%;
     margin-left: -50vw;
     margin-right: -50vw;
+}
+
+.search-hero-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .search-overlay {
@@ -133,7 +135,6 @@
     text-align: center;
     margin: 0;
     padding: 40px;
-
 }
 
 .map-slider-section {
@@ -177,6 +178,7 @@
     border-radius: 0;
     border: none;
     box-shadow: none;
+    height: 100%;
 }
 
 .map-image-container {
@@ -185,7 +187,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
 
 .map-image {
@@ -198,10 +199,9 @@
     font-weight: bolder;
     font-size: 1.563rem;
     font-family: "Inter", sans-serif;
-
 }
 
-.text-center {
+.text-image {
     padding: 0px;
     margin: 0;
     display: flex;
@@ -214,13 +214,19 @@
 
 @media (max-width: 768px) {
 
-    .package-featured {
-        font-size: 2.2rem;
-        padding: 15px 0 25px 0;
+    .search-hero-container {
+        width: 100%;
+        max-width: 100vw;
+        padding: 0 5px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
-    .package-home {
-        padding: 10px 20px;
+    .featured-package {
+        font-size: 2.2rem;
+        padding: 15px 0 25px 0;
     }
 
     .navbar {
@@ -236,7 +242,7 @@
         margin-top: 50px;
     }
 
-    .text-lg {
+    .text-featured-packages {
         font-size: 1.5rem;
         margin-bottom: 20px;
     }
@@ -260,17 +266,21 @@
 
     .map-layout {
         flex-direction: column;
-        padding-right: 45px;
-        padding-left: 0px;
+        padding-right: 0;
     }
 
-    .destination-slider-container {
-        padding: 1rem;
+    .slider-column,
+    .map-column {
+        flex: 1 1 100%;
+        padding: 20px;
     }
 
     .map-image {
-        height: 280px;
-        margin: 20px auto;
+        height: 300px;
+    }
+
+    .destination-content h3 {
+        font-size: 1.8rem;
     }
 
     .tn-navbar .navbar-nav {
@@ -370,6 +380,74 @@
     .social-links {
         justify-content: center;
     }
+
+    .search-container-box {
+        flex-direction: column !important;
+        height: auto !important;
+        padding: 20px !important;
+        gap: 10px !important;
+        border-radius: 20px !important;
+    }
+
+    .search-input-group {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(250, 248, 240, 0.2);
+    }
+
+    .vr {
+        display: none !important;
+    }
+
+    .search-container-box button[type="submit"] {
+        width: 100%;
+        margin-top: 10px;
+        height: 50px;
+    }
+
+    .dropdown-custom {
+        min-width: 100% !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        position: absolute;
+        width: auto !important;
+        max-width: 95vw !important;
+        overflow-x: auto !important;
+        background-color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 10px !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .react-datepicker__months-container {
+        flex-direction: row !important;
+        display: flex !important;
+        width: max-content !important;
+    }
+
+    .react-datepicker__month-container {
+        width: 300px !important;
+    }
+
+    .flip-card {
+        height: 320px !important;
+    }
+
+    .back-title {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .back-description {
+        font-size: 0.75rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .front-title {
+        font-size: 1.1rem !important;
+    }
 }
 
 @media (min-width: 769px) and (max-width: 1023px) {
@@ -386,8 +464,33 @@
         font-size: 2rem;
     }
 
-    .search-overlay {
-        width: 80%;
+    .search-container-box {
+        flex-direction: column !important;
+        height: auto !important;
+        padding: 20px !important;
+        gap: 10px !important;
+        border-radius: 20px !important;
+    }
+
+    .search-input-group {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(250, 248, 240, 0.2);
+    }
+
+    .search-input-group:last-of-type {
+        border-bottom: none;
+    }
+
+    .vr {
+        display: none !important;
+    }
+
+    .search-container-box button[type="submit"] {
+        width: 100%;
+        margin-top: 10px;
+        height: 50px;
     }
 
     .map-slider-section h2 {
@@ -428,8 +531,45 @@
         font-size: 2rem;
     }
 
+    .display-title {
+        margin-top: 250px !important;
+    }
+
+    .package-home {
+        padding: 0 20px;
+    }
+
+    .package-card {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 25px !important;
+        padding: 0 30px !important;
+        margin: auto;
+    }
+
     .flip-card {
-        height: 320px;
+        width: 100% !important;
+        max-width: 320px;
+        margin: 0 auto;
+        height: 320px !important;
+    }
+
+    .back-title {
+        font-size: 0.95rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+
+    .back-description {
+        font-size: 0.7rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.5rem !important;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .front-title {
+        font-size: 1.1rem !important;
     }
 
     .footer-main-layout {
@@ -440,9 +580,113 @@
     .brand-info {
         max-width: 45%;
     }
+
+    .button-icon-favorite {
+        width: 40px;
+        height: 40px;
+        margin-bottom: -10px;
+        margin-right: -10px;
+    }
+
+    .dropdown-custom {
+        margin-left: -140px;
+    }
 }
 
 @media (max-width: 575px) {
+
+    .react-datepicker,
+    .react-datepicker__tab,
+    .react-datepicker__month-container,
+    .react-datepicker__months-container,
+    .react-datepicker__month,
+    .react-datepicker__header,
+    .react-datepicker__triangle,
+    .react-datepicker-popper {
+        min-width: 340px !important;
+        width: 340px !important;
+        max-width: 98vw !important;
+        box-sizing: border-box;
+    }
+
+    .react-datepicker__input-container {
+        width: 100% !important;
+    }
+
+    .react-datepicker__day,
+    .react-datepicker__day-name {
+        min-width: 40px !important;
+        width: 40px !important;
+        max-width: 40px !important;
+    }
+
+    .react-datepicker,
+    .react-datepicker__tab,
+    .react-datepicker__month-container,
+    .react-datepicker__months-container {
+        min-width: 320px !important;
+        width: 100% !important;
+        max-width: 400px !important;
+        box-sizing: border-box;
+    }
+
+    .react-datepicker__input-container {
+        width: 100% !important;
+    }
+
+    .react-datepicker__month {
+        min-width: 320px !important;
+        width: 100% !important;
+        max-width: 400px !important;
+    }
+
+    .react-datepicker__header {
+        min-width: 320px !important;
+        width: 100% !important;
+        max-width: 400px !important;
+    }
+
+    .react-datepicker__day,
+    .react-datepicker__day-name {
+        min-width: 40px !important;
+        width: 40px !important;
+        max-width: 40px !important;
+    }
+
+    .dropdown-custom {
+        max-width: 800px;
+    }
+
+    .search-hero-container {
+        width: 100%;
+        max-width: 100vw;
+        padding: 0 2px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .featured-package {
+        font-size: 1.3rem;
+        padding: 10px 0 15px 0;
+    }
+
+    .text-featured-packages {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .hero-section h1 {
+        font-size: 1.2rem;
+        margin-top: 20px;
+    }
+
+    .map-slider-section h2 {
+        font-size: 1.2rem;
+        padding: 30px 5px;
+    }
+
     .hero-section {
         height: 100vh;
     }
@@ -485,6 +729,44 @@
     .navbar-toggler {
         z-index: 1;
     }
+
+    .search-input-field {
+        font-size: 16px !important;
+    }
+
+    .flip-card {
+        height: 380px;
+    }
+
+    .search-container-box {
+        flex-direction: column !important;
+        height: auto !important;
+        padding: 20px !important;
+        gap: 10px !important;
+        border-radius: 20px !important;
+    }
+
+    .search-input-group {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(250, 248, 240, 0.2);
+    }
+
+    .search-input-group:last-of-type {
+        border-bottom: none;
+    }
+
+    .vr {
+        display: none !important;
+    }
+
+    .search-container-box button[type="submit"] {
+        width: 100%;
+        margin-top: 10px;
+        height: 50px;
+    }
+
 }
 
 @media (orientation:landscape) {

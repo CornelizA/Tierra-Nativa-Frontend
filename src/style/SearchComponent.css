@@ -1,89 +1,23 @@
-.search-container {
-    position: relative;
-    width: 750px;
-    padding: 15px
+.search-input-field::placeholder {
+    color: rgba(250, 248, 240, 0.7) !important;
+    font-weight: normal;
 }
 
-.search-container .form-control {
-    background-color: #FAF8F020;
-    border: none;
-    box-shadow: 0 2px 4px #1A531A;
-    color: #FAF8F0;
-    padding-left: 1rem;
-    height: 48px;
-    transition: all 0.3s ease;
+.dropdown-custom::-webkit-scrollbar {
+    width: 12px !important;
+    display: block !important;
+
 }
 
-.search-container .form-control::placeholder {
-    color: #FAF8F099;
-    font-style: italic;
+.dropdown-custom::-webkit-scrollbar-track {
+    background: #6c757d  !important;
+    border-radius: 1px !important;
+    border: 1px solid #e2e8f0 !important;
 }
 
-.search-container .form-control:focus {
-    border-color: #B85C38;
-    box-shadow: none;
-    background-color: #FAF8F020;
+.dropdown-custom::-webkit-scrollbar-thumb {
+    background-color: #1A531A !important;
+    border-radius: 1px !important;
+    min-height: 40px !important;
 }
 
-.search-container .btn-outline-success {
-    border: none;
-    background-color: transparent;
-    color: #1A531A;
-    padding: 0.5rem 0.8rem;
-}
-
-.search-container .btn-outline-success:hover {
-    color: #B85C38;
-    background-color: transparent;
-    border-color: transparent;
-}
-
-.suggestions-list {
-    overflow-y: auto;
-    z-index: 1000;
-    position: absolute;
-    width: calc(100% - 15px);
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    border: 1px solid #1A531A;
-    border-top: none;
-    background-color: #FAF8F010;
-    width: 712px;
-}
-
-.suggestions-list li {
-    padding: 10px;
-    cursor: pointer;
-    border-bottom: 1px solid rgba(26, 83, 26, 0.1);
-    background-color: #FAF8F010;
-    color: #FAF8F0;
-}
-
-.suggestions-list li:hover {
-    background-color: #FAF8F020;
-    color: #FAF8F0;
-}
-
-.input-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.search-icon {
-    position: absolute;
-    left: 10px;
-    margin-top: -8px;
-    z-index: 10;
-}
-
-.form-control.me-2 {
-    padding-left: 35px;
-}
-
-@media (max-width: 575px) {
-    .search-container {
-        width: 336px;
-    }
-}

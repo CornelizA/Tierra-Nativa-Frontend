@@ -54,7 +54,6 @@ export const RegisterView = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!isPasswordValid) {
             fireAlert("La contraseña no cumple con todos los requisitos de seguridad.");
             return;
@@ -67,7 +66,6 @@ export const RegisterView = () => {
             fireAlert("Datos Requeridos", "Por favor, introduce tu Nombre Completo (Nombre y Apellido).");
             return;
         }
-
         let firstName = parts[0];
         let lastName = parts.length > 1 ? parts.slice(1).join(' ') : '';
 
@@ -77,13 +75,17 @@ export const RegisterView = () => {
             email: userData.email,
             password: userData.password
         };
-
         setLoading(true);
 
         try {
             await apiRegister(apiData);
             navigate('/verify-email', { state: { email: userData.email } });
         } catch (error) {
+            if (error?.response?.status === 403) {
+                fireAlert('Cuenta Existente', 'Ya existe una cuenta con este correo electrónico.');
+            } else {
+                fireAlert('Error', 'No se pudo completar el registro. Intenta nuevamente.');
+            }
         } finally {
             setLoading(false);
         }
@@ -97,45 +99,79 @@ export const RegisterView = () => {
                 </h3>
                 <form onSubmit={handleSubmit} className="user-form">
                     <div className='form-field-group'>
-                        <label htmlFor="fullName" className="text d-block">
+
+                        <label
+                            htmlFor="fullName"
+                            className="text d-block">
                             Nombre Completo
                         </label>
-                        <input type="text" name="fullName" id="fullName" required value={userData.fullName} onChange={handleChange}
+
+                        <input
+                            type="text"
+                            name="fullName"
+                            id="fullName"
+                            required value={userData.fullName}
+                            onChange={handleChange}
                             className="w-100 px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
                             placeholder="Nombre Apellido"
                             autoComplete="name"
                         />
                     </div>
+
                     <div className='form-field-group'>
-                        <label htmlFor="email" className="text d-block">
+                        <label
+                            htmlFor="email"
+                            className="text d-block">
                             Correo Electrónico
                         </label>
-                        <input type="email" name="email" id="email" required value={userData.email} onChange={handleChange}
-                            className="w-100 px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="tu.correo@ejemplo.com"
+
+                        <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            required value={userData.email}
+                            onChange={handleChange}
+                            className="w-100 px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                            placeholder="tu.correo@ejemplo.com"
                             autoComplete="email"
                         />
                     </div>
+
                     <div className='form-field-group'>
-                        <label htmlFor="password" className="text d-block">
+                        <label
+                            htmlFor="password"
+                            className="text d-block">
                             Contraseña
                         </label>
-                        <input type="password" name="password" id="password" required value={userData.password} onChange={handleChange}
-                            className="w-100 px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" placeholder="Mínimo 8 caracteres"
+
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            required value={userData.password}
+                            onChange={handleChange}
+                            className="w-100 px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                            placeholder="Mínimo 8 caracteres"
                             autoComplete="new-password"
                         />
                         <PasswordValidationChecks password={userData.password} />
                     </div>
 
                     <div className="md:col-span-2 mt-4">
-                        <button type="submit" disabled={loading || !isPasswordValid}
+                        <button
+                            type="submit"
+                            disabled={loading || !isPasswordValid}
                             className={`auth-button py-2 px-4 rounded-lg font-semibold text-white transition duration-300 ${loading || !isPasswordValid ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 shadow-lg'}`}
                         >
                             {loading ? 'Registrando...' : 'Registrarme'}
                         </button>
                     </div>
                 </form>
+
                 <div className="mt-6 text-center">
-                    <button onClick={() => navigate('/login')} className="button-second text-sm text-green-600 hover:text-green-700 hover:underline">
+                    <button
+                        onClick={() => navigate('/login')}
+                        className="button-second text-sm text-green-600 hover:text-green-700 hover:underline">
                         ¿Ya tienes cuenta? Inicia Sesión
                     </button>
                 </div>

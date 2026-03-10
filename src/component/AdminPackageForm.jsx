@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { apiPostPackage, apiUpdatePackage, apiGetCategoriesPublic, apiGetCharacteristicsPublic, fireAlert } from '../service/PackageTravelService';
+import { apiPostPackage, apiUpdatePackage, apiGetCategories, apiGetCharacteristics, fireAlert } from '../service/PackageTravelService';
 import { PackageTravelContext } from '../context/PackageTravelContext';
 import '../style/AdminPackageForm.css';
 import { IconLibrary } from '../component/AdminCharacteristic.jsx';
@@ -80,13 +80,13 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
     useEffect(() => {
         (async () => {
             try {
-                const cats = await apiGetCategoriesPublic();
+                const cats = await apiGetCategories();
                 setCategoriesList(Array.isArray(cats) ? cats : (cats?.data || []));
             } catch (e) {
                 fireAlert('Error de Operación', 'Hubo un error al cargar las categorías.', 'error');
             }
             try {
-                const chars = await apiGetCharacteristicsPublic();
+                const chars = await apiGetCharacteristics();
                 setCharacteristicsList(Array.isArray(chars) ? chars : (chars?.data || []));
             } catch (e) {
                 fireAlert('Error de Operación', 'Hubo un error al cargar las características.', 'error');
@@ -148,12 +148,6 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
             }
             return { ...prev, characteristicIds: [...existing, asNum] };
         });
-    };
-
-    const handleSelectAllCharacteristics = () => {
-        if (!Array.isArray(characteristicsList) || characteristicsList.length === 0) return;
-        const allIds = characteristicsList.map(c => Number(c.id));
-        setFormData(prev => ({ ...prev, characteristicIds: allIds }));
     };
 
     const handleImageChange = (index, value) => {
@@ -250,6 +244,8 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
             };
 
             let response;
+            
+            let finalPackageId;
 
             if (isEditing) {
                 response = await apiUpdatePackage(id, dataToSend);
@@ -271,7 +267,6 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 showConfirmButton: false,
                 timer: 2000
             });
-
 
             const merged = { ...response };
             if ((!merged.imageDetails || merged.imageDetails.length === 0) && Array.isArray(dataToSend.imageDetails) && dataToSend.imageDetails.length) {
@@ -320,11 +315,9 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                     displayErrorMessage = apiMessage || displayErrorMessage;
                 }
             }
-
             else if (errorBody) {
                 displayErrorMessage = typeof errorBody === 'string' ? errorBody : (errorBody.message || JSON.stringify(errorBody));
             }
-
             Swal.fire({
                 icon: 'error',
                 title: displayErrorTitle,
@@ -336,9 +329,7 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
 
     return (
         <div className="admin-form-container">
-
             <h2 className='title-admin-form'> {isEditing ? 'Editar Paquete Existente' : 'Registrar Nuevo Paquete de Viaje'}</h2>
-
             <button
                 type="button"
                 className="btn btn-back-to-list mb-3"
@@ -350,7 +341,6 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
             </button>
 
             <form onSubmit={handleSubmit} className="package-form">
-
                 <h3>Información Básica</h3>
                 <div className="form-group">
                     <label htmlFor="name">Nombre del Paquete</label>
@@ -370,6 +360,7 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                         <input id="basePrice" name="basePrice" type="number" value={formData.basePrice} onChange={handleChange} placeholder="Precio Base ($)" className={validationErrors.basePrice ? 'input-error' : ''} />
                         {validationErrors.basePrice && <p className="validation-error">{validationErrors.basePrice}</p>}
                     </div>
+
                     <div className="form-group-half">
                         <label htmlFor="destination">Destino</label>
                         <input id="destination" name="destination" value={formData.destination} onChange={handleChange} placeholder="Destino (Ej: El Calafate, Jujuy)" className={validationErrors.destination ? 'input-error' : ''} />
@@ -389,7 +380,6 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                 </div>
 
                 <div className="form-group">
-
                     <div className="flex justify-between items-center">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-blue-600">Características</h3>
                         <button
@@ -400,6 +390,7 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                             {formData.characteristicIds.length === characteristicsList.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
                         </button>
                     </div>
+
                     <label className="inline-flex items-center gap-2 p-2">
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2  ">
                             {characteristicsList.map(ch => {
@@ -431,6 +422,7 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                         <input id="duration" name="duration" value={formData.itineraryDetail.duration} onChange={handleChange} placeholder="Duración (ej. 4 Días / 3 Noches)" className={validationErrors.duration ? 'input-error' : ''} />
                         {validationErrors.duration && <p className="validation-error">{validationErrors.duration}</p>}
                     </div>
+
                     <div className="form-group-half">
                         <label htmlFor="lodgingType">Tipo de Hospedaje</label>
                         <input id="lodgingType" name="lodgingType" value={formData.itineraryDetail.lodgingType} onChange={handleChange} placeholder="Tipo de Hospedaje" className={validationErrors.lodgingType ? 'input-error' : ''} />

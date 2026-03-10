@@ -27,6 +27,7 @@ Aplicación web especializada en la gestión y visualización de paquetes turís
 
 - **Axios** (`^1.12.2`)
 - **JWT Decode** Decodificación de claims para validación de roles en el cliente.
+- **Date-fns** React Datepicker Gestión de calendarios dobles y rangos de fecha.
 
 ## ☕ Backend
 
@@ -48,6 +49,18 @@ Aplicación web especializada en la gestión y visualización de paquetes turís
 - **Catálogo Dinámico** Filtrado por categorías y buscador inteligente de destinos.
 
 - **Detalle de Paquete** Visualización de itinerarios, precios, galería de imágenes y características (WiFi, traslados, entre otros).
+
+- **Búsqueda Avanzada y Disponibilidad Dinámica** Motor de búsqueda que combina palabras clave con filtros por fechas y provincia.
+
+- **Calendario de Disponibilidad Real** Integrado en la ficha técnica, permite visualizar bloqueos administrativos y reservas confirmadas, garantizando una planificación libre de errores.
+
+- **Sistema de Favoritos** Sección privada ("Mis Favoritos") para usuarios autenticados, permitiendo persistir intereses y agilizar la conversión de compra.
+
+- **Reseñas Verificadas** Lógica de negocio donde solo los usuarios con viajes finalizados pueden puntuar y comentar. El sistema recalcula automáticamente el promedio de estrellas en tiempo real.
+
+- **Transparencia y Políticas** Bloque informativo obligatorio en cada paquete detallando políticas de Medio Ambiente, Seguridad y Cancelación.
+
+- **Conectividad Social** Módulo de "Compartir" con copia rápida de enlaces y redirección optimizada a redes sociales.
 
 - **Sistema de Autenticación** Registro con validación de contraseña mediante Regex y login persistente con sessionStorage.
 
@@ -76,6 +89,8 @@ Para obtener privilegios totales de creación, edición y eliminación en todo e
 - **Contraseña**  Tierranativa24$
 
 Requisito previo: Debe iniciar sesión con el correo electronico y contraseña definida, el sistema reconocerá este dominio/correo y le asignará automáticamente el rol de SUPERUSUARIO con permisos de escritura.
+
+El superusuario puede crear reseñas en los paquetes ya que tiene estado "finalizado" en las mismas.
 
 ### 👥 Administradores de Lectura
 

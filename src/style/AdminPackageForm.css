@@ -7,7 +7,6 @@
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
 }
 
 .admin-form-container .title-admin-form {
@@ -196,7 +195,7 @@
 
     .mobile-access-denied-container {
         margin-top: 30px;
-
+        
         h2 {
             width: auto;
         }

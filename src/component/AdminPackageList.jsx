@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { apiGetPackagesAdmin, apiDeletePackage, fireAlert} from '../service/PackageTravelService';
+import { apiGetPackages, apiDeletePackage, fireAlert } from '../service/PackageTravelService';
 import { AdminPackageForm, initialFormData } from './AdminPackageForm';
 import '../style/AdminPackageList.css';
-import { Pencil, X, Plus, ArrowLeft, ArrowRight} from 'lucide-react';
+import { Pencil, X, Plus, ArrowLeft, ArrowRight } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 4;
 
@@ -17,15 +17,14 @@ export const AdminPackageList = ({ onBackToMenu }) => {
         setLoading(true);
         setError(null);
         try {
-            const data = await apiGetPackagesAdmin();
+            const data = await apiGetPackages();
             setPackages(data);
-
         } catch (err) {
             const friendlyMessage = 'No se pudo cargar la lista de paquetes. Por favor, verifica tu conexión o el estado del servidor.';
             setError(friendlyMessage);
             fireAlert(
-                'Error de Carga', 
-                friendlyMessage, 
+                'Error de Carga',
+                friendlyMessage,
                 'error'
             );
         } finally {
@@ -50,15 +49,12 @@ export const AdminPackageList = ({ onBackToMenu }) => {
         setCurrentPage(prev => (prev > 1 ? prev - 1 : prev));
     };
 
-
     const handleDelete = async (packageId, packageName) => {
-        
         const result = await fireAlert(
-            'Confirmar Eliminación', 
+            'Confirmar Eliminación',
             `¿Estás seguro de eliminar el paquete "${packageName}"? Esta acción es irreversible.`,
-             'warning', 
-             true);
-
+            'warning',
+            true);
         if (result.isConfirmed) {
             try {
                 await apiDeletePackage(packageId);
@@ -69,11 +65,10 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                     icon: 'success',
                     confirmButtonColor: '#1A531A'
                 });
-
             } catch (err) {
-             const errorMessage = err.response?.data?.message || 
-             'Ocurrió un problema al intentar eliminar el paquete. Intente de nuevo.';
-                
+                const errorMessage = err.response?.data?.message ||
+                    'Ocurrió un problema al intentar eliminar el paquete. Intente de nuevo.';
+
                 Swal.fire({
                     title: 'Error al Eliminar',
                     text: errorMessage,
@@ -95,7 +90,6 @@ export const AdminPackageList = ({ onBackToMenu }) => {
 
     if (loading) return <div>Cargando lista de paquetes...</div>;
     if (error) return <div className="error">{error}</div>;
-
 
     if (packageToEdit) {
         return (
@@ -122,6 +116,7 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                     <ArrowLeft size={18} />
                     Volver al Menú
                 </button>
+
                 <button
                     className="btn btn-primary"
                     onClick={() => setPackageToEdit(initialFormData)}
@@ -131,6 +126,7 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                     Nuevo Paquete
                 </button>
             </div>
+
             <div className="admin-list-container">
                 <h2 className='title-package-admin'>Administración de Paquetes</h2>
                 <table>
@@ -143,6 +139,7 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                             <th>Acciones</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {currentPackages.map((pkg) => (
                             <tr key={pkg.id}>
@@ -151,6 +148,7 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                                 <td>{pkg.destination}</td>
                                 <td>{(pkg.price || pkg.basePrice || 0).toFixed(2)}</td>
                                 <td>
+
                                     <button
                                         className="btn btn-warning me-2"
                                         onClick={() => handleEdit(pkg)}
@@ -165,7 +163,6 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                                         onClick={() => handleDelete(pkg.id, pkg.name)}
                                         style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                                     >
-
                                         <X size={16} />
                                         Eliminar
                                     </button>
@@ -174,12 +171,11 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                         ))}
                     </tbody>
                 </table>
+
                 {packages.length > ITEMS_PER_PAGE && (
                     <div className="d-flex flex-column align-items-center mt-3">
-
                         <nav aria-label="Navegación de páginas">
                             <ul className="pagination justify-content-center">
-
                                 <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                                     <a
                                         className="page-link"
@@ -221,7 +217,6 @@ export const AdminPackageList = ({ onBackToMenu }) => {
                         </nav>
                     </div>
                 )}
-
             </div>
         </div>
     );

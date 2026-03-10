@@ -16,7 +16,7 @@ jest.mock('sweetalert2', () => ({
 }));
 
 const mockUsers = [
-    { id: 1, firstName: 'Admin', lastName: 'Tierra', email: 'admin@tierranativa.com', role: 'ADMIN' },
+    { id: 1, firstName: 'Admin', lastName: 'Tierra', email: 'tierranativa.dev@gmail.com', role: 'ADMIN' },
     { id: 2, firstName: 'Juan', lastName: 'Perez', email: 'juan@test.com', role: 'USER' },
     { id: 3, firstName: 'Marta', lastName: 'Gomez', email: 'marta@test.com', role: 'ADMIN' },
 ];
@@ -33,7 +33,7 @@ describe('AdminUserList Security and Logic', () => {
         window.confirm = jest.fn(() => true);
         Storage.prototype.getItem = jest.fn((key) => {
             if (key === 'jwtToken') return 'valid-token';
-            if (key === 'user') return JSON.stringify({ email: 'admin@tierranativa.com', role: 'ADMIN' });
+            if (key === 'user') return JSON.stringify({ email: 'tierranativa.dev@gmail.com', role: 'ADMIN' });
             return null;
         });
         PackageService.apiGetAdminUsers.mockResolvedValue(mockUsers);
@@ -87,7 +87,7 @@ describe('AdminUserList Security and Logic', () => {
 
     it('should prevent Superuser from self-revoking ADMIN role', async () => {
         renderComponent();
-        await waitFor(() => expect(screen.getByText('admin@tierranativa.com')).toBeInTheDocument());
+        await waitFor(() => expect(screen.getByText('tierranativa.dev@gmail.com')).toBeInTheDocument());
 
         const revokeButtons = screen.getAllByRole('button', { name: /Revocar Admin/i });
         fireEvent.click(revokeButtons[0]);
@@ -115,7 +115,6 @@ describe('AdminUserList Security and Logic', () => {
             expect(screen.getByText('Solo Lectura (ADMIN)')).toBeInTheDocument();
             expect(screen.getAllByText(/Permiso de lectura/i)).toHaveLength(3);
         });
-
         expect(screen.queryByRole('button', { name: /Hacer Admin/i })).not.toBeInTheDocument();
     });
 

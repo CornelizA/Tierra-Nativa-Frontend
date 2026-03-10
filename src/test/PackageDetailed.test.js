@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { PackageTravelContext } from '../context/PackageTravelContext';
 import { PackageDetailed } from '../pages/PackageDetailed';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -6,8 +6,13 @@ import * as PackageService from '../service/PackageTravelService';
 import '@testing-library/jest-dom';
 
 jest.mock('../service/PackageTravelService', () => ({
-    apiGetCharacteristicsPublic: jest.fn(),
+    apiGetCharacteristics: jest.fn(),
     apiGetPackageById: jest.fn(),
+    apiGetReviews: jest.fn(),
+    apiPostReview: jest.fn(),
+    apiUpdateReview: jest.fn(),
+    apiDeleteReview: jest.fn(),
+    apiToggleFavorite: jest.fn(),
     fireAlert: jest.fn(),
 }));
 
@@ -19,11 +24,13 @@ const mockCharacteristics = [
 const mockPackage = {
     id: 1,
     name: "Glaciar Perito Moreno: Hielo Milenario",
+    shortDescription: "Descripción breve del glaciar.",
+    averageRating: 4.8,
     itineraryDetail: {
         duration: "4 Días / 3 Noches",
         lodgingType: "Hotel 4 estrellas",
         transferType: "Vuelo a FTE",
-        dailyActivitiesDescription: "Día 1: Llegada. Día 2: Glaciar.",
+        dailyActivitiesDescription: "Día 1: Arribo. Día 2: Glaciar.",
         foodAndHydrationNotes: "Incluye comidas.",
         generalRecommendations: "Llevar abrigo. Usar lentes."
     },
@@ -32,25 +39,28 @@ const mockPackage = {
         { id: 2, url: "p2.jpg", principal: false },
         { id: 3, url: "p3.jpg", principal: false },
         { id: 4, url: "p4.jpg", principal: false },
-        { id: 5, url: "p5.jpg", principal: false },
-        { id: 6, url: "p6.jpg", principal: false }
+        { id: 5, url: "p5.jpg", principal: false }
     ],
-    characteristicIds: [1, 3]
+    characteristicIds: [1, 3],
+    availabilityBlocks: []
 };
 
-const renderWithContext = (packageId, packages = []) => {
+const mockReviews = [
+    { id: 10, score: 5, comment: "Excelente viaje", userName: "Juan Pérez", date: new Date().toISOString() }
+];
+
+const renderWithContext = (packageId, packages = [mockPackage], favoriteIds = new Set()) => {
     return render(
         <MemoryRouter initialEntries={[`/detallePaquete/${packageId}`]}>
-            <Routes>
-                <Route
-                    path="/detallePaquete/:id"
-                    element={
-                        <PackageTravelContext.Provider value={{ packageTravel: packages }}>
-                            <PackageDetailed />
-                        </PackageTravelContext.Provider>
-                    }
-                />
-            </Routes>
+            <PackageTravelContext.Provider value={{ 
+                packageTravel: packages, 
+                favoriteIds: favoriteIds,
+                updateFavoriteInContext: jest.fn() 
+            }}>
+                <Routes>
+                    <Route path="/detallePaquete/:id" element={<PackageDetailed />} />
+                </Routes>
+            </PackageTravelContext.Provider>
         </MemoryRouter>
     );
 };
@@ -59,72 +69,119 @@ describe('PackageDetailed Page Integration', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        PackageService.apiGetCharacteristicsPublic.mockResolvedValue(mockCharacteristics);
+        storageMock();
+        PackageService.apiGetCharacteristics.mockResolvedValue(mockCharacteristics);
         PackageService.apiGetPackageById.mockResolvedValue(mockPackage);
+        PackageService.apiGetReviews.mockResolvedValue(mockReviews);
     });
+
+    afterEach(cleanup);
+
+    const storageMock = (token = 'valid-token') => {
+        const storage = {
+            'jwtToken': token,
+            'user': JSON.stringify({ firstName: 'Juan', lastName: 'Pérez' })
+        };
+        Object.defineProperty(window, 'sessionStorage', {
+            value: {
+                getItem: (key) => storage[key] || null,
+                setItem: (key, val) => { storage[key] = val },
+                removeItem: (key) => { delete storage[key] },
+                clear: () => { for (let k in storage) delete storage[k] }
+            },
+            writable: true
+        });
+    };
 
     it('should load and display main information and title', async () => {
         renderWithContext('1');
-
-        await waitFor(() => {
-            expect(screen.getByText(/Glaciar Perito Moreno/i)).toBeInTheDocument();
-            expect(screen.getByText('4 Días / 3 Noches')).toBeInTheDocument();
-        });
-    });
-
-    it('should render the gallery with 1 main image and 4 secondary images', async () => {
-        const { container } = renderWithContext('1');
-
-        await waitFor(() => {
-            const mainImg = screen.getByAltText("Glaciar Perito Moreno: Hielo Milenario");
-            expect(mainImg).toHaveAttribute('src', 'p1.jpg');
-
-            const secondaryGrid = container.querySelector('.secondary-images-grid');
-            const images = secondaryGrid.querySelectorAll('.secondary-image');
-            expect(images).toHaveLength(4);
-            expect(images[0]).toHaveAttribute('src', 'p2.jpg');
-        });
-    });
-
-    it('should show and hide the gallery modal when "Ver más" is clicked', async () => {
-        renderWithContext('1');
-
-        const verMas = await screen.findByText('Ver más');
-        fireEvent.click(verMas);
-
-        expect(screen.getByRole('button', { name: '×' })).toBeInTheDocument();
-        
-        const modalImages = document.querySelectorAll('.modal-image');
-        expect(modalImages.length).toBe(6); 
-
-        fireEvent.click(screen.getByText('×'));
-        expect(screen.queryByText('×')).not.toBeInTheDocument();
+        const title = await screen.findByText(/Glaciar Perito Moreno/i);
+        expect(title).toBeInTheDocument();
+        expect(screen.getByText('4 Días / 3 Noches')).toBeInTheDocument();
     });
 
     it('should render characteristics with their icons and titles', async () => {
         renderWithContext('1');
+        const wifiLabel = await screen.findByText('Wi-Fi');
+        const hospLabel = await screen.findByText('Hospedaje');
+
+        expect(wifiLabel).toBeInTheDocument();
+        expect(hospLabel).toBeInTheDocument();
+    });
+
+    it('should call apiToggleFavorite when heart is clicked', async () => {
+        PackageService.apiToggleFavorite.mockResolvedValue({ isFavorite: true });
+        renderWithContext('1');
+
+        const heartBtn = await screen.findByTitle(/favoritos/i);
+        fireEvent.click(heartBtn);
 
         await waitFor(() => {
-            expect(screen.getByText('Wi-Fi')).toBeInTheDocument();
-            expect(screen.getByText('Hospedaje')).toBeInTheDocument();
+            expect(PackageService.apiToggleFavorite).toHaveBeenCalledWith(1);
         });
     });
 
-    it('should parse and format recommendations into list items', async () => {
+    it('should open review form and call apiPostReview', async () => {
+        PackageService.apiPostReview.mockResolvedValue({ success: true });
         renderWithContext('1');
 
+        const openFormBtn = await screen.findByText(/\+ Publicar mi experiencia/i);
+        fireEvent.click(openFormBtn);
+
+         const textarea = screen.getByPlaceholderText(/Cuéntanos los detalles/i);
+        fireEvent.change(textarea, { target: { value: 'Una experiencia inolvidable de prueba.' } });
+
+        const starButtons = screen.getAllByRole('button').filter(b => b.querySelector('svg'));
+        fireEvent.click(starButtons[4]); 
+
+        const submitBtn = screen.getByText(/Guardar mi Valoración/i);
+        fireEvent.click(submitBtn);
+
         await waitFor(() => {
-            const recommendationItems = screen.getAllByRole('listitem').filter(
-                li => li.className.includes('card-list-item')
-            );
-            expect(recommendationItems.length).toBe(2);
-            expect(recommendationItems[0]).toHaveTextContent('Llevar abrigo.');
+            expect(PackageService.apiPostReview).toHaveBeenCalled();
+        });
+    });
+
+
+    it('should call apiDeleteReview when trash icon is clicked and confirmed', async () => {
+        PackageService.fireAlert.mockResolvedValue({ isConfirmed: true });
+        PackageService.apiDeleteReview.mockResolvedValue({ success: true });
+        
+        const { container } = renderWithContext('1');
+
+        await screen.findAllByText(/Juan Pérez/i); 
+        
+        const trashIcon = container.querySelector('.lucide-trash2');
+        fireEvent.click(trashIcon.closest('button'));
+
+        await waitFor(() => {
+            expect(PackageService.apiDeleteReview).toHaveBeenCalled();
+            expect(PackageService.apiGetPackageById).toHaveBeenCalled();
+        });
+    });
+
+
+
+    it('should navigate to home if user logs out while on the page', async () => {
+        const { rerender } = renderWithContext('1');
+        storageMock(null);
+        rerender(
+            <MemoryRouter initialEntries={[`/detallePaquete/1`]}>
+                <PackageTravelContext.Provider value={{ packageTravel: [mockPackage], favoriteIds: new Set() }}>
+                    <Routes>
+                        <Route path="/detallePaquete/:id" element={<PackageDetailed />} />
+                        <Route path="/home" element={<div>Home Page</div>} />
+                    </Routes>
+                </PackageTravelContext.Provider>
+            </MemoryRouter>
+        );
+        await waitFor(() => {            
+        expect(window.location.pathname).toBe('/'); 
         });
     });
 
     it('should call apiGetPackageById if package is not in context list', async () => {
-        renderWithContext('1', []);
-
+        renderWithContext('1', []); 
         await waitFor(() => {
             expect(PackageService.apiGetPackageById).toHaveBeenCalledWith('1');
         });

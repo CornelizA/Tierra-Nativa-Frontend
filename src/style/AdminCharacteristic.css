@@ -33,7 +33,6 @@
     border-bottom: 1px solid #DEDEDE;
 }
 
-
 .admin-characteristic tbody tr:nth-child(even) {
     background-color: #FAF8F0;
 }
@@ -148,7 +147,6 @@
     width: 100%;
 }
 
-
 .modal-dialog-characteristic {
     width: 100%;
     height: 100%;
@@ -180,7 +178,6 @@
     resize: vertical;
     margin-bottom: 25px;
     width: 100%;
-
 }
 
 .button-icon-characteristic {
@@ -202,7 +199,6 @@
     transition: background-color 0.2s, opacity 0.2s;
     text-align: center;
 }
-
 
 .button-icon-characteristic.is-auto {
      background-color: #1A531A;

@@ -63,6 +63,7 @@
 
 .package-card {
     padding: 20px 70px;
+    flex: 0 0 auto;
 }
 
 .load-text {
@@ -90,16 +91,82 @@
     }
 
     .package-card {
-        padding: 0px 24px 24px;
+        padding: 0px 10px;
+        margin-left: -35px;
         margin-top: -26px;
+    }
+
+    .flip-card {
+        height: 320px !important;
+    }
+
+    .back-title {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .back-description {
+        font-size: 0.75rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .back-price,
+    .back-value {
+        margin-top: 0px;
+    }
+
+    .back-categories {
+        margin-bottom: 0;
+    }
+
+    .front-title {
+        font-size: 1.1rem !important;
     }
 }
 
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 769px) and (max-width: 1023px) {
+
     .background-category {
         height: 100vh;
         padding-top: 25%;
         border-bottom: none;
+    }
+
+    .display-title {
+        margin-top: 250px !important;
+    }
+
+    .package-card {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 25px !important;
+        padding: 0 30px !important;
+        margin: auto;
+    }
+
+    .flip-card {
+        width: 100% !important;
+        margin: 0 auto;
+        height: 320px !important;
+    }
+
+    .back-title {
+        font-size: 0.95rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+
+    .back-description {
+        font-size: 0.7rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.5rem !important;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .front-title {
+        font-size: 1.1rem !important;
     }
 }
 

@@ -7,6 +7,10 @@ const API_URL_AUTH = `${BASE_URL}/auth`;
 const API_URL_ADMIN = `${BASE_URL}/admin`;
 const API_URL_CATEGORY = `${BASE_URL}/categories`;
 const API_URL_CHARACTERISTICS = `${BASE_URL}/characteristics`;
+const API_URL_FAVORITES = `${BASE_URL}/favorites`;
+const API_URL_SEARCH = `${BASE_URL}/search`;
+const API_URL_BOOKING = `${BASE_URL}/bookings`;
+const API_URL_REVIEWS = `${BASE_URL}/reviews`;
 
 axios.interceptors.response.use(
     (response) => response,
@@ -53,7 +57,6 @@ export const fireAlert = (title, text, icon = 'info', isConfirm = false) => {
             return Swal.fire(config);
         }
         return Swal.fire(config);
-
     }
 };
 
@@ -62,7 +65,6 @@ export const apiHandleErrorAlert = (error, defaultMessage) => {
 
     if (error.response && error.response.data) {
         const serverData = error.response.data;
-
         if (typeof serverData === 'object') {
             if (serverData.error) {
                 message = serverData.error;
@@ -101,26 +103,15 @@ export const apiHandleErrorAlert = (error, defaultMessage) => {
         message = "No se pudo conectar con el servidor. Revisa tu conexión a internet.";
     }
     fireAlert('Operación Fallida', message, 'error');
-
     throw error;
 };
 
-export const apiGetPackagesPublic = async () => {
+export const apiGetPackages = async () => {
     try {
         const response = await axios.get(API_URL_PACKAGES);
         return response.data;
     } catch (error) {
         apiHandleErrorAlert(error, 'Error al obtener el listado de paquetes.');
-        throw error;
-    }
-};
-
-export const apiGetPackagesAdmin = async () => {
-    try {
-        const response = await axios.get(`${API_URL_PACKAGES}/admin`, { headers: getHeaders() });
-        return response.data;
-    } catch (error) {
-        apiHandleErrorAlert(error, 'Error al obtener el listado de paquetes (Acceso ADMIN).');
         throw error;
     }
 };
@@ -230,11 +221,9 @@ export const apiGetAdminUsers = async () => {
 export const apiUpdateUserRole = async (emailToPromote, newRole) => {
     try {
         const payload = { email: emailToPromote, newRole };
-
         const response = await axios.put(`${API_URL_ADMIN}/role`, payload, {
             headers: getHeaders()
         });
-
         fireAlert('¡Éxito!', `Rol del usuario ${emailToPromote} actualizado a ${newRole}.`, 'success');
         return { success: true, data: response.data };
     } catch (error) {
@@ -245,18 +234,7 @@ export const apiUpdateUserRole = async (emailToPromote, newRole) => {
 
 export const apiGetCategories = async () => {
     try {
-        const headers = getHeaders();
-        const response = await axios.get(API_URL_CATEGORY, { headers });
-        return response.data;
-    } catch (error) {
-        apiHandleErrorAlert(error, 'Error al obtener la lista de categorías del Administrador.');
-        throw error;
-    }
-};
-
-export const apiGetCategoriesPublic = async () => {
-    try {
-        const response = await axios.get(`${API_URL_CATEGORY}/public`);
+        const response = await axios.get(`${API_URL_CATEGORY}`);
         return response.data;
     } catch (error) {
         apiHandleErrorAlert(error, `Error al obtener la lista de categorías.`);
@@ -265,7 +243,6 @@ export const apiGetCategoriesPublic = async () => {
 };
 
 export const apiGetCategoriesByCategory = async (categorySlug) => {
-
     try {
         const response = await axios.get(`${API_URL_CATEGORY}/categoria/${categorySlug.toUpperCase()}`);
         return response.data;
@@ -290,7 +267,7 @@ export const apiPostCategory = async (categoryData) => {
 
 export const apiUpdateCategory = async (categoryData) => {
     try {
-        const response = await axios.put(API_URL_CATEGORY, categoryData, {
+        const response = await axios.put(`${API_URL_CATEGORY}/${categoryData.id}`, categoryData, {
             headers: getHeaders()
         });
         fireAlert('¡Actualizada!', `Categoría ${categoryData.title} actualizada correctamente.`, 'success');
@@ -312,22 +289,12 @@ export const apiDeleteCategory = async (id) => {
     }
 };
 
-export const apiGetCharacteristicsPublic = async () => {
+export const apiGetCharacteristics = async () => {
     try {
-        const response = await axios.get(`${API_URL_CHARACTERISTICS}/public`);
+        const response = await axios.get(`${API_URL_CHARACTERISTICS}`);
         return response.data;
     } catch (error) {
         apiHandleErrorAlert(error, `Error al obtener la lista de características.`);
-        throw error;
-    }
-};
-
-export const apiGetCharacteristics = async () => {
-    try {
-        const response = await axios.get(API_URL_CHARACTERISTICS, { headers: getHeaders() });
-        return response.data;
-    } catch (error) {
-        apiHandleErrorAlert(error, 'Error al obtener la lista de características del Administrador.');
         throw error;
     }
 };
@@ -346,8 +313,8 @@ export const apiPostCharacteristic = async (characteristicData) => {
 };
 
 export const apiUpdateCharacteristic = async (characteristicData) => {
-    try {
-        const response = await axios.put(API_URL_CHARACTERISTICS, characteristicData, {
+   try {
+        const response = await axios.put(`${API_URL_CHARACTERISTICS}/${characteristicData.id}`, characteristicData, {
             headers: getHeaders()
         });
         fireAlert('¡Actualizada!', `Característica ${characteristicData.title} actualizada correctamente.`, 'success');
@@ -396,6 +363,103 @@ export const apiVerifyEmail = async (token) => {
             errorMessage = error.response?.data?.error || errorMessage;
         }
         fireAlert('Operación Fallida', errorMessage, 'error');
+        throw error;
+    }
+};
+
+export const apiToggleFavorite = async (id) => {
+    try {
+        const response = await axios.post(`${API_URL_FAVORITES}/toggle/${id}`, {}, {
+            headers: getHeaders()
+        });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert("Error al cambiar estado de favorito", error);
+        throw error;
+    }
+};
+
+export const apiGetMyFavorites = async () => {
+    try {
+        const response = await axios.get(API_URL_FAVORITES, {
+            headers: getHeaders()
+        });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert("Error al obtener favoritos", error);
+        throw error;
+    }
+};
+
+export const apiSearchPackages = async (params) => {
+    try {
+        const response = await axios.get(API_URL_SEARCH, {
+            params: params,
+            headers: getHeaders(false)
+        });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert("Error en la búsqueda", error);
+        throw error;
+    }
+};
+
+export const apiPostBooking = async (bookingData) => {
+    try {
+        const response = await axios.post(API_URL_BOOKING, bookingData, { headers: getHeaders() });
+        fireAlert('¡Reserva creada!', 'Tu solicitud ha sido registrada.', 'success');
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al realizar la reserva.");
+    }
+};
+
+export const apiGetMyBooking = async () => {
+    try {
+        const response = await axios.get(`${API_URL_BOOKING}/my-bookings`, { headers: getHeaders() });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert("Error al obtener las reservas", error);
+        throw error;
+    }
+};
+
+export const apiPostReview = async (reviewData) => {
+    try {
+        const response = await axios.post(API_URL_REVIEWS, reviewData, { headers: getHeaders() });
+        fireAlert('¡Reseña creada!', 'Gracias por compartir tu opinión.', 'success');
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al realizar la reseña.");
+    }
+};
+
+export const apiUpdateReview = async (reviewId, reviewData) => {
+    try {
+        const response = await axios.put(`${API_URL_REVIEWS}/${reviewId}`, reviewData, { headers: getHeaders() });
+        fireAlert('¡Reseña actualizada!', 'Tus cambios han sido guardados.', 'success');
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al actualizar la reseña.");
+    }
+};
+
+export const apiDeleteReview = async (reviewId) => {
+    try {
+        const response = await axios.delete(`${API_URL_REVIEWS}/${reviewId}`, { headers: getHeaders() });
+        fireAlert('¡Reseña eliminada!', `Tu comentario ha sido removido con éxito.`, 'success');
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al eliminar la reseña.");
+    }
+};
+
+export const apiGetReviews = async (packageId) => {
+    try {
+        const response = await axios.get(`${API_URL_REVIEWS}/package/${packageId}`, { headers: getHeaders(false) });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert("Error al obtener las reseñas", error);
         throw error;
     }
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Wifi, Utensils, ShieldCheck, Mountain, Camera, Bus, Apple, Map, Plane,
-    Ticket, Hotel, Star, MountainSnow, Pencil, X, Plus, Activity, ArrowLeft, ArrowRight,
+    Ticket, Hotel, Star, MountainSnow, Pencil, X, Plus, Activity, ArrowLeft, ArrowRight, Loader2
 } from 'lucide-react';
 import { apiGetCharacteristics, apiPostCharacteristic, apiUpdateCharacteristic, apiDeleteCharacteristic, fireAlert } from '../service/PackageTravelService';
 import '../style/AdminCharacteristic.css';
@@ -42,7 +42,6 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
     const [isAuto, setIsAuto] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(Boolean(sessionStorage.getItem('jwtToken')));
 
-
     useEffect(() => {
         fetchData();
     }, []);
@@ -73,7 +72,6 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
         if (t.includes('hotel') || t.includes('alojamiento') || t.includes('posada')) return 'hotel';
         return 'star';
     };
-
 
     const fetchData = async () => {
         setLoading(true);
@@ -106,29 +104,28 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
             return;
         }
         setLoading(true);
-
         try {
             const formattedTitle = formatTitle(formData.title);
             const payload = { ...formData, title: formattedTitle };
 
+            sessionStorage.setItem('adminActiveView', 'LIST_CHARACTERISTICS');
+
             if (isEditing) {
                 await apiUpdateCharacteristic({ ...payload, id: Number(payload.id) });
-                fireAlert('Éxito', `Característica "${payload.title}" actualizada correctamente.`, 'success');
+                setLoading(false);
+                fireAlert('Éxito', `Característica "${payload.title}" actualizada correctamente.`, 'success')
             } else {
                 await apiPostCharacteristic(payload);
-                fireAlert('Éxito', `Característica "${payload.title}" creada correctamente.`, 'success');
+                setLoading(false);
+                fireAlert('Éxito', `Característica "${payload.title}" creada correctamente.`, 'success')
             }
-
             fetchData();
             handleCloseModal();
-
         } catch (error) {
             fireAlert('Error de Operación', 'Hubo un error al guardar la característica.', 'error');
-        } finally {
             setLoading(false);
         }
     };
-
 
     const handleEdit = (characteristic) => {
         setFormData(characteristic);
@@ -156,8 +153,8 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
     };
 
     const handleDelete = async (char) => {
-        const result = await fireAlert('Confirmar Eliminación', `¿Estás seguro de eliminar la característica "${char.title}"? Esta acción es irreversible.`, 'warning', true);
-
+        const result = await fireAlert
+            ('Confirmar Eliminación', `¿Estás seguro de eliminar la característica "${char.title}"? Esta acción es irreversible.`, 'warning', true);
         setLoading(true);
         try {
             const token = sessionStorage.getItem('jwtToken');
@@ -166,12 +163,10 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                 setLoading(false);
                 return;
             }
-
             if (result.isConfirmed) {
                 await apiDeleteCharacteristic(char.id);
                 setCharacteristics(prev => prev.filter(c => c.id !== char.id));
                 await fetchData();
-
                 fireAlert('Eliminado', 'La característica ha sido eliminada.', 'success');
             }
         } catch (error) {
@@ -185,6 +180,10 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
         }
     };
 
+    const handleManualBack = () => {
+        sessionStorage.removeItem('adminActiveView');
+        onBackToMenu();
+    };
 
     const totalPages = Math.ceil(characteristics.length / ITEMS_PER_PAGE);
     const lastItemIndex = currentPage * ITEMS_PER_PAGE;
@@ -205,7 +204,7 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                 <button
                     type="button"
                     className="btn btn-back-to-list"
-                    onClick={onBackToMenu}
+                    onClick={handleManualBack}
                     style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                 >
                     <ArrowLeft size={18} />
@@ -221,14 +220,18 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                     <Plus size={18} />
                     Nueva Característica
                 </button>
-
             </div>
+
             <h1 className="text-3xl font-extrabold text-blue-900 mx-auto">
                 Administración de Características
             </h1>
 
             {isModalOpen && (
-                <div className="modal fade show d-block" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className="modal fade show d-block"
+                    tabIndex={-1}
+                    aria-labelledby="exampleModalLabel"
+                    aria-hidden="true"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                     <div className="modal-dialog-characteristic">
                         <div className="modal-content-characteristic">
                             <div className="modal-header-characteristic">
@@ -278,7 +281,7 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                                                     key={key}
                                                     type="button"
                                                     onClick={() => { setFormData({ ...formData, icon: key }); setIsAuto(false); }}
-                                                    className={`button-icon p-3 rounded-lg border flex items-center justify-center transition ${formData.icon === key ? 'bg-blue-600 text-green' : 'bg-white border-slate-100 text-slate-400 hover:border-blue-200'}`}
+                                                    className={`button-icon p-3 rounded-lg border flex items-center justify-center transition ${formData.icon === key ? 'bg-blue-600 text-white' : 'bg-white border-slate-100 text-slate-400 hover:border-blue-200'}`}
                                                 >
                                                     <Icon size={18} />
                                                 </button>
@@ -291,7 +294,6 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                                     <button
                                         type="button"
                                         className="btn btn-secondary bg-gray-500 text-white hover:bg-gray-600 rounded-lg p-2 transition"
-                                        data-bs-dismiss="modal"
                                         onClick={handleCloseModal}
                                     >
                                         Cancelar
@@ -299,16 +301,13 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
 
                                     <button
                                         type="submit"
-                                        className="btn btn-primary bg-green-600 text-white hover:bg-green-700 rounded-lg p-2 transition disabled:opacity-50"
-                                        onClick={async () => {
-                                            await handleSubmit();
-                                            onclose();
-                                        }}
+                                        className="btn btn-primary bg-green-600 text-white hover:bg-green-700 rounded-lg p-2 transition disabled:opacity-50 font-bold flex items-center gap-2"
                                         disabled={loading}
-
                                     >
-                                        {loading ? 'Guardando...' : 'Guardar característica'}
+                                        {loading && <Loader2 className="animate-spin" size={16} />}
+                                        {loading ? 'Guardando...' : 'Confirmar Cambios'}
                                     </button>
+
                                 </div>
                             </form>
                         </div>
@@ -317,7 +316,6 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
             )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="p-6 bg-slate-50 border-b flex justify-between items-center">
-
                 </div>
 
                 <div className="admin-characteristic overflow-x-auto">
@@ -345,10 +343,7 @@ export const AdminCharacteristic = ({ onBackToMenu }) => {
                                                 <button
                                                     type="button"
                                                     className="btn btn-warning me-2"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#exampleModal"
                                                     onClick={() => handleEdit(char)}
-
                                                     style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                                                 >
                                                     <Pencil size={16} />

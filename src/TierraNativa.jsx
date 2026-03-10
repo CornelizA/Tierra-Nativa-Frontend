@@ -2,7 +2,8 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import { NavBarComponent } from './component/NavBarComponent';
 import { Home } from './pages/Home.jsx';
 import { PackageDetailed } from './pages/PackageDetailed.jsx'
-import { useEffect, useState } from 'react';
+import ErrorBoundary from './component/ErrorBoundary.jsx';
+import { useEffect, useState, useContext } from 'react';
 import { FooterComponent } from './component/FooterComponent.jsx';
 import { useLocation } from 'react-router-dom';
 import { AdminDashboard } from './component/AdminDashboard.jsx';
@@ -10,15 +11,19 @@ import { LoginView } from './component/LoginView.jsx';
 import { RegisterView } from './component/RegisterView.jsx';
 import { VerifyEmailView } from './component/VerifyEmailView.jsx';
 import { AdminCategory } from './component/AdminCategory.jsx';
-import { apiGetCategoriesPublic } from './service/PackageTravelService';
+import { apiGetCategories } from './service/PackageTravelService';
 import { CategoryPackagesPage } from './pages/CategoryPackagesPage'
 import Swal from 'sweetalert2'
+import { FavoritesPage } from './pages/FavoritesPage.jsx';
+import { PackageTravelContext } from './context/PackageTravelContext.js';
 
 export const TierraNativa = () => {
     const SCROLL_THRESHOLD = 500;
     const [isScrolled, setIsScrolled] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
+
+    const { setFavoriteIds, syncFavorites } = useContext(PackageTravelContext);
 
     const [user, setUser] = useState(() => {
         const storedUser = sessionStorage.getItem('user');
@@ -32,11 +37,10 @@ export const TierraNativa = () => {
 
             if (token && expiry) {
                 const now = Date.now();
-
                 if (now >= parseInt(expiry)) {
-
                     sessionStorage.clear();
                     setUser(null);
+                    setFavoriteIds(new Set());
 
                     Swal.fire({
                         title: 'Sesión Finalizada',
@@ -51,20 +55,17 @@ export const TierraNativa = () => {
                 }
             }
         };
-
         const interval = setInterval(checkTokenExpiry, 1000);
         return () => clearInterval(interval);
-    }, [navigate]);
-
-
+    }, [navigate, setFavoriteIds]);
 
     const [categories, setCategories] = useState([]);
     const isDetailedPage = location.pathname.startsWith('/detallePaquete/') && location.pathname.split('/').length === 3;
     const isAdminPage = location.pathname.startsWith('/paquetes/admin');
     const isAuthPage = location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/verify-email';
     const isCategoryPage = location.pathname.startsWith('/categories/categoria/') && location.pathname.split('/').length > 3;
-    const shouldBeSolid = isDetailedPage || isAdminPage || isAuthPage || isCategoryPage;
-
+    const isFavoritePage = location.pathname.startsWith('/favorites');
+    const shouldBeSolid = isDetailedPage || isAdminPage || isAuthPage || isCategoryPage || isFavoritePage;
 
     const onAuthSuccess = (userData) => {
         sessionStorage.setItem('jwtToken', userData.token);
@@ -84,7 +85,10 @@ export const TierraNativa = () => {
         sessionStorage.clear();
         setUser(null);
         setIsScrolled(false);
-
+        setFavoriteIds(new Set());
+        if (typeof syncFavorites === 'function') {
+            syncFavorites();
+        }
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 title: 'Sesión cerrada.',
@@ -94,10 +98,10 @@ export const TierraNativa = () => {
                 customClass: {
                     confirmButton: 'btn btn-outline-success border mx-2'
                 },
-                buttonsStyling: false 
+                buttonsStyling: false
             });
         }
-        navigate('/home');
+        window.location.href = '/home';
     };
 
     useEffect(() => {
@@ -111,14 +115,13 @@ export const TierraNativa = () => {
         } else {
             setIsScrolled(true);
         }
-
         return () => window.removeEventListener('scroll', handleScroll);
     }, [shouldBeSolid]);
 
     useEffect(() => {
         const loadCategories = async () => {
             try {
-                const fetchedCategories = await apiGetCategoriesPublic();
+                const fetchedCategories = await apiGetCategories();
                 setCategories(fetchedCategories);
             } catch (error) {
                 setCategories([]);
@@ -131,6 +134,7 @@ export const TierraNativa = () => {
         <>
             <div className="app-wrapper">
                 <div className="app-content-wrapper">
+
                     <NavBarComponent
                         isScrolled={isScrolled}
                         shouldBeSolid={shouldBeSolid}
@@ -140,15 +144,21 @@ export const TierraNativa = () => {
                     />
                     <div className={`container-pages ${isAuthPage ? 'pt-24' : (shouldBeSolid ? 'pt-80' : '')}`}>
                         <Routes>
-                            <Route path='/home' element={<Home />}></Route>
-                            <Route path='/paquetes' element={<Home />}></Route>
-                            <Route path='/detallePaquete/:id' element={<PackageDetailed />}></Route>
+                            <Route path='/home' element={<Home isUserLoggedIn={!!user} />}></Route>
+                            <Route path='/paquetes' element={<Home isUserLoggedIn={!!user} />}></Route>
+                            <Route path='/detallePaquete/:id' element={
+                                <ErrorBoundary>
+                                    <PackageDetailed />
+                                </ErrorBoundary>
+                            }></Route>
                             <Route path='/paquetes/admin' element={<AdminDashboard onLogout={handleLogout} />}></Route>
                             <Route path='/login' element={<LoginView onAuthSuccess={onAuthSuccess} />}></Route>
                             <Route path='/register' element={<RegisterView onAuthSuccess={onAuthSuccess} />}></Route>
                             <Route path='/verify-email' element={<VerifyEmailView />}></Route>
                             <Route path='/categories/categoria/:categorySlug/*' element={<CategoryPackagesPage />} />
                             <Route path='/categories' element={<AdminCategory />}></Route>
+                            <Route path='/favorites' element={<FavoritesPage isUserLoggedIn={!!user} />}></Route>
+                            <Route path="*" element={<Home isUserLoggedIn={!!user} />} />
                         </Routes>
                     </div>
                 </div>

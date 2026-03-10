@@ -2,6 +2,7 @@ import { NavLink, Link } from 'react-router-dom';
 import '../style/NavBarComponent.css';
 
 export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout, categories = [] }) => {
+
     const navClasses = `navbar navbar-expand-lg tn-navbar navbar-fixed ${shouldBeSolid || isScrolled ? 'navbar-solid' : 'navbar-transparent'}`;
 
     const slugify = (text) => {
@@ -41,17 +42,25 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout, cat
                     <span className={`initials d-flex items-center justify-center me-2 font-bold`}>{initials}</span>
                     <span className="fw-bold d-none d-md-inline me-1">{firstName}</span>
                 </button>
+
                 <ul className="dropdown-menu dropdown-menu-end">
                     <li className="dropdown-item-text small px-3">
                         <span className={`badge ${role === 'ADMIN' ? 'bg-warning text-dark' : 'bg-success '}`}>{role}</span>
                         <br />
                         {firstName} {lastName}
                     </li>
+
                     <li><hr className="dropdown-divider" /></li>
+                    <li>
+                        <NavLink to="/favorites" className="dropdown-item">
+                            Mis Favoritos
+                        </NavLink>
+                    </li>
                     {role === 'ADMIN' && (
                         <li>
                             <NavLink to="/paquetes/admin" className="dropdown-item">Panel Admin</NavLink>
                         </li>
+
                     )}
                     <li>
                         <button onClick={onLogout} className="dropdown-item text">Cerrar Sesión</button>

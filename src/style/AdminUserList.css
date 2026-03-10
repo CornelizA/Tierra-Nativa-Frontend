@@ -70,7 +70,6 @@ td {
     padding: 5px 15px;
     border-bottom: 1px solid #DEDEDE;
     text-align: center;
-
 }
 
 tbody tr:nth-child(even) {
@@ -91,7 +90,6 @@ button.remove {
     color: #FAF8F0;
     background-color: #B85C38;
     border: none;
-
 }
 
 button.remove:hover {

@@ -13,7 +13,7 @@ jest.mock('../helpers/arrayUtils', () => ({
 jest.mock('../component/SearchComponent', () => ({
     SearchComponent: ({ onFilter }) => (
         <div data-testid="search-component">
-            <button onClick={() => onFilter('Mendoza')}>Filtrar por Mendoza</button>
+            <button onClick={() => onFilter({ destination: 'Mendoza' })}>Filtrar por Mendoza</button>
             <button onClick={() => onFilter(null)}>Quitar Filtro</button>
         </div>
     ),
@@ -24,9 +24,9 @@ jest.mock('../component/DestinationComponent', () => ({
 }));
 
 jest.mock('../component/PackageTravelCard', () => ({
-    PackageTravelCard: ({ name, imageUrl }) => {
+    PackageTravelCard: ({ pkg, imageUrl }) => {
         const status = imageUrl.includes('placehold.co') ? 'FB' : 'IMG';
-        return <div data-testid="package-card">{name} - {status}</div>;
+        return <div data-testid="package-card">{pkg?.name} - {status}</div>;
     },
 }));
 
@@ -54,10 +54,10 @@ describe('Home Page Component', () => {
     it('should show 6 featured packages by default and render main components', async () => {
         renderWithContext(packagesContext, true);
         expect(sampleArray).toHaveBeenCalledWith(expect.any(Array), 6);
-        
+
         const cards = screen.getAllByTestId('package-card');
         expect(cards).toHaveLength(6);
-        
+
         expect(screen.getByTestId('search-component')).toBeInTheDocument();
         expect(screen.getByTestId('destination-component')).toBeInTheDocument();
         expect(screen.getByAltText(/Mapa de Argentina/i)).toBeInTheDocument();
@@ -68,9 +68,8 @@ describe('Home Page Component', () => {
             { id: 1, name: 'Sin Fotos', destination: 'Narnia', imageDetails: [] },
             ...packagesContext.slice(1)
         ];
-        
         renderWithContext(customData, true);
-        
+
         expect(screen.getByText('Sin Fotos - FB')).toBeInTheDocument();
     });
 
@@ -84,8 +83,7 @@ describe('Home Page Component', () => {
             const filteredCards = screen.getAllByTestId('package-card');
             expect(filteredCards.length).toBeLessThan(6);
         });
-        
-        expect(screen.getByText(/Experiencias imperdibles/i)).toBeInTheDocument();
+        expect(screen.getByText(/Experiencias encontradas/i)).toBeInTheDocument();
     });
 
     it('should render "Ver Detalle" buttons with correct IDs', () => {

@@ -1,0 +1,93 @@
+.container-favorites {
+    padding: 80px 20px 20px 20px;
+    background-color: #fff;
+}
+
+.favorites-bg {
+    background-color: #fff;
+}
+
+.title-favorites {
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 0;
+    color: #1A531A;
+    font-weight: bolder;
+}
+
+.sub-title-favorites {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #1A531A;
+}
+
+.package-card {
+    padding: 20px 70px;
+}
+
+.heart-favorites {
+    color: #fff;
+}
+
+.container-empty-favorites {
+    padding: 140px 0 140px 0;
+    background-color: none;
+}
+
+.loading-favorites {
+    color: #fff;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bolder;
+}
+
+.empty-favorites {
+    text-align: center;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: bolder;
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+
+    .display-title {
+        margin-top: 250px !important;
+    }
+
+    .package-home {
+        padding: 0 20px;
+    }
+
+    .package-card {
+        flex: 0 0 auto;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 25px !important;
+        padding: 0 30px !important;
+        margin: auto;
+    }
+
+    .flip-card {
+        width: 100% !important;
+        margin: 0 auto;
+        height: 320px !important;
+    }
+
+    .back-title {
+        font-size: 0.95rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+
+    .back-description {
+        font-size: 0.7rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.5rem !important;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .front-title {
+        font-size: 1.1rem !important;
+    }
+
+}

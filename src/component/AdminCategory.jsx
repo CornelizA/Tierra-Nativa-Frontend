@@ -15,7 +15,6 @@ const ITEMS_PER_PAGE = 4;
 const CategoryForm = ({ formData, onChange, onSubmit, loading }) => (
     <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
             <div>
                 <label htmlFor="title" className="label-title-category d-block text-sm font-medium text-gray-700">Título</label>
                 <input
@@ -61,9 +60,7 @@ const CategoryForm = ({ formData, onChange, onSubmit, loading }) => (
                 disabled={loading}
             ></textarea>
         </div>
-
         <div className="flex justify-end space-x-3 pt-4">
-
         </div>
     </form>
 );
@@ -105,23 +102,19 @@ export const AdminCategory = ({ onBackToMenu }) => {
             fireAlert('Campos Incompletos', 'Por favor, rellena todos los campos.', 'warning');
             return;
         }
-
         setLoading(true);
         try {
             const payload = { ...formData, title: formData.title.toUpperCase() };
-
             if (isEditing) {
                 await apiUpdateCategory({ ...payload, id: Number(payload.id) });
                 fireAlert('Éxito', `Categoría "${payload.title}" actualizada.`, 'success');
             } else {
                 await apiPostCategory(payload);
                 fireAlert('Éxito', `Categoría "${payload.title}" creada.`, 'success');
-
-                window.location.reload();
-                return;
             }
             fetchCategories();
             handleCloseModal();
+
         } catch (error) {
             fireAlert('Error', 'Hubo un error al guardar.', 'error');
         } finally {
@@ -153,7 +146,8 @@ export const AdminCategory = ({ onBackToMenu }) => {
     };
 
     const handleDelete = async (id, title) => {
-        const result = await fireAlert('Confirmar Eliminación', `¿Estás seguro de eliminar la categoría "${title}"? Esta acción es irreversible.`, 'warning', true);
+        const result = await fireAlert
+            ('Confirmar Eliminación', `¿Estás seguro de eliminar la categoría "${title}"? Esta acción es irreversible.`, 'warning', true);
 
         if (result.isConfirmed) {
             setLoading(true);
@@ -161,7 +155,6 @@ export const AdminCategory = ({ onBackToMenu }) => {
                 await apiDeleteCategory(id);
                 fireAlert('Eliminada', `La categoría "${title}" ha sido eliminada.`, 'success');
                 fetchCategories();
-                window.location.reload();
                 return;
             } catch (error) {
                 fireAlert('Error de Eliminación', 'Hubo un error al intentar eliminar la categoría.', 'error');
@@ -183,7 +176,6 @@ export const AdminCategory = ({ onBackToMenu }) => {
     const goToPrevPage = () => {
         setCurrentPage(prev => (prev > 1 ? prev - 1 : prev));
     };
-
 
     return (
         <div className="container-admin-category p-4 md:p-8 bg-gray-50 min-h-screen">
@@ -224,8 +216,8 @@ export const AdminCategory = ({ onBackToMenu }) => {
                                 <h5 class="modal-title-category fs-5" id="exampleModalLabel">
                                     {isEditing ? 'Editar Categoría Existente' : 'Crear Nueva Categoría'}
                                 </h5>
-
                             </div>
+
                             <div class="modal-body-category">
                                 <CategoryForm
                                     formData={formData}
@@ -236,7 +228,6 @@ export const AdminCategory = ({ onBackToMenu }) => {
                             </div>
 
                             <div className="modal-footer justify-between bg-gray-100 rounded-b-xl">
-
                                 <button
                                     type="button"
                                     className="btn btn-secondary bg-gray-500 text-white hover:bg-gray-600 rounded-lg p-2 transition"
@@ -253,7 +244,6 @@ export const AdminCategory = ({ onBackToMenu }) => {
                                         await handleFormSubmit();
                                     }}
                                     disabled={loading}
-
                                 >
                                     {loading ? 'Guardando...' : 'Guardar categoría'}
                                 </button>
@@ -320,7 +310,6 @@ export const AdminCategory = ({ onBackToMenu }) => {
                                                 onClick={() => handleDelete(cat.id, cat.title)}
                                                 className="btn btn-danger"
                                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-
                                             >
                                                 <X size={16} />
                                                 Eliminar
@@ -332,12 +321,11 @@ export const AdminCategory = ({ onBackToMenu }) => {
                             ))}
                         </tbody>
                     </table>
+
                     {categories.length > ITEMS_PER_PAGE && (
                         <div className="d-flex flex-column align-items-center mt-3">
-
                             <nav aria-label="Navegación de páginas">
                                 <ul className="pagination justify-content-center">
-
                                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                                         <a
                                             className="page-link"
@@ -380,9 +368,7 @@ export const AdminCategory = ({ onBackToMenu }) => {
                         </div>
                     )}
                 </div>
-
             )}
         </div>
-
     );
 };

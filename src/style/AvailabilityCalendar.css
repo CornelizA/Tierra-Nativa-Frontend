@@ -1,0 +1,42 @@
+.container-calendar {
+    padding: 30px 100px 30px 100px;
+    background-color: #faf8f035;
+}
+
+.header-calendar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: center;
+    color: #fff;
+}
+
+.title-calendar {
+    text-align: center;
+    font-size: 2rem;
+    padding: 15px 0 15px 0;
+    color: #fff;
+    font-weight: bolder;
+}
+
+.sub-title-calendar {
+    text-align: center;
+    font-size: 1.25rem;
+    color: #fff;
+}
+
+.top-calendar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.available {
+    color: #fff;
+}
+
+
+
+

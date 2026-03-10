@@ -5,6 +5,7 @@ import { Mail, ArrowLeft } from 'lucide-react';
 import '../style/AuthStyles.css';
 
 export const VerifyEmailView = () => {
+
     const navigate = useNavigate();
     const location = useLocation();
     const [searchParams] = useSearchParams();
@@ -40,7 +41,6 @@ export const VerifyEmailView = () => {
 
     const handleResendEmail = async (e) => {
         e.preventDefault();
-
         if (!email.trim()) {
             fireAlert('Error', 'Por favor, introduce tu correo electrónico.');
             return;
@@ -51,9 +51,8 @@ export const VerifyEmailView = () => {
             setVerificationStatus('resent');
             setTimeout(() => setVerificationStatus('waiting'), 3000);
         } catch (error) {
-
             const errorMessage = error.response?.data?.message ||
-             'No se pudo reenviar el correo. Por favor, verifica que la dirección sea correcta o intenta más tarde.';
+                'No se pudo reenviar el correo. Por favor, verifica que la dirección sea correcta o intenta más tarde.';
             fireAlert('Error de Envío', errorMessage, 'error');
         } finally {
             setResendLoading(false);
@@ -61,6 +60,7 @@ export const VerifyEmailView = () => {
     };
 
     return (
+
         <div className="auth-container flex items-center justify-center min-h-[70vh] p-4">
             <div className="auth-card max-w-2xl p-8 rounded-xl shadow-2xl bg-white">
                 <button
@@ -68,7 +68,6 @@ export const VerifyEmailView = () => {
                     className="btn btn-back-to-list"
                     style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                 >
-
                     <ArrowLeft size={20} />
                     Volver al Login
                 </button>
@@ -76,6 +75,7 @@ export const VerifyEmailView = () => {
                 <h3 className="auth-title-verify">
                     Verifica tu Correo
                 </h3>
+
                 <div className="auth-text-verify">
                     <Mail size={40} className=" text-green-600 " />
                     <p className="text-gray-600">
@@ -84,19 +84,19 @@ export const VerifyEmailView = () => {
                 </div>
 
                 {verificationStatus === 'success' && (
-                    <div className="text-success">
+                    <div className="verification-Status text-success">
                         ✓ ¡Correo verificado con éxito! Redirigiendo al login...
                     </div>
                 )}
 
                 {verificationStatus === 'error' && (
-                    <div className="text-error">
+                    <div className="verification-Status text-error">
                         ✗ El enlace de verificación es inválido o ha expirado. Reenvía el correo.
                     </div>
                 )}
 
                 {verificationStatus === 'resent' && (
-                    <div className="text-resent">
+                    <div className="verification-Status text-resent">
                         ✓ Correo reenviado. Revisa tu bandeja de entrada.
                     </div>
                 )}
@@ -119,9 +119,12 @@ export const VerifyEmailView = () => {
                             </p>
                             <form onSubmit={handleResendEmail} className="space-y-4">
                                 <div className="form-field-group">
-                                    <label htmlFor="email" className="label-verify text d-block">
+
+                                    <label htmlFor="email"
+                                        className="label-verify text d-block">
                                         Correo Electrónico
                                     </label>
+
                                     <input
                                         type="email"
                                         id="email"
@@ -132,6 +135,7 @@ export const VerifyEmailView = () => {
                                         required
                                     />
                                 </div>
+
                                 <button
                                     type="submit"
                                     disabled={resendLoading}

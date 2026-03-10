@@ -1,14 +1,16 @@
 import { PackageTravelContext } from './PackageTravelContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { apiGetMyFavorites } from '../service/PackageTravelService'
 import Swal from 'sweetalert2';
-import { apiGetPackagesPublic, apiGetCategoriesPublic } from "../service/PackageTravelService.js";
+import { apiGetPackages, apiGetCategories } from "../service/PackageTravelService.js";
 
 export const PackageTravelProvider = ({ children }) => {
 
     const [packageTravel, setPackageTravel] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [categoryMap, setCategoryMap] = useState({});
-
+    const [favoriteIds, setFavoriteIds] = useState(new Set());
+    const [loadingFavorites, setLoadingFavorites] = useState(false);
 
     const fireAlert = () => {
         if (typeof Swal !== 'undefined') {
@@ -19,10 +21,11 @@ export const PackageTravelProvider = ({ children }) => {
             });
         }
     };
+
     const fetchPackageTravel = async () => {
         setIsLoaded(false);
         try {
-            const data = await apiGetPackagesPublic();
+            const data = await apiGetPackages();
             const normalize = (raw) => {
                 if (!raw) return [];
                 const list = Array.isArray(raw) ? raw : (Array.isArray(raw.packages) ? raw.packages : []);
@@ -49,7 +52,6 @@ export const PackageTravelProvider = ({ children }) => {
 
                     return { ...pkg, characteristics: safeCharacteristics, categories: safeCategories, imageDetails: images, images, characteristicIds, categoryId };
                 };
-
                 return list.map(sanitizePackage);
             };
 
@@ -90,7 +92,7 @@ export const PackageTravelProvider = ({ children }) => {
         fetchPackageTravel();
         const fetchCats = async () => {
             try {
-                const cats = await apiGetCategoriesPublic();
+                const cats = await apiGetCategories();
                 if (Array.isArray(cats)) {
                     const map = {};
                     cats.forEach(c => { if (c && (c.id !== undefined)) map[c.id] = c.title || c.name || ''; });
@@ -102,15 +104,55 @@ export const PackageTravelProvider = ({ children }) => {
         };
         fetchCats();
     }, []);
+
+    const syncFavorites = useCallback(async () => {
+        const token = sessionStorage.getItem('jwtToken');
+
+        if (!token) {
+            setFavoriteIds(new Set());
+            return;
+        }
+        try {
+            setLoadingFavorites(true);
+            const data = await apiGetMyFavorites();
+            const ids = new Set(data.map(pkg => pkg.id));
+            setFavoriteIds(ids);
+        } catch (error) {
+        } finally {
+            setLoadingFavorites(false);
+        }
+    }, []);
+
+    const updateFavoriteInContext = (id, isFav) => {
+        setFavoriteIds(prev => {
+            const newSet = new Set(prev);
+            if (isFav) {
+                newSet.add(id);
+            } else {
+                newSet.delete(id);
+            }
+            return newSet;
+        });
+    };
+
+    useEffect(() => {
+        syncFavorites();
+    }, [syncFavorites]);
+
     return (
         <PackageTravelContext.Provider value={{
             packageTravel,
             isLoaded,
             categoryMap,
+            setCategoryMap,
             addPackageTravel,
             fetchPackageTravel,
             updatePackageTravel,
-            removePackageTravel
+            removePackageTravel,
+            favoriteIds,
+            updateFavoriteInContext,
+            loadingFavorites,
+            syncFavorites
         }}>
             {children}
         </PackageTravelContext.Provider>

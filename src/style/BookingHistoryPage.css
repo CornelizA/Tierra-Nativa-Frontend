@@ -1,0 +1,320 @@
+.history-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 24px 80px 24px;
+    width: 100%;
+    background-color: #fff;
+}
+
+.history-header {
+    margin-bottom: 36px;
+}
+
+.history-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1A531A;
+    margin-top: 50px;
+    text-align: center;
+    margin-bottom: 8px;
+  
+}
+
+.history-subtitle {
+    color: #1A531A;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 0px;
+      border-bottom: 1px solid #DEDEDE;
+}
+
+.history-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 24px;
+    text-align: center;
+    background-color: #FAF8F0;
+    border: 2px dashed #B85C38;
+    border-radius: 16px;
+}
+
+.history-empty h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1A531A;
+    margin: 0;
+}
+
+.history-empty p {
+    color: #333;
+    margin: 0;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.history-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background-color: #fff;
+    border: 2px solid rgb(231, 224, 199);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.history-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.history-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.history-card-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1A531A;
+    margin: 0;
+}
+
+.history-card-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.history-detail {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.history-status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.booking-status-confirmed {
+    background-color: rgba(26, 83, 26, 0.12);
+    color: #1A531A;
+}
+
+.booking-status-pending {
+    background-color: rgba(255, 183, 0, 0.15);
+    color: #a07800;
+}
+
+.booking-status-finished {
+    background-color: rgba(184, 92, 56, 0.12);
+    color: #B85C38;
+}
+
+.booking-status-cancelled {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.history-btn-primary {
+    display: inline-block;
+    padding: 10px 24px;
+    background-color: #1A531A;
+    color: #FAF8F0;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 8px;
+}
+
+.history-btn-primary:hover {
+    background-color: #154014;
+}
+
+.history-btn-review {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background-color: #FFB700;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.history-btn-review:hover {
+    background-color: #e0a300;
+    transform: translateY(-1px);
+}
+
+.history-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.history-filter-group {
+    display: flex;
+    align-items: center;
+}
+
+.history-select {
+    padding: 8px 12px;
+    border: 2px solid #1A531A;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    align-items: flex-start;
+    color: #1A531A;
+    background-color: #fff;
+    cursor: pointer;
+    outline: none;
+}
+
+.history-sort-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background-color: #1A531A;
+    border: 2px solid #1A531A;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.history-no-results {
+    text-align: center;
+    color: #888;
+    padding: 32px 0;
+    font-size: 0.95rem;
+}
+
+.history-badge-reviewed {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background-color: rgba(26, 83, 26, 0.1);
+    color: #1A531A;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.history-card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.history-btn-cancel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    background-color: #fff;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+
+.history-btn-cancel:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.history-btn-cancel--disabled {
+    color: #aaa;
+    border-color: #ddd;
+    cursor: not-allowed;
+}
+
+.history-btn-cancel--disabled:hover {
+    background-color: #fff;
+    color: #aaa;
+}
+
+/* Created at detail */
+.history-created-at {
+    color: #aaa;
+    font-size: 0.82rem;
+}
+
+/* Loading */
+.history-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .history-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .history-btn-review,
+    .history-btn-cancel {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .history-card-actions {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .history-page {
+        padding: 24px 16px 60px 16px;
+    }
+}

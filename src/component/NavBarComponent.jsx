@@ -55,6 +55,10 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout, cat
                         <NavLink to="/favorites" className="dropdown-item">
                             Mis Favoritos
                         </NavLink>
+
+                        <NavLink to="/my-bookings" className="dropdown-item">
+                          Mis Reservas
+                        </NavLink>
                     </li>
                     {role === 'ADMIN' && (
                         <li>

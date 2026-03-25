@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiGetAdminUsers, apiUpdateUserRole, apiHandleErrorAlert, fireAlert } from '../service/PackageTravelService';
-import { Search, User, Mail, Shield, ArrowLeft } from 'lucide-react';
+import { Search, User, Mail, Shield, ArrowLeft, Phone } from 'lucide-react';
 import '../style/AdminUserList.css';
 
 const SUPERUSER_EMAIL = 'tierranativa.dev@gmail.com';
@@ -163,6 +163,9 @@ export const AdminUserList = ({ onLogout, onBackToMenu }) => {
                                     <Mail size={20} className="inline-block " /> Correo Electrónico
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+                                    <Phone size={20} className="inline-block" /> Teléfono
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider flex items-center gap-1">
                                     <Shield size={20} className="inline-block " /> Rol Actual
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Acciones</th>
@@ -178,6 +181,9 @@ export const AdminUserList = ({ onLogout, onBackToMenu }) => {
                                     </td>
                                     <td className="px-6 py-4 text-sm">
                                         {user.email}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm">
+                                        {user.phoneNumber || <span style={{ color: '#aaa', fontStyle: 'italic' }}>Sin registrar</span>}
                                     </td>
 
                                     <td className="px-6 py-4">

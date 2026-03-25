@@ -76,7 +76,6 @@ export const PackageTravelProvider = ({ children }) => {
         }
     };
 
-
     const updatePackageTravel = (updatedPackage) => {
         setPackageTravel(prevPackages => prevPackages.map(pkg =>
             pkg.id === updatedPackage.id ? updatedPackage : pkg
@@ -86,7 +85,6 @@ export const PackageTravelProvider = ({ children }) => {
     const removePackageTravel = (packageId) => {
         setPackageTravel(prevPackages => prevPackages.filter(pkg => pkg.id !== packageId));
     };
-
 
     useEffect(() => {
         fetchPackageTravel();

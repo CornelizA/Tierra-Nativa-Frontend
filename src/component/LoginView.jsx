@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { apiLogin, fireAlert } from '../service/PackageTravelService';
 import { useNavigate } from 'react-router-dom';
 import '../style/AuthStyles.css';
@@ -8,6 +8,7 @@ export const LoginView = ({ onAuthSuccess }) => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    const bookingRedirect = sessionStorage.getItem('bookingRedirect');
     const isFormValid = credentials.email.length > 0 && credentials.password.length > 0;
 
     const handleChange = (e) => {
@@ -21,7 +22,13 @@ export const LoginView = ({ onAuthSuccess }) => {
         try {
             const userData = await apiLogin(credentials);
             onAuthSuccess(userData);
-            navigate('/home');
+            const redirect = sessionStorage.getItem('bookingRedirect');
+            if (redirect) {
+                sessionStorage.removeItem('bookingRedirect');
+                navigate(redirect);
+            } else {
+                navigate('/home');
+            }
         } catch (error) {
             let errorTitle = "Error de Sesión";
             let errorMessage = "Ocurrió un error inesperado al intentar iniciar sesión. Inténtalo de nuevo.";
@@ -44,6 +51,14 @@ export const LoginView = ({ onAuthSuccess }) => {
     return (
         <div className="auth-container flex items-center justify-center min-h-[70vh] p-4">
             <div className="auth-card max-w-2xl p-8 rounded-xl shadow-2xl bg-white ">
+
+                {bookingRedirect && (
+                    <div className="booking-login-banner">
+                        <span className="booking-login-banner-icon">🔒</span>
+                        <span>Debes iniciar sesión o registrarte para completar tu reserva.</span>
+                    </div>
+                )}
+
                 <h3 className="auth-title text-3xl font-extrabold text-center text-gray-900 mb-6">
                     Iniciar Sesión
                 </h3>

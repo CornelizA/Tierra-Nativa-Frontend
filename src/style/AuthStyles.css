@@ -74,6 +74,25 @@ button.auth-button:disabled {
     color: #276749;
 }
 
+.booking-login-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(26, 83, 26, 0.08);
+    border-left: 4px solid #1A531A;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1A531A;
+}
+
+.booking-login-banner-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
 .user-form {
     width: 600px;
     margin: auto;

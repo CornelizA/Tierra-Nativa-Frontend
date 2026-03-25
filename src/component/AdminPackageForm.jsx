@@ -9,6 +9,8 @@ export const initialFormData = {
     name: '',
     shortDescription: '',
     basePrice: '',
+    numberOfDays: '',
+    capacity: '',
     destination: '',
     itineraryDetail: {
         duration: '',
@@ -359,6 +361,38 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
                         <label htmlFor="basePrice">Precio Base ($)</label>
                         <input id="basePrice" name="basePrice" type="number" value={formData.basePrice} onChange={handleChange} placeholder="Precio Base ($)" className={validationErrors.basePrice ? 'input-error' : ''} />
                         {validationErrors.basePrice && <p className="validation-error">{validationErrors.basePrice}</p>}
+                    </div>
+
+                    <div className="form-group-half">
+                        <label htmlFor="numberOfDays">Días de viaje <span style={{ color: '#B85C38', fontWeight: 700 }}>*</span></label>
+                        <input
+                            id="numberOfDays"
+                            name="numberOfDays"
+                            type="number"
+                            min="1"
+                            value={formData.numberOfDays}
+                            onChange={handleChange}
+                            placeholder="Ej: 3"
+                            className={validationErrors.numberOfDays ? 'input-error' : ''}
+                        />
+                        {validationErrors.numberOfDays && <p className="validation-error">{validationErrors.numberOfDays}</p>}
+                    </div>
+                </div>
+
+                <div className="form-group-inline">
+                    <div className="form-group-half">
+                        <label htmlFor="capacity">Capacidad (cupos) <span style={{ color: '#B85C38', fontWeight: 700 }}>*</span></label>
+                        <input
+                            id="capacity"
+                            name="capacity"
+                            type="number"
+                            min="1"
+                            value={formData.capacity}
+                            onChange={handleChange}
+                            placeholder="Ej: 15"
+                            className={validationErrors.capacity ? 'input-error' : ''}
+                        />
+                        {validationErrors.capacity && <p className="validation-error">{validationErrors.capacity}</p>}
                     </div>
 
                     <div className="form-group-half">

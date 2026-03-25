@@ -16,6 +16,9 @@ import { CategoryPackagesPage } from './pages/CategoryPackagesPage'
 import Swal from 'sweetalert2'
 import { FavoritesPage } from './pages/FavoritesPage.jsx';
 import { PackageTravelContext } from './context/PackageTravelContext.js';
+import { BookingPage } from './pages/BookingPage.jsx';
+import { BookingHistoryPage } from './pages/BookingHistoryPage.jsx';
+import { WhatsAppButton } from './component/WhatsAppButton.jsx';
 
 export const TierraNativa = () => {
     const SCROLL_THRESHOLD = 500;
@@ -65,7 +68,8 @@ export const TierraNativa = () => {
     const isAuthPage = location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/verify-email';
     const isCategoryPage = location.pathname.startsWith('/categories/categoria/') && location.pathname.split('/').length > 3;
     const isFavoritePage = location.pathname.startsWith('/favorites');
-    const shouldBeSolid = isDetailedPage || isAdminPage || isAuthPage || isCategoryPage || isFavoritePage;
+    const isBookingPage = location.pathname.startsWith('/booking') || location.pathname.startsWith('/my-bookings');
+    const shouldBeSolid = isDetailedPage || isAdminPage || isAuthPage || isCategoryPage || isFavoritePage || isBookingPage;
 
     const onAuthSuccess = (userData) => {
         sessionStorage.setItem('jwtToken', userData.token);
@@ -158,12 +162,17 @@ export const TierraNativa = () => {
                             <Route path='/categories/categoria/:categorySlug/*' element={<CategoryPackagesPage />} />
                             <Route path='/categories' element={<AdminCategory />}></Route>
                             <Route path='/favorites' element={<FavoritesPage isUserLoggedIn={!!user} />}></Route>
+                            <Route path='/booking/:id' element={<BookingPage />}></Route>
+                            <Route path='/my-bookings' element={<BookingHistoryPage />}></Route>
                             <Route path="*" element={<Home isUserLoggedIn={!!user} />} />
                         </Routes>
+
+                        <WhatsAppButton />
                     </div>
-                </div>
+                </div>xs
                 <FooterComponent />
             </div>
+
         </>
     )
 };

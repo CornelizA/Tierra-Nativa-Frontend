@@ -37,6 +37,24 @@
     color: #fff;
 }
 
+.calendar-duration-notice {
+    background-color: rgba(26, 83, 26, 0.15);
+    border: 1.5px solid rgba(26, 83, 26, 0.4);
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.calendar-day-selectable:hover {
+    background-color: rgba(26, 83, 26, 0.25) !important;
+    transform: scale(1.08);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
 
 
 

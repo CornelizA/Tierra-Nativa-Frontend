@@ -86,7 +86,7 @@ export const FavoritesPage = () => {
             {favorites.map((pkg) => {
 
               return (
-                <div key={pkg.id} className="col-12 col-sm-6 col-md-12">
+                <div key={pkg.id} className="col-12 col-sm-6 col-md-4">
                   <PackageTravelCard
                     key={pkg.id}
                     pkg={pkg}

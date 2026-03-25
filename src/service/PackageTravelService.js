@@ -11,6 +11,7 @@ const API_URL_FAVORITES = `${BASE_URL}/favorites`;
 const API_URL_SEARCH = `${BASE_URL}/search`;
 const API_URL_BOOKING = `${BASE_URL}/bookings`;
 const API_URL_REVIEWS = `${BASE_URL}/reviews`;
+const API_URL_CONFIG = `${BASE_URL}/configs`;
 
 axios.interceptors.response.use(
     (response) => response,
@@ -407,10 +408,19 @@ export const apiSearchPackages = async (params) => {
 export const apiPostBooking = async (bookingData) => {
     try {
         const response = await axios.post(API_URL_BOOKING, bookingData, { headers: getHeaders() });
-        fireAlert('¡Reserva creada!', 'Tu solicitud ha sido registrada.', 'success');
         return response.data;
     } catch (error) {
         apiHandleErrorAlert(error, "Error al realizar la reserva.");
+        throw error;
+    }
+};
+
+export const apiGetContactConfig = async () => {
+    try {
+        const response = await axios.get(`${API_URL_CONFIG}/contact`, { headers: getHeaders(false) });
+        return response.data;
+    } catch {
+        return null;
     }
 };
 
@@ -420,6 +430,16 @@ export const apiGetMyBooking = async () => {
         return response.data;
     } catch (error) {
         apiHandleErrorAlert("Error al obtener las reservas", error);
+        throw error;
+    }
+};
+
+export const apiCancelBooking = async (id) => {
+    try {
+        const response = await axios.patch(`${API_URL_BOOKING}/${id}/cancel`, {}, { headers: getHeaders() });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al cancelar la reserva.");
         throw error;
     }
 };

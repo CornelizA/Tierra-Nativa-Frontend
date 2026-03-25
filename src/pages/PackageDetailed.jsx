@@ -18,6 +18,8 @@ export const PackageDetailed = () => {
 
   const [packageTravel, setPackageTravel] = useState(null);
   const [allCharacteristics, setAllCharacteristics] = useState([]);
+  const [selectedStart, setSelectedStart] = useState(null);
+  const [selectedEnd, setSelectedEnd] = useState(null);
   const [showGallery, setShowGallery] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [loadingDetail, setLoadingDetail] = useState(true);
@@ -134,8 +136,7 @@ export const PackageDetailed = () => {
     setLoadingDetail(true);
     setCalendarError(false);
     try {
-      let found = allPackages?.find(pkg => Number(pkg.id) === Number(packageTravelId));
-      if (!found) found = await apiGetPackageById(packageTravelId);
+      const found = await apiGetPackageById(packageTravelId);
       if (found) {
         setPackageTravel(found);
         setCustomMessage(`¡Mira esta aventura en ${found.destination}!`);
@@ -146,7 +147,7 @@ export const PackageDetailed = () => {
       } else { setCalendarError(true); }
     } catch (e) { setCalendarError(true); }
     finally { setLoadingDetail(false); }
-  }, [allPackages, packageTravelId]);
+  }, [packageTravelId]);
 
   useEffect(() => {
     loadDetails();
@@ -699,6 +700,51 @@ export const PackageDetailed = () => {
           </div>
         )}
 
+        <section className="container-calendar p-10 md:p-16 bg-slate-50 rounded-[4rem] mb-20 shadow-inner" style={{ margin: '50px auto 50px auto' }}>
+          <div className="mb-12 text-start">
+            <div className="header-calendar flex items-center gap-3 mb-2">
+              <CalendarIcon className="text-blue-600" size={28} />
+              <h2 className="title-calendar uppercase tracking-tighter m-0">Calendario de Disponibilidad</h2>
+            </div>
+          </div>
+
+          <AvailabilityCalendar
+            availabilityBlocks={packageTravel.availabilityBlocks}
+            selectable={true}
+            numberOfDays={packageTravel.numberOfDays || 1}
+            onRangeSelect={(start, end) => {
+              setSelectedStart(start);
+              setSelectedEnd(end);
+            }}
+          />
+
+          <div className="mt-0 p-4 d-block text-center">
+            <p className="sub-title-calendar medium m-0 fw-bold text-center uppercase tracking-widest " style={{ color: '#fff' }}>
+              ¿Todo listo para tu aventura? <br />
+              Selecciona tus fechas en el calendario y confirma tu reserva.</p>
+
+            <button
+              className="btn btn-success mt-3"
+              disabled={!selectedStart || !selectedEnd}
+              style={{ opacity: (!selectedStart || !selectedEnd) ? 0.65 : 1, borderRadius: '10px', background: '#fff', color: '#1A531A', fontWeight: 'bolder' }}
+              onClick={() => {
+                const isLoggedIn = !!sessionStorage.getItem('jwtToken');
+                if (!isLoggedIn) {
+                  sessionStorage.setItem(
+                    'bookingRedirect',
+                    `/booking/${packageTravelId}?start=${selectedStart}&end=${selectedEnd}`
+                  );
+                  navigate('/login');
+                } else {
+                  navigate(`/booking/${packageTravelId}?start=${selectedStart}&end=${selectedEnd}`);
+                }
+              }}
+            >
+              {(!selectedStart || !selectedEnd) ? 'Selecciona fechas para reservar' : 'Iniciar Reserva'}
+            </button>
+          </div>
+        </section>
+
         <section className="section-characteristic  p-8 md:p-12 shadow-sm ">
           <div className="mb-10">
             <h2 className="title-detailed-characteristic">Características del Paquete</h2>
@@ -726,27 +772,6 @@ export const PackageDetailed = () => {
               </li>
             )}
           </ul>
-        </section>
-
-        <section className="container-calendar p-10 md:p-16 bg-slate-50 rounded-[4rem] mb-20 shadow-inner" style={{ margin: '50px auto 50px auto' }}>
-          <div className="mb-12 text-start">
-            <div className="header-calendar flex items-center gap-3 mb-2">
-              <CalendarIcon className="text-blue-600" size={28} />
-              <h2 className="title-calendar uppercase tracking-tighter m-0">Calendario de Disponibilidad</h2>
-            </div>
-          </div>
-
-          <AvailabilityCalendar availabilityBlocks={packageTravel.availabilityBlocks} />
-
-          <div className="mt-0 p-4 d-block text-center">
-            <p className="sub-title-calendar medium m-0 fw-bold text-center uppercase tracking-widest " style={{ color: '#fff' }}>
-              ¿Todo listo para tu aventura? <br />
-              Consulta el calendario de disponibilidad para planificar tu viaje y asegurar tu lugar.</p>
-
-            <button className="btn btn-success mt-3">
-              Iniciar Reserva
-            </button>
-          </div>
         </section>
 
         <section className="product-details-section" style={{ backgroundColor: '#faf8f035', padding: '50px 0px 50px 0px' }}>
@@ -884,7 +909,7 @@ export const PackageDetailed = () => {
 
           <div className="row g-5">
             <div className="col-12 col-md-4">
-              <div className="p-4 h-100 rounded-4 border" style={{ background: '#fff', }}>
+              <div className="p-4 h-100 rounded-4 border" style={{ background: '#fff' }}>
                 <div className="mb-3" style={{ textAlign: 'center', borderBottom: '2px solid #1A531A' }}>
                   <div className="d-inline-flex align-items-center gap-1">
                     <div className="p-2"><Leaf size={25} color="#1A531A" strokeWidth={3} /></div>

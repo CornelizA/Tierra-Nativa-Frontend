@@ -105,7 +105,7 @@ export const AdminPackageList = ({ onBackToMenu }) => {
             <div className="button-header-row">
                 <button
                     type="button"
-                    className="btn btn-secondary mb-3"
+                    className="btn btn-back-to-list mb-3"
                     onClick={onBackToMenu}
                     style={{
                         display: 'inline-flex',

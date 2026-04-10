@@ -83,7 +83,7 @@ export const Home = ({ isUserLoggedIn }) => {
                 `${packagesToDisplay.length} Experiencias encontradas que coinciden con tu búsqueda`
               ) : (
 
-                <span className="small fw-bold text-center" style={{ padding: '30px', borderRadius: '8px', marginTop: '20px', fontSize: '1.7rem', textAlign: 'center', display: 'inline-block', backgroundColor: '#9ca0a426', width: '500px' }}>
+                <span className="small fw-bold text-center" style={{ padding: '30px', borderRadius: '8px', marginTop: '20px', fontSize: '1.7rem', textAlign: 'center', display: 'inline-block', backgroundColor: '#9ca0a426', width: '100%', maxWidth: '500px' }}>
                   <TriangleAlert size={50} style={{ display: 'block', margin: '0 auto', marginBottom: '10px' }} />
                   No hay paquetes disponibles,
                   <br /> por favor escoja otras fechas.
@@ -107,7 +107,7 @@ export const Home = ({ isUserLoggedIn }) => {
 
             return (
 
-              <div key={pkg.id ?? `pkg-${pkg.name}-${Math.random()}`} className="col-md-4 mb-3">
+              <div key={pkg.id ?? `pkg-${pkg.name}-${Math.random()}`} className="col-sm-4 col-md-6 col-lg-4 mb-3">
                 <PackageTravelCard
                   pkg={pkg}
                   isUserLoggedIn={isUserLoggedIn}

@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { PackageTravelCard } from '../component/PackageTravelCard';
 import { PackageTravelContext } from '../context/PackageTravelContext';
 import '@testing-library/jest-dom';

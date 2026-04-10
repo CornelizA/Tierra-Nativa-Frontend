@@ -8,6 +8,7 @@ export const AvailabilityCalendar = ({
     selectable = false,
     onRangeSelect = null,
     numberOfDays = 1,
+    packageCapacity = 0,
 }) => {
     const today = useMemo(() => new Date(), []);
     const [currentMonth, setCurrentMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -45,23 +46,30 @@ export const AvailabilityCalendar = ({
 
     const bookedDates = useMemo(() => {
         const booked = new Set();
-        if (Array.isArray(availabilityBlocks)) {
-            availabilityBlocks.forEach(block => {
-                if (!block.startDate || !block.endDate) return;
-                if (block.available === false || block.status === 'booked' || !block.available) {
-                    try {
-                        const start = new Date(block.startDate + "T00:00:00");
-                        const end = new Date(block.endDate + "T00:00:00");
-                        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                            booked.add(formatDateLocal(d));
-                        }
-                    } catch {
+        if (!Array.isArray(availabilityBlocks) || availabilityBlocks.length === 0) return booked;
+
+        availabilityBlocks.forEach(block => {
+            if (!block.startDate || !block.endDate) return;
+            if (block.status === 'CANCELLED') return;
+
+            const isFullyBooked = block.available === false;
+
+            const travelers = block.travelerCount ?? block.bookedTravelers ?? block.travelers ?? block.occupiedSpots ?? null;
+            const isOverCapacity = packageCapacity > 0 && travelers !== null && travelers >= packageCapacity;
+
+            if (isFullyBooked || isOverCapacity) {
+                try {
+                    const start = new Date(block.startDate + "T00:00:00");
+                    const end = new Date(block.endDate + "T00:00:00");
+                    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                        booked.add(formatDateLocal(d));
                     }
+                } catch {
                 }
-            });
-        }
+            }
+        });
         return booked;
-    }, [availabilityBlocks]);
+    }, [availabilityBlocks, packageCapacity]);
 
     const hasBookedInRange = (start, end) => {
         const s = new Date(start + "T00:00:00");
@@ -246,10 +254,10 @@ export const AvailabilityCalendar = ({
 
             <div className="row g-4 flex-nowrap overflow-auto pb-3" style={{ minWidth: '320px' }}>
                 <div className="col-12 col-lg-6 d-flex">
-                    {renderMonth(currentMonth, true, false)}
+                    {renderMonth(currentMonth, true, true)}
                 </div>
-                <div className="col-12 col-lg-6 d-flex">
-                    {renderMonth(nextMonthDate, false, true)}
+                <div className="col-12 col-lg-6 d-none d-lg-flex">
+                    {renderMonth(nextMonthDate, false, false)}
                 </div>
             </div>
         </div>

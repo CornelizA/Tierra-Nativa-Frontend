@@ -12,8 +12,8 @@ export const SearchComponent = ({ onFilter }) => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [dateRange, setDateRange] = useState({ start: null, end: null });
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 1, 1));
-  const today = useMemo(() => new Date(2026, 1, 1), []);
+  const today = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
+  const [currentMonth, setCurrentMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
 
   const containerRef = useRef(null);
 
@@ -120,21 +120,23 @@ export const SearchComponent = ({ onFilter }) => {
           {blanks.map(b => <div key={`b-${b}`} className="col" />)}
           {daysArray.map(d => {
             const dateObj = new Date(monthDate.getFullYear(), monthDate.getMonth(), d);
+            const isPast = dateObj < today;
             const isSelected = (dateRange.start && dateObj.toDateString() === dateRange.start.toDateString()) ||
               (dateRange.end && dateObj.toDateString() === dateRange.end.toDateString());
             const isInRange = dateRange.start && dateRange.end && dateObj > dateRange.start && dateObj < dateRange.end;
 
             return (
-
               <div key={d} className="col">
                 <button
                   type="button"
-                  onClick={() => handleDateChange(dateObj)}
+                  onClick={() => !isPast && handleDateChange(dateObj)}
+                  disabled={isPast}
                   className={`btn btn-sm w-100 p-0 border-0 rounded-2 d-flex align-items-center justify-content-center
-                    ${isSelected ? 'btn-success fw-bold shadow-sm' :
+                    ${isPast ? 'text-muted' :
+                      isSelected ? 'btn-success fw-bold shadow-sm' :
                       isInRange ? 'btn-success text-white fw-bold' : 'bg-transparent text-muted hover-bg-light'}
                   `}
-                  style={{ height: '26px', fontSize: '15px' }}
+                  style={{ height: '26px', fontSize: '15px', opacity: isPast ? 0.3 : 1, cursor: isPast ? 'not-allowed' : 'pointer' }}
                 >
                   {d}
                 </button>

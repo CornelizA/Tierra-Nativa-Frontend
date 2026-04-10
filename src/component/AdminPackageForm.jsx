@@ -107,6 +107,10 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         if (!formData.category) { errors.categories = 'La categoría es obligatoria.'; }
         if (!formData.characteristicIds || formData.characteristicIds.length === 0) { errors.characteristics = 'Las características son obligatorias.'; }
 
+        const capacityValue = parseInt(formData.capacity, 10);
+        if (!formData.capacity || isNaN(capacityValue) || capacityValue < 1) {
+            errors.capacity = 'La capacidad es obligatoria y debe ser un número mayor a 0.';
+        }
         if (!formData.destination.trim()) { errors.destination = 'El destino es obligatorio.'; }
 
         const itinerary = formData.itineraryDetail;
@@ -230,10 +234,21 @@ export const AdminPackageForm = ({ packageToEdit, onActionComplete }) => {
         try {
             const { imageDetails, id, ...restOfFormData } = formData;
 
+            const capacityParsed = parseInt(restOfFormData.capacity, 10);
+            const numberOfDaysParsed = parseInt(restOfFormData.numberOfDays, 10);
+
+            if (isNaN(capacityParsed) || capacityParsed < 1) {
+                Swal.close();
+                fireAlert('Error', 'La capacidad debe ser un número válido mayor a 0.', 'error');
+                return;
+            }
+
             const dataToSend = {
                 ...(isEditing && { id: id }),
                 ...restOfFormData,
                 basePrice: parseFloat(restOfFormData.basePrice),
+                capacity: capacityParsed,
+                numberOfDays: isNaN(numberOfDaysParsed) ? null : numberOfDaysParsed,
                 imageDetails: (imageDetails || [])
                     .filter(img => img.url.trim() !== '')
                     .map(img => ({

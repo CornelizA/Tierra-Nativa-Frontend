@@ -13,7 +13,7 @@ export const WhatsAppButton = () => {
                 if (data && data.whatsapp) {
                     setContact(data);
                 }
-            } catch {
+            } catch (error) {
             }
         };
         loadContact();
@@ -22,9 +22,10 @@ export const WhatsAppButton = () => {
     if (!contact) return null;
 
     const handleClick = () => {
-        const message = encodeURIComponent(
-            '¡Hola Tierra Nativa! 🌿 Me encantaría conocer más sobre sus experiencias y paquetes turísticos para planificar mi próxima aventura.'
-        );
+
+        const text = "¡Hola Tierra Nativa! Me encantaría conocer más sobre sus experiencias y paquetes turísticos para planificar mi próxima aventura.";
+        const message = encodeURIComponent(text);
+
         Swal.fire({
             title: '¡Redirigiendo!',
             text: 'Te estamos conectando con un asesor de Tierra Nativa.',

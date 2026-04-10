@@ -111,7 +111,7 @@ export const AdminUserList = ({ onLogout, onBackToMenu }) => {
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
                 <ArrowLeft size={18} />
-                Volver al Menú Principal
+                Volver al Menú 
             </button>
 
             <h1 className="text-3xl p-4 border-b pb-2">
@@ -157,7 +157,7 @@ export const AdminUserList = ({ onLogout, onBackToMenu }) => {
                         <thead className="icons-svg">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider flex items-center gap-1">
-                                    <User size={20} className="inline-block" /> Nombre Completo
+                                    <User size={20} className="inline-block" /> Usuario
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider flex items-center gap-1">
                                     <Mail size={20} className="inline-block " /> Correo Electrónico

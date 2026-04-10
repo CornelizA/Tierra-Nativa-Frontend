@@ -29,11 +29,16 @@ describe('AdminCharacteristic Component', () => {
         Object.defineProperty(window, 'sessionStorage', {
             value: {
                 getItem: jest.fn((key) => sessionStore[key] || null),
+                setItem: jest.fn((key, val) => { sessionStore[key] = val; }),
+                removeItem: jest.fn((key) => { delete sessionStore[key]; }),
+                clear: jest.fn(() => { Object.keys(sessionStore).forEach(k => delete sessionStore[k]); }),
             },
             writable: true
         });
 
         PackageService.apiGetCharacteristics.mockResolvedValue(mockCharacteristics);
+        PackageService.apiPostCharacteristic.mockResolvedValue({ id: 99, title: 'Piscina climatizada', icon: 'star' });
+        PackageService.apiUpdateCharacteristic.mockResolvedValue({});
         PackageService.fireAlert.mockResolvedValue({ isConfirmed: true });
     });
 
@@ -91,8 +96,8 @@ describe('AdminCharacteristic Component', () => {
         const titleInput = await screen.findByPlaceholderText('Ej: WiFi Gratis');
         fireEvent.change(titleInput, { target: { value: 'piscina climatizada' } });
 
-        const saveBtn = screen.getByText('Guardar característica');
-        fireEvent.click(saveBtn);
+        const form = document.querySelector('form');
+        fireEvent.submit(form);
 
         await waitFor(() => {
             expect(PackageService.apiPostCharacteristic).toHaveBeenCalledWith(

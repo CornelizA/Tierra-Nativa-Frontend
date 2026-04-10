@@ -13,6 +13,7 @@ jest.mock('../service/PackageTravelService', () => ({
     apiUpdateReview: jest.fn(),
     apiDeleteReview: jest.fn(),
     apiToggleFavorite: jest.fn(),
+    apiGetMyBooking: jest.fn(),
     fireAlert: jest.fn(),
 }));
 
@@ -52,10 +53,10 @@ const mockReviews = [
 const renderWithContext = (packageId, packages = [mockPackage], favoriteIds = new Set()) => {
     return render(
         <MemoryRouter initialEntries={[`/detallePaquete/${packageId}`]}>
-            <PackageTravelContext.Provider value={{ 
-                packageTravel: packages, 
+            <PackageTravelContext.Provider value={{
+                packageTravel: packages,
                 favoriteIds: favoriteIds,
-                updateFavoriteInContext: jest.fn() 
+                updateFavoriteInContext: jest.fn()
             }}>
                 <Routes>
                     <Route path="/detallePaquete/:id" element={<PackageDetailed />} />
@@ -73,6 +74,9 @@ describe('PackageDetailed Page Integration', () => {
         PackageService.apiGetCharacteristics.mockResolvedValue(mockCharacteristics);
         PackageService.apiGetPackageById.mockResolvedValue(mockPackage);
         PackageService.apiGetReviews.mockResolvedValue(mockReviews);
+        PackageService.apiGetMyBooking.mockResolvedValue([
+            { id: 99, packageId: 1, status: 'FINISHED' }
+        ]);
     });
 
     afterEach(cleanup);
@@ -128,11 +132,11 @@ describe('PackageDetailed Page Integration', () => {
         const openFormBtn = await screen.findByText(/\+ Publicar mi experiencia/i);
         fireEvent.click(openFormBtn);
 
-         const textarea = screen.getByPlaceholderText(/Cuéntanos los detalles/i);
+        const textarea = screen.getByPlaceholderText(/Cuéntanos los detalles\.\.\./i);
         fireEvent.change(textarea, { target: { value: 'Una experiencia inolvidable de prueba.' } });
 
         const starButtons = screen.getAllByRole('button').filter(b => b.querySelector('svg'));
-        fireEvent.click(starButtons[4]); 
+        fireEvent.click(starButtons[4]);
 
         const submitBtn = screen.getByText(/Guardar mi Valoración/i);
         fireEvent.click(submitBtn);
@@ -146,11 +150,11 @@ describe('PackageDetailed Page Integration', () => {
     it('should call apiDeleteReview when trash icon is clicked and confirmed', async () => {
         PackageService.fireAlert.mockResolvedValue({ isConfirmed: true });
         PackageService.apiDeleteReview.mockResolvedValue({ success: true });
-        
+
         const { container } = renderWithContext('1');
 
-        await screen.findAllByText(/Juan Pérez/i); 
-        
+        await screen.findAllByText(/Juan Pérez/i);
+
         const trashIcon = container.querySelector('.lucide-trash2');
         fireEvent.click(trashIcon.closest('button'));
 
@@ -159,7 +163,6 @@ describe('PackageDetailed Page Integration', () => {
             expect(PackageService.apiGetPackageById).toHaveBeenCalled();
         });
     });
-
 
 
     it('should navigate to home if user logs out while on the page', async () => {
@@ -175,13 +178,13 @@ describe('PackageDetailed Page Integration', () => {
                 </PackageTravelContext.Provider>
             </MemoryRouter>
         );
-        await waitFor(() => {            
-        expect(window.location.pathname).toBe('/'); 
+        await waitFor(() => {
+            expect(window.location.pathname).toBe('/');
         });
     });
 
     it('should call apiGetPackageById if package is not in context list', async () => {
-        renderWithContext('1', []); 
+        renderWithContext('1', []);
         await waitFor(() => {
             expect(PackageService.apiGetPackageById).toHaveBeenCalledWith('1');
         });

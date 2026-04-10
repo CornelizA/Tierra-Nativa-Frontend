@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { apiGetMyBooking, apiCancelBooking, fireAlert } from '../service/PackageTravelService';
-import { CalendarIcon, MapPin, Star, CheckCircle, ArrowUpDown, XCircle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { CalendarIcon, MapPin, Star, CheckCircle, ArrowUpDown, XCircle, ArrowLeft, ArrowRight, Users } from 'lucide-react';
 import '../style/BookingHistoryPage.css';
 
 const STATUS_LABEL = {
@@ -20,7 +20,10 @@ const STATUS_CLASS = {
 const formatDate = (dateStr) => {
     if (!dateStr) return null;
     try {
-        return new Date(dateStr).toLocaleDateString('es-AR', {
+        const normalized = dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00';
+        const date = new Date(normalized);
+        if (isNaN(date.getTime())) return dateStr;
+        return date.toLocaleDateString('es-AR', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
@@ -97,7 +100,7 @@ export const BookingHistoryPage = () => {
             setBookings(prev =>
                 prev.map(b => b.id === bookingId ? { ...b, status: 'CANCELLED' } : b)
             );
-            fireAlert('Reserva cancelada', 'Tu reserva ha sido cancelada exitosamente.', 'success');
+            fireAlert('Reserva cancelada', 'Tu reserva ha sido cancelada. Te hemos enviado un correo electrónico con la confirmación de la anulación.', 'success');
         } catch {
         } finally {
             setCancellingId(null);
@@ -192,6 +195,8 @@ export const BookingHistoryPage = () => {
                                 const startDate = booking.startDate || booking.fechaInicio;
                                 const endDate = booking.endDate || booking.fechaFin;
                                 const createdAt = booking.creationDate || null;
+                                const travelerCount = booking.travelerCount ?? null;
+                                const totalPrice = booking.totalPrice ?? null;
                                 const isReviewed = booking.reviewed === true || booking.hasReview === true;
 
                                 return (
@@ -215,6 +220,12 @@ export const BookingHistoryPage = () => {
                                                     <div className="history-detail">
                                                         <CalendarIcon size={15} color="#1A531A" />
                                                         <span>{startDate} → {endDate}</span>
+                                                    </div>
+                                                )}
+                                                {travelerCount && (
+                                                    <div className="history-detail">
+                                                        <Users size={15} color="#1A531A" />
+                                                        <span>{travelerCount} {travelerCount === 1 ? 'viajero' : 'viajeros'}{totalPrice ? ` — $${totalPrice.toLocaleString('es-AR')}` : ''}</span>
                                                     </div>
                                                 )}
                                                 {createdAt && (

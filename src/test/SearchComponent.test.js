@@ -17,6 +17,7 @@ jest.mock('lucide-react', () => ({
     Settings2: () => <div data-testid="settings-icon" />,
     ShieldAlert: () => <div data-testid="shield-icon" />,
     Laptop: () => <div data-testid="laptop-icon" />,
+    BookMarked: () => <div data-testid="bookmarked-icon" />,
     MapPin: () => <div data-testid="map-pin-icon" />,
     Calendar: () => <div data-testid="calendar-icon" />,
     ArrowRight: () => <div data-testid="arrow-right-icon" />,

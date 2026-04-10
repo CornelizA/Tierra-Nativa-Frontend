@@ -273,7 +273,7 @@ export const AdminCategory = ({ onBackToMenu }) => {
                                 <th>ID</th>
                                 <th>Título</th>
                                 <th>Descripción</th>
-                                <th>Imagen (Preview)</th>
+                                <th>Imagen</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>

@@ -276,7 +276,9 @@
     }
 
     .map-image {
-        height: 300px;
+        height: auto;
+        max-width: 100%;
+        object-fit: contain;
     }
 
     .destination-content h3 {
@@ -318,12 +320,13 @@
     }
 
     .package-home {
-        padding: 10px 20px;
+        padding: 10px 15px;
     }
+
 
     .flip-card {
         height: 300px;
-        margin-bottom: 20px;
+        margin-bottom: 8px;
     }
 
     .card-title {
@@ -429,25 +432,6 @@
     .react-datepicker__month-container {
         width: 300px !important;
     }
-
-    .flip-card {
-        height: 320px !important;
-    }
-
-    .back-title {
-        font-size: 1rem !important;
-        margin-bottom: 0.5rem !important;
-    }
-
-    .back-description {
-        font-size: 0.75rem !important;
-        line-height: 1.3 !important;
-        margin-bottom: 1rem !important;
-    }
-
-    .front-title {
-        font-size: 1.1rem !important;
-    }
 }
 
 @media (min-width: 769px) and (max-width: 1023px) {
@@ -502,7 +486,19 @@
     }
 
     .map-image {
-        height: 400px;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .map-column {
+        flex: 1 1 50%;
+        min-height: 350px;
+    }
+
+    .map-image-container {
+        width: 100%;
+        height: 100%;
     }
 
     .tn-navbar .nav-item a.nav-link {
@@ -537,39 +533,6 @@
 
     .package-home {
         padding: 0 20px;
-    }
-
-    .package-card {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 25px !important;
-        padding: 0 30px !important;
-        margin: auto;
-    }
-
-    .flip-card {
-        width: 100% !important;
-        max-width: 320px;
-        margin: 0 auto;
-        height: 320px !important;
-    }
-
-    .back-title {
-        font-size: 0.95rem !important;
-        margin-bottom: 0.4rem !important;
-    }
-
-    .back-description {
-        font-size: 0.7rem !important;
-        line-height: 1.2 !important;
-        margin-bottom: 0.5rem !important;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .front-title {
-        font-size: 1.1rem !important;
     }
 
     .footer-main-layout {
@@ -683,23 +646,35 @@
     }
 
     .map-slider-section h2 {
-        font-size: 1.2rem;
-        padding: 30px 5px;
+        font-size: 1.8rem;
+        padding: 40px 16px;
+    }
+
+    .package-home {
+        padding: 25px 40px;
+    }
+
+    .package-home .col-md-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    .back-title {
+        font-size: 0.95rem !important;
+        margin-bottom: 0.4rem !important;
+    }
+
+    .back-description {
+        font-size: 0.7rem !important;
+        line-height: 1.2 !important;
+        margin-bottom: 0.5rem !important;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .hero-section {
         height: 100vh;
-    }
-
-    .flip-card {
-        height: 335px;
-        margin-bottom: 0;
-        margin-top: 30px;
-    }
-
-    .package-home {
-        padding: 0 10px;
-        margin: auto;
     }
 
     .map-layout {
@@ -712,7 +687,17 @@
     }
 
     .map-slider-section {
-        padding-bottom: 0;
+        padding-top: 10px;
+        padding-bottom: 30px;
+    }
+
+    .destination-content h3 {
+        font-size: 1.6rem;
+        padding: 8px 5px;
+    }
+
+    .destination-content p {
+        font-size: 1rem;
     }
 
     .navbar-transparent .navbar-collapse {
@@ -732,10 +717,6 @@
 
     .search-input-field {
         font-size: 16px !important;
-    }
-
-    .flip-card {
-        height: 380px;
     }
 
     .search-container-box {

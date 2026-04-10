@@ -49,23 +49,18 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout, cat
                         <br />
                         {firstName} {lastName}
                     </li>
-
                     <li><hr className="dropdown-divider" /></li>
-                    <li>
-                        <NavLink to="/favorites" className="dropdown-item">
-                            Mis Favoritos
-                        </NavLink>
-
-                        <NavLink to="/my-bookings" className="dropdown-item">
-                          Mis Reservas
-                        </NavLink>
-                    </li>
-                    {role === 'ADMIN' && (
+                    {role === 'ADMIN' ? (
                         <li>
                             <NavLink to="/paquetes/admin" className="dropdown-item">Panel Admin</NavLink>
                         </li>
-
+                    ) : (
+                        <li>
+                            <NavLink to="/favorites" className="dropdown-item">Mis Favoritos</NavLink>
+                            <NavLink to="/my-bookings" className="dropdown-item">Mis Reservas</NavLink>
+                        </li>
                     )}
+                    <li><hr className="dropdown-divider" /></li>
                     <li>
                         <button onClick={onLogout} className="dropdown-item text">Cerrar Sesión</button>
                     </li>

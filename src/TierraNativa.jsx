@@ -7,6 +7,7 @@ import { useEffect, useState, useContext } from 'react';
 import { FooterComponent } from './component/FooterComponent.jsx';
 import { useLocation } from 'react-router-dom';
 import { AdminDashboard } from './component/AdminDashboard.jsx';
+import { AdminBookingList } from './component/AdminBookingList.jsx';
 import { LoginView } from './component/LoginView.jsx';
 import { RegisterView } from './component/RegisterView.jsx';
 import { VerifyEmailView } from './component/VerifyEmailView.jsx';
@@ -93,7 +94,8 @@ export const TierraNativa = () => {
         if (typeof syncFavorites === 'function') {
             syncFavorites();
         }
-        if (typeof Swal !== 'undefined') {
+        window.location.replace('/home');
+        setTimeout(() => {
             Swal.fire({
                 title: 'Sesión cerrada.',
                 text: '¡Regresa pronto!',
@@ -102,10 +104,11 @@ export const TierraNativa = () => {
                 customClass: {
                     confirmButton: 'btn btn-outline-success border mx-2'
                 },
-                buttonsStyling: false
+                buttonsStyling: false,
+                timer: 2500,
+                timerProgressBar: true,
             });
-        }
-        window.location.href = '/home';
+        }, 100);
     };
 
     useEffect(() => {
@@ -156,6 +159,7 @@ export const TierraNativa = () => {
                                 </ErrorBoundary>
                             }></Route>
                             <Route path='/paquetes/admin' element={<AdminDashboard onLogout={handleLogout} />}></Route>
+                            <Route path='/paquetes/admin/reservas' element={<AdminBookingList />}></Route>
                             <Route path='/login' element={<LoginView onAuthSuccess={onAuthSuccess} />}></Route>
                             <Route path='/register' element={<RegisterView onAuthSuccess={onAuthSuccess} />}></Route>
                             <Route path='/verify-email' element={<VerifyEmailView />}></Route>

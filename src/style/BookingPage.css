@@ -45,7 +45,6 @@
     align-items: start;
 }
 
-
 .booking-section {
     background-color: #fff;
     border: 2px solid rgb(231, 224, 199);
@@ -121,7 +120,6 @@
     margin-top: 4px;
 }
 
-/* Buttons */
 .booking-btn-primary {
     display: block;
     width: 100%;
@@ -206,7 +204,6 @@
     font-size: 0.95rem;
     margin-bottom: 10px;
 }
-
 
 .booking-summary-detail strong {
     color: #1A531A;
@@ -294,7 +291,6 @@
     margin-top: 1px;
 }
 
-/* Phone input (editable) */
 .booking-input-editable {
     background-color: #fff;
     color: #333;
@@ -307,7 +303,6 @@
     font-size: 0.82rem;
 }
 
-/* Terms section */
 .booking-terms-section {
     margin-bottom: 0;
 }
@@ -380,7 +375,6 @@
     margin-top: 6px;
 }
 
-/* Error banner */
 .booking-error-banner {
     display: flex;
     align-items: center;
@@ -395,7 +389,6 @@
     margin-top: 16px;
 }
 
-/* Responsive */
 @media (max-width: 900px) {
     .booking-content {
         grid-template-columns: 1fr;
@@ -404,6 +397,26 @@
     .booking-summary-column {
         position: static;
         order: -1;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .booking-header {
+        margin-bottom: 24px;
+    }
+
+    .booking-page-title {
+        margin-top: 20px;
+    }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+    .booking-header {
+        margin-bottom: 24px;
+    }
+
+    .booking-page-title {
+        margin-top: 20px;
     }
 }
 

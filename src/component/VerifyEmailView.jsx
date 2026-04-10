@@ -63,14 +63,16 @@ export const VerifyEmailView = () => {
 
         <div className="auth-container flex items-center justify-center min-h-[70vh] p-4">
             <div className="auth-card max-w-2xl p-8 rounded-xl shadow-2xl bg-white">
-                <button
-                    onClick={() => navigate('/login')}
-                    className="btn btn-back-to-list"
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                >
-                    <ArrowLeft size={20} />
-                    Volver al Login
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '20px' }}>
+                    <button
+                        onClick={() => navigate('/login')}
+                        className="btn btn-back-to-list"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                    >
+                        <ArrowLeft size={20} />
+                        Volver al Login
+                    </button>
+                </div>
 
                 <h3 className="auth-title-verify">
                     Verifica tu Correo
@@ -139,7 +141,7 @@ export const VerifyEmailView = () => {
                                 <button
                                     type="submit"
                                     disabled={resendLoading}
-                                    className={`auth-button-verify flex py-2 px-4 rounded-lg font-semibold text-white transition duration-300 ${resendLoading
+                                    className={`auth-button-verify py-2 px-4 rounded-lg font-semibold text-white transition duration-300 d-block mx-auto ${resendLoading
                                         ? 'bg-green-400 cursor-not-allowed'
                                         : 'bg-green-600 hover:bg-green-700 shadow-lg'
                                         }`}

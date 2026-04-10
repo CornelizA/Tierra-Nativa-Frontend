@@ -82,11 +82,11 @@ export const FavoritesPage = () => {
           </div>
         ) : (
 
-          <div className="package-card row g-4">
+          <div className="package-card row g-4 justify-content-center">
             {favorites.map((pkg) => {
 
               return (
-                <div key={pkg.id} className="col-12 col-sm-6 col-md-4">
+                <div key={pkg.id} className="col-12 col-md-12 col-lg-4 mb-4">
                   <PackageTravelCard
                     key={pkg.id}
                     pkg={pkg}

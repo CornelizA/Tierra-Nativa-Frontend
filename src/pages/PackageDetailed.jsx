@@ -3,18 +3,18 @@ import { useContext, useEffect, useState, useCallback, useMemo, useRef } from "r
 import { useNavigate, useParams } from "react-router-dom";
 import '../style/PackageDetailed.css';
 import '../style/AvailabilityCalendar.css';
-import { Clock, Tent, Car, Utensils, Circle, Star, AlertTriangle, RefreshCw, CalendarIcon, Loader2, Info, ShieldAlert, Leaf, BadgeCheck, TextAlignStart, Share2, X, Copy, Check, MessageSquare, UserCircle, Pencil, Trash2, ChevronRight, MessageCircle, ChevronLeft, Heart } from 'lucide-react';
+import { Clock, Tent, Car, Utensils, Circle, Star, AlertTriangle, RefreshCw, CalendarIcon, Loader2, Info, ShieldAlert, Leaf, BadgeCheck, TextAlignStart, Share2, X, Copy, Check, UserCircle, Pencil, Trash2, ChevronRight, MessageCircle, ChevronLeft, Heart } from 'lucide-react';
 import { IconLibrary } from '../component/AdminCharacteristic';
 import { AvailabilityCalendar } from '../component/AvailabilityCalendar';
-import { apiGetCharacteristics, apiGetPackageById, apiGetReviews, apiPostReview, fireAlert, apiToggleFavorite, apiUpdateReview, apiDeleteReview } from "../service/PackageTravelService";
+import { apiGetCharacteristics, apiGetPackageById, apiGetReviews, apiPostReview, fireAlert, apiToggleFavorite, apiUpdateReview, apiDeleteReview, apiGetMyBooking } from "../service/PackageTravelService";
 
 export const PackageDetailed = () => {
   const params = useParams();
   const packageTravelId = params?.id || params?.packageId || null;
   const navigate = useNavigate();
 
-  const { packageTravel: allPackages, favoriteIds, updateFavoriteInContext
-  } = useContext(PackageTravelContext) || { packageTravel: [], favoriteIds: new Set() };
+  const { favoriteIds, updateFavoriteInContext
+  } = useContext(PackageTravelContext) || { favoriteIds: new Set() };
 
   const [packageTravel, setPackageTravel] = useState(null);
   const [allCharacteristics, setAllCharacteristics] = useState([]);
@@ -37,6 +37,7 @@ export const PackageDetailed = () => {
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [editingReviewId, setEditingReviewId] = useState(null);
   const [loadingFav, setLoadingFav] = useState(false);
+  const [hasFinishedBooking, setHasFinishedBooking] = useState(false);
 
   const FALLBACK_URL = 'https://images.pexels.com/photos/17217435/pexels-photo-17217435.jpeg';
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -144,6 +145,16 @@ export const PackageDetailed = () => {
           const reviews = await apiGetReviews(packageTravelId);
           setReviewsList(Array.isArray(reviews) ? reviews : []);
         } catch (revErr) { setReviewsList([]); }
+        if (sessionStorage.getItem('jwtToken')) {
+          try {
+            const myBookings = await apiGetMyBooking();
+            const finished = Array.isArray(myBookings) && myBookings.some(b =>
+              b.status === 'FINISHED' &&
+              (b.packageId === Number(packageTravelId) || b.package?.id === Number(packageTravelId))
+            );
+            setHasFinishedBooking(finished);
+          } catch { setHasFinishedBooking(false); }
+        }
       } else { setCalendarError(true); }
     } catch (e) { setCalendarError(true); }
     finally { setLoadingDetail(false); }
@@ -164,12 +175,7 @@ export const PackageDetailed = () => {
   }, []);
 
   const handleCopyLink = () => {
-    const el = document.createElement('textarea');
-    el.value = shareUrl;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
+    navigator.clipboard.writeText(shareUrl).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -312,7 +318,7 @@ export const PackageDetailed = () => {
   return (
     <>
       <header className="detail-header-block" style={{ paddingTop: '70px' }}>
-        <div className="header-content-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="header-content-wrapper">
           <h1 className="product-title" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {packageTravel.name}
 
@@ -324,6 +330,7 @@ export const PackageDetailed = () => {
               style={{ marginBottom: '10px', marginRight: '15px', cursor: 'pointer', padding: '10px', marginTop: '10px' }}
             >
               <Heart
+                className="detail-fav-icon"
                 size={32}
                 fill={isFavorite ? "#fff" : "none"}
                 stroke={isFavorite ? "#fff" : "currentColor"}
@@ -332,7 +339,7 @@ export const PackageDetailed = () => {
             </button>
           </h1>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="header-actions-group">
             <button className="back-button"
               onClick={() => navigate(-1)} aria-label="Volver">
               &larr; Volver
@@ -340,8 +347,7 @@ export const PackageDetailed = () => {
 
             <button
               onClick={() => setShowShare(true)}
-              className="btn btn-light"
-              style={{ padding: '8px 15px', alignItems: 'center', marginTop: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '1.3rem', borderRadius: '5px', transition: 'background-color 0.3s' }}
+              className="btn btn-light share-button"
             >
               <Share2 size={20} strokeWidth={3} style={{ paddingRight: '4px' }} /> Compartir
             </button>
@@ -354,7 +360,7 @@ export const PackageDetailed = () => {
           <div className="col-lg-9 p-0">
             <div className="gallery-layout">
               <div className="main-image-container">
-                <img src={mainUrl} alt="main" className="" style={{ width: '500px', borderRadius: '12px', height: '100%', objectFit: 'cover' }} />
+                <img src={mainUrl} alt="main" className="main-image" style={{ width: '500px', borderRadius: '12px', height: '100%', objectFit: 'cover' }} />
               </div>
 
               <div className="secondary-images-grid">
@@ -373,8 +379,8 @@ export const PackageDetailed = () => {
           </div>
 
 
-          <div className="col-lg-3 font-black"
-            style={{ height: '500px', justifyContent: 'center', display: 'flex', flexDirection: 'column', paddingLeft: '20px' }} >
+          <div className="col-lg-3 font-black detail-reviews-col">
+
             <div
               data-bs-toggle="offcanvas"
               data-bs-target="#offcanvasReviews"
@@ -474,14 +480,20 @@ export const PackageDetailed = () => {
               <div className="mb-10">
 
                 {!showReviewForm ? (
-                  <button
-                    onClick={() => setShowReviewForm(true)}
-                    className="btn btn-success"
-                    style={{ fontSize: '1.1rem', fontWeight: 'bold', backgroundColor: '#1A531A', color: '#FAF8F0', borderRadius: '12px', marginTop: '15px', marginBottom: '15px' }} >
-
-                    + Publicar mi experiencia
-
-                  </button>
+                  <div title={!hasFinishedBooking ? 'Solo puedes publicar una reseña si tienes una reserva finalizada para este paquete.' : ''}>
+                    <button
+                      onClick={() => setShowReviewForm(true)}
+                      className="btn btn-success"
+                      disabled={!hasFinishedBooking}
+                      style={{ fontSize: '1.1rem', fontWeight: 'bold', backgroundColor: hasFinishedBooking ? '#1A531A' : '#aaa', color: '#FAF8F0', borderRadius: '12px', marginTop: '15px', marginBottom: '5px', cursor: hasFinishedBooking ? 'pointer' : 'not-allowed', opacity: hasFinishedBooking ? 1 : 0.65 }} >
+                      + Publicar mi experiencia
+                    </button>
+                    {!hasFinishedBooking && (
+                      <p style={{ fontSize: '0.78rem', color: '#888', margin: '0 0 10px 0' }}>
+                        Debes tener una reserva finalizada para este paquete.
+                      </p>
+                    )}
+                  </div>
                 ) : (
                   <form onSubmit={handleSubmitReview} className="p-6 rounded-3xl  text-start" >
                     <div className="flex inline items-center mb-3"
@@ -523,7 +535,7 @@ export const PackageDetailed = () => {
                       value={userComment}
                       onChange={(e) => setUserComment(e.target.value)}
                       className=" p-3 border rounded-xl italic  shadow-inner"
-                      style={{ width: '551px', background: '#fff', color: '#333' }}
+                      style={{ width: '100%', background: '#fff', color: '#333' }}
                       placeholder="Cuéntanos los detalles..."
                       rows="3" />
 
@@ -590,18 +602,18 @@ export const PackageDetailed = () => {
             <div className="rounded-5 overflow-hidden shadow-2xl relative d-flex flex-column flex-md-row animate-in fade-in zoom-in duration-300"
               style={{ background: '#fff', width: '90%', maxWidth: '1500px', maxHeight: '600px' }}>
 
-              <div className="col-md-5"><img src={mainUrl} className="w-100 h-100 object-cover" alt="prev" /></div>
-              <div className="col-md-6 p-4 text-start" style={{ width: '650px', marginLeft: '15px' }}>
+              <div className="col-md-5 share-modal-image"><img src={mainUrl} className="w-100 h-100 object-cover" alt="prev" /></div>
+              <div className="col-md-6 p-4 text-start share-modal-body">
                 <h3 className="h4 fw-black uppercase italic mb-3"
                   style={{ fontSize: '2rem', color: '#1A531A', fontWeight: 'bolder', paddingTop: '20px' }}>Compartir Experiencia</h3>
 
-                <p className=" mb-4" style={{ color: '#333', fontSize: '1.1rem', width: '650px' }}>{packageTravel.shortDescription}</p>
+                <p className=" mb-4" style={{ color: '#333', fontSize: '1.1rem', width: '100%' }}>{packageTravel.shortDescription}</p>
                 <label className="medium fw-bold text-muted uppercase tracking-widest mb-1">Tu Mensaje</label>
                 <textarea value={customMessage} onChange={(e) => setCustomMessage(e.target.value)}
                   className="form-control mb-4 rounded-4 border-0 italic"
-                  style={{ width: '650px', background: '#9ca0a426', border: '1px solid #9ca0a4' }} rows="3" />
+                  style={{ width: '100%', background: '#9ca0a426', border: '1px solid #9ca0a4' }} rows="3" />
 
-                <div className="d-flex gap-3 mb-4">
+                <div className="d-flex gap-3 mb-4 flex-wrap">
                   <a href={shareLinks.facebook} target="_blank" rel="noreferrer" className="btn btn-primary rounded-circle p-0 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
                     {getSocialIcon("M12 2C6.47 2 2 6.47 2 12c0 5.09 3.69 9.3 8.5 9.87V15h-2.5v-3H10V9.8c0-2.73 1.64-4.5 4.1-4.5 1.15 0 2.22.2 2.53.29V8h-1.6c-1.3 0-1.56.62-1.56 1.53V12h3l-0.5 3h-2.5v6.87C18.31 21.3 22 17.09 22 12c0-5.53-4.47-10-10-10z")}
                   </a>
@@ -626,7 +638,7 @@ export const PackageDetailed = () => {
                 </div>
 
                 <div className="d-flex align-items-center gap-2 p-2 rounded-4 border"
-                  style={{ width: '650px', background: '#9ca0a426', border: '1px solid #9ca0a4', marginBottom: '20px' }}>
+                  style={{ width: '100%', background: '#9ca0a426', border: '1px solid #9ca0a4', marginBottom: '20px' }}>
                   <span className="small text-muted truncate flex-grow-1 ps-2">{shareUrl}</span>
 
                   <button
@@ -665,33 +677,32 @@ export const PackageDetailed = () => {
               </button>
             </div>
 
-            <div className="d-flex align-items-center justify-content-center w-100 px-5 flex-grow-1"
+            <div className="gallery-main-area d-flex align-items-center justify-content-center w-100 flex-grow-1"
               style={{ background: '#9ca0a426', paddingTop: '50px' }}>
 
               <button
                 onClick={handlePrevImage}
-                className="btn btn-link text-white p-3 hover:bg-white/10 rounded-circle border-0 shadow-none">
+                className="gallery-nav-btn btn btn-link text-white p-3 hover:bg-white/10 rounded-circle border-0 shadow-none">
                 <ChevronLeft size={48} strokeWidth={3} />
               </button>
 
-              <div className="mx-4 position-relative" style={{ maxWidth: '80%', maxHeight: '65vh' }}>
-                <img src={allImg[activeImageIndex]?.url} className="rounded-4 shadow-2xl animate-in fade-in zoom-in duration-500" style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '65vh', objectFit: 'contain' }} alt="gallery" />
+              <div className="gallery-img-wrapper mx-4 position-relative">
+                <img src={allImg[activeImageIndex]?.url} className="gallery-main-img rounded-4 shadow-2xl animate-in fade-in zoom-in duration-500" style={{ objectFit: 'contain' }} alt="gallery" />
               </div>
 
               <button
                 onClick={handleNextImage}
-                className="btn btn-link text-white p-3 hover:bg-white/10 rounded-circle border-0 shadow-none">
+                className="gallery-nav-btn btn btn-link text-white p-3 hover:bg-white/10 rounded-circle border-0 shadow-none">
                 <ChevronRight size={48} strokeWidth={3} />
               </button>
             </div>
 
-            <div className="w-100 bg-black/40 py-4 px-4 overflow-x-auto d-flex gap-3 justify-content-center custom-scrollbar"
+            <div className="gallery-thumbs-strip w-100 overflow-x-auto d-flex gap-3 justify-content-center custom-scrollbar"
               style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
               {allImg.map((img, idx) => (
                 <div key={idx}
                   onClick={() => setActiveImageIndex(idx)}
-                  className={`rounded-3 overflow-hidden cursor-pointer transition-all ${idx === activeImageIndex ? 'border border-4 border-blue-500 scale-110 shadow-lg' : 'opacity-40 hover:opacity-100'}`}
-                  style={{ width: '80px', height: '60px', flexShrink: 0 }}>
+                  className={`gallery-thumb rounded-3 overflow-hidden cursor-pointer transition-all ${idx === activeImageIndex ? 'border border-4 border-blue-500 scale-110 shadow-lg' : 'opacity-40 hover:opacity-100'}`}>
                   <img src={img.url}
                     className="w-100 h-100 object-cover"
                     alt="thumb" /></div>
@@ -701,9 +712,9 @@ export const PackageDetailed = () => {
         )}
 
         <section className="container-calendar p-10 md:p-16 bg-slate-50 rounded-[4rem] mb-20 shadow-inner" style={{ margin: '50px auto 50px auto' }}>
-          <div className="mb-12 text-start">
-            <div className="header-calendar flex items-center gap-3 mb-2">
-              <CalendarIcon className="text-blue-600" size={28} />
+          <div className="mb-12 text-center">
+            <div className="header-calendar mb-2">
+              <CalendarIcon className="text-blue-600 calendar-header-icon" size={28} />
               <h2 className="title-calendar uppercase tracking-tighter m-0">Calendario de Disponibilidad</h2>
             </div>
           </div>
@@ -712,6 +723,7 @@ export const PackageDetailed = () => {
             availabilityBlocks={packageTravel.availabilityBlocks}
             selectable={true}
             numberOfDays={packageTravel.numberOfDays || 1}
+            packageCapacity={packageTravel.capacity || 0}
             onRangeSelect={(start, end) => {
               setSelectedStart(start);
               setSelectedEnd(end);
@@ -912,7 +924,7 @@ export const PackageDetailed = () => {
               <div className="p-4 h-100 rounded-4 border" style={{ background: '#fff' }}>
                 <div className="mb-3" style={{ textAlign: 'center', borderBottom: '2px solid #1A531A' }}>
                   <div className="d-inline-flex align-items-center gap-1">
-                    <div className="p-2"><Leaf size={25} color="#1A531A" strokeWidth={3} /></div>
+                    <div className="p-2"><Leaf size={40} color="#1A531A" strokeWidth={2.5} /></div>
                     <h4 className="uppercase tracking-tight m-0"
                       style={{ fontSize: '1.875rem', color: '#1A531A', fontWeight: 'bold' }}
                     >Medio Ambiente</h4>
@@ -937,7 +949,7 @@ export const PackageDetailed = () => {
               <div className="p-4 h-100 rounded-4 border border-slate-100 transition-all hover:shadow-lg" style={{ background: '#fff' }}>
                 <div className="mb-3" style={{ textAlign: 'center', borderBottom: '2px solid #1A531A' }}>
                   <div className="d-inline-flex align-items-center gap-1">
-                    <div className="p-2"><ShieldAlert size={25} color="#1A531A" strokeWidth={3} /></div>
+                    <div className="p-2"><ShieldAlert size={40} color="#1A531A" strokeWidth={2.5} /></div>
                     <h4 className="uppercase tracking-tight m-0"
                       style={{ fontSize: '1.875rem', color: '#1A531A', fontWeight: 'bold' }}>Salud y Seguridad</h4>
                   </div>
@@ -961,7 +973,7 @@ export const PackageDetailed = () => {
               <div className="p-4 h-100 rounded-4 border border-slate-100 transition-all hover:shadow-lg" style={{ background: '#fff' }}>
                 <div className="mb-3" style={{ textAlign: 'center', borderBottom: '2px solid #1A531A' }}>
                   <div className="d-inline-flex align-items-center gap-1">
-                    <div className="p-2"><Info size={25} color="#1A531A" strokeWidth={3} /></div>
+                    <div className="p-2"><Info size={40} color="#1A531A" strokeWidth={2.5} /></div>
                     <h4 className="uppercase tracking-tight m-0"
                       style={{ fontSize: '1.875rem', color: '#1A531A', fontWeight: 'bold' }}>Cancelación</h4>
                   </div>

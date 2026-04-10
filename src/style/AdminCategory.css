@@ -78,7 +78,6 @@
 .admin-category .btn-danger:hover {
     background-color: #FAF8F0;
     color: #B85C38;
-
 }
 
 .button-flex {
@@ -172,7 +171,6 @@
     background-color: #fff;
     margin-left: auto;
     margin-right: auto;
-
 }
 
 .label-description-category,
@@ -189,12 +187,10 @@
     resize: vertical;
     margin-bottom: 25px;
     width: 100%;
-
 }
 
 .modal-body-category {
     padding: 20px 40px;
     text-align: center;
     color: #1A531A;
-
 }

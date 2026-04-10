@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { apiGetPackageById, apiPostBooking } from '../service/PackageTravelService';
+import { apiGetPackageById, apiPostBooking, apiGetAvailableCapacity } from '../service/PackageTravelService';
 import { formatCurrency } from '../helpers/FormatCurrency';
 import { CalendarIcon, MapPin, Clock, AlertCircle, ArrowLeft, UserIcon, ShieldAlert, MessageSquare, Plane, Mail, Users, MinusCircle, PlusCircle } from 'lucide-react';
 import '../style/BookingPage.css';
@@ -22,6 +22,7 @@ export const BookingPage = () => {
     const [acceptTerms, setAcceptTerms] = useState(false);
     const [bookingError, setBookingError] = useState(null);
     const [travelerCount, setTravelerCount] = useState(1);
+    const [availableSpots, setAvailableSpots] = useState(null);
 
     const user = (() => {
         try {
@@ -55,6 +56,19 @@ export const BookingPage = () => {
         fetchPackage();
     }, [id, startDate, endDate, navigate]);
 
+    useEffect(() => {
+        if (!packageData || !startDate || !endDate) return;
+        const fetchCapacity = async () => {
+            try {
+                const data = await apiGetAvailableCapacity(id, startDate, endDate);
+                setAvailableSpots(data?.availableSpots ?? null);
+            } catch {
+                setAvailableSpots(null);
+            }
+        };
+        fetchCapacity();
+    }, [packageData, id, startDate, endDate]);
+
     const calcNights = () => {
         if (!startDate || !endDate) return 0;
         const diff = new Date(endDate) - new Date(startDate);
@@ -63,7 +77,7 @@ export const BookingPage = () => {
 
     const nights = calcNights();
     const basePrice = packageData?.price || packageData?.basePrice || 0;
-    const capacity = packageData?.capacity || null;
+    const isSoldOut = availableSpots !== null && availableSpots === 0;
     const totalPrice = basePrice * travelerCount;
 
     const getImage = () => {
@@ -236,12 +250,12 @@ export const BookingPage = () => {
                         <h2 className="booking-section-title">
                             <Users size={25} strokeWidth={3} /> Cantidad de Viajeros
                         </h2>
-                        {capacity && (
+                        {availableSpots !== null && (
                             <p className="booking-hint">
-                                Capacidad del paquete: <strong>{capacity} personas</strong>.
-                                {travelerCount >= capacity && (
-                                    <span className="booking-capacity-warning"> Solo quedan <strong>{capacity}</strong> cupos disponibles para este viaje.</span>
-                                )}
+                                {isSoldOut
+                                    ? <span className="booking-capacity-warning">No hay cupos disponibles para las fechas seleccionadas.</span>
+                                    : <>Cupos disponibles para estas fechas: <strong>{availableSpots} {availableSpots === 1 ? 'persona' : 'personas'}</strong>.</>
+                                }
                             </p>
                         )}
                         <div className="booking-traveler-selector">
@@ -249,7 +263,7 @@ export const BookingPage = () => {
                                 type="button"
                                 className="booking-traveler-btn"
                                 onClick={() => setTravelerCount(c => Math.max(1, c - 1))}
-                                disabled={travelerCount <= 1}
+                                disabled={travelerCount <= 1 || isSoldOut}
                             >
                                 <MinusCircle size={26} />
                             </button>
@@ -257,8 +271,8 @@ export const BookingPage = () => {
                             <button
                                 type="button"
                                 className="booking-traveler-btn"
-                                onClick={() => setTravelerCount(c => capacity ? Math.min(capacity, c + 1) : c + 1)}
-                                disabled={capacity ? travelerCount >= capacity : false}
+                                onClick={() => setTravelerCount(c => availableSpots ? Math.min(availableSpots, c + 1) : c + 1)}
+                                disabled={isSoldOut || (availableSpots !== null && travelerCount >= availableSpots)}
                             >
                                 <PlusCircle size={26} />
                             </button>
@@ -313,12 +327,17 @@ export const BookingPage = () => {
                     <button
                         className="booking-btn-primary booking-submit-btn"
                         onClick={handleSubmit}
-                        disabled={submitting || !acceptTerms || !phone.trim()}
-                        title={!acceptTerms ? 'Debés aceptar los términos para continuar' : !phone.trim() ? 'Ingresá tu teléfono de contacto' : ''}
+                        disabled={submitting || !acceptTerms || !phone.trim() || isSoldOut}
+                        title={isSoldOut ? 'No hay cupos disponibles para estas fechas' : !acceptTerms ? 'Debés aceptar los términos para continuar' : !phone.trim() ? 'Ingresá tu teléfono de contacto' : ''}
                     >
                         {submitting ? 'Confirmando...' : 'Confirmar Reserva'}
                     </button>
-                    {(!acceptTerms || !phone.trim()) && (
+                    {isSoldOut && (
+                        <p className="booking-terms-warning" style={{ color: '#B85C38' }}>
+                            No quedan cupos disponibles para las fechas seleccionadas. Por favor, elige otras fechas.
+                        </p>
+                    )}
+                    {!isSoldOut && (!acceptTerms || !phone.trim()) && (
                         <p className="booking-terms-warning">
                             {!phone.trim() ? 'Ingresá tu teléfono de contacto para continuar.' : 'Aceptá los términos y condiciones para habilitar la reserva.'}
                         </p>

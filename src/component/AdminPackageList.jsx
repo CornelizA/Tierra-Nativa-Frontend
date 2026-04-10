@@ -4,7 +4,7 @@ import { AdminPackageForm, initialFormData } from './AdminPackageForm';
 import '../style/AdminPackageList.css';
 import { Pencil, X, Plus, ArrowLeft, ArrowRight } from 'lucide-react';
 
-const ITEMS_PER_PAGE = 4;
+const ITEMS_PER_PAGE = 8;
 
 export const AdminPackageList = ({ onBackToMenu }) => {
     const [packages, setPackages] = useState([]);

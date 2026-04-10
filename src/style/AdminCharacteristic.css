@@ -29,6 +29,7 @@
 }
 
 .admin-characteristic td {
+    padding: 0px 15px;
     color: #333;
     border-bottom: 1px solid #DEDEDE;
 }
@@ -70,7 +71,6 @@
 .admin-characteristic .btn-danger:hover {
     background-color: #FAF8F0;
     color: #B85C38;
-
 }
 
 .button-flex-characteristic {
@@ -163,7 +163,6 @@
     background-color: #fff;
     margin-left: auto;
     margin-right: auto;
-
 }
 
 .label-icon-characteristic,
@@ -201,7 +200,7 @@
 }
 
 .button-icon-characteristic.is-auto {
-     background-color: #1A531A;
+    background-color: #1A531A;
     color: #FAF8F0;
     border-color: #1A531A;
 }
@@ -218,7 +217,7 @@
 }
 
 .button-icon-characteristic.is-manual {
-   background-color: #A49989;
+    background-color: #A49989;
     color: #FAF8F0;
     border-color: #A49989;
 }
@@ -238,7 +237,7 @@
     color: #1A531A;
 }
 
-.icon-box{
+.icon-box {
     width: fit-content;
     text-align: center;
     font-weight: bolder;
@@ -246,9 +245,8 @@
     border-radius: 8px;
 }
 
-.button-icon{
+.button-icon {
     color: #1A531A;
     font-weight: bolder;
     padding: 10px;
 }
-

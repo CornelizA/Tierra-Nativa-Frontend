@@ -122,6 +122,7 @@ describe('AdminPackageForm Updated', () => {
         fireEvent.change(screen.getByLabelText(/Nombre del Paquete/i), { target: { value: 'Nuevo Viaje' } });
         fireEvent.change(screen.getByLabelText(/Descripción Corta/i), { target: { value: 'Descripción de más de diez caracteres para que la validación pase satisfactoriamente' } });
         fireEvent.change(screen.getByLabelText(/Precio Base/i), { target: { value: '5000' } });
+        fireEvent.change(screen.getByLabelText(/Capacidad/i), { target: { value: '20' } });
         fireEvent.change(screen.getByLabelText(/Destino/i), { target: { value: 'Bariloche' } });
         
         const categorySelect = screen.getByRole('combobox');
@@ -153,6 +154,7 @@ describe('AdminPackageForm Updated', () => {
             name: 'Viaje Original',
             shortDescription: 'Descripción larga original requerida para que no falle la validación inicial del formulario',
             basePrice: "1000",
+            capacity: 15,
             destination: 'Salta',
             itineraryDetail: { 
                 duration: '1 día', 

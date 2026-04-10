@@ -125,7 +125,7 @@
     }
 }
 
-@media (min-width: 769px) and (max-width: 1023px) {
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
 
     .background-category {
         height: 100vh;
@@ -145,10 +145,18 @@
         margin: auto;
     }
 
-    .flip-card {
+    .package-card .flip-card {
         width: 100% !important;
         margin: 0 auto;
         height: 320px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .package-card .btn-primary {
+        border-radius: 0 0 8px 8px;
+        margin-top: 0;
+        display: block;
+        width: 50%;
     }
 
     .back-title {

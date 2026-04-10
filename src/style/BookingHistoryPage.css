@@ -17,7 +17,6 @@
     margin-top: 50px;
     text-align: center;
     margin-bottom: 8px;
-  
 }
 
 .history-subtitle {
@@ -282,13 +281,11 @@
     color: #aaa;
 }
 
-/* Created at detail */
 .history-created-at {
     color: #aaa;
     font-size: 0.82rem;
 }
 
-/* Loading */
 .history-loading {
     display: flex;
     justify-content: center;
@@ -296,7 +293,6 @@
     min-height: 50vh;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
     .history-card {
         flex-direction: column;

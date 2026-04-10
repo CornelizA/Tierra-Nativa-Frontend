@@ -1,6 +1,5 @@
 import { render, screen, cleanup } from '@testing-library/react';
 import ErrorBoundary from '../component/ErrorBoundary';
-import React from 'react';
 import '@testing-library/jest-dom';
 
 jest.mock('lucide-react', () => ({

@@ -3,6 +3,32 @@
     background-color: #faf8f035;
 }
 
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+    .container-calendar {
+        padding: 24px 20px;
+    }
+
+    .bootstrap-calendar-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .container-calendar {
+        padding: 20px 10px;
+    }
+
+    .bootstrap-calendar-container {
+        width: 100%;
+    }
+
+    .header-calendar {
+        gap: 0.4rem;
+    }
+}
+
 .header-calendar {
     display: flex;
     align-items: center;

@@ -1,8 +1,6 @@
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { AdminPackageList } from '../component/AdminPackageList';
-import Swal from 'sweetalert2';
 import * as PackageTravelService from '../service/PackageTravelService';
-import { packagesList } from './mockData';
 import '@testing-library/jest-dom';
 
 jest.mock('lucide-react', () => ({
@@ -37,7 +35,11 @@ const mockPackagesList = [
     { id: 2, name: "Cataratas Iguazú", destination: "Misiones", basePrice: 400000 },
     { id: 3, name: "Fitz Roy Trekking", destination: "Chaltén", basePrice: 800000 },
     { id: 4, name: "Esteros del Iberá", destination: "Corrientes", basePrice: 350000 },
-    { id: 5, name: "Península Valdés", destination: "Chubut", basePrice: 500000 }
+    { id: 5, name: "Península Valdés", destination: "Chubut", basePrice: 500000 },
+    { id: 6, name: "Salta Colonial", destination: "Salta", basePrice: 450000 },
+    { id: 7, name: "Mendoza y Vinos", destination: "Mendoza", basePrice: 550000 },
+    { id: 8, name: "Bariloche Nevado", destination: "Río Negro", basePrice: 700000 },
+    { id: 9, name: "Ushuaia Fin del Mundo", destination: "Tierra del Fuego", basePrice: 900000 },
 ];
 
 describe('AdminPackageList Component', () => {
@@ -63,7 +65,7 @@ describe('AdminPackageList Component', () => {
             expect(screen.getByText(mockPackagesList[0].name)).toBeInTheDocument();
         });
         const rows = screen.getAllByRole('row');
-        expect(rows.length).toBe(5);
+        expect(rows.length).toBe(9);
     });
 
     it('should show error message if API fails', async () => {
@@ -82,13 +84,13 @@ describe('AdminPackageList Component', () => {
         await waitFor(() => {
             expect(screen.getByText(mockPackagesList[0].name)).toBeInTheDocument();
         });
-        expect(screen.queryByText(mockPackagesList[4].name)).not.toBeInTheDocument();
+        expect(screen.queryByText(mockPackagesList[8].name)).not.toBeInTheDocument();
 
         const nextButton = screen.getByText(/Siguiente/i);
         fireEvent.click(nextButton);
 
         await waitFor(() => {
-            expect(screen.getByText(mockPackagesList[4].name)).toBeInTheDocument();
+            expect(screen.getByText(mockPackagesList[8].name)).toBeInTheDocument();
             expect(screen.queryByText(mockPackagesList[0].name)).not.toBeInTheDocument();
         });
     });

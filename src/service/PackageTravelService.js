@@ -117,6 +117,18 @@ export const apiGetPackages = async () => {
     }
 };
 
+export const apiGetAvailableCapacity = async (packageId, startDate, endDate) => {
+    try {
+        const response = await axios.get(
+            `${API_URL_BOOKING}/${packageId}/available-capacity`,
+            { params: { startDate, endDate }, headers: getHeaders() }
+        );
+        return response.data;
+    } catch {
+        return null; 
+    }
+};
+
 export const apiGetPackageById = async (id) => {
     try {
         const response = await axios.get(`${API_URL_PACKAGES}/${id}`);
@@ -480,6 +492,26 @@ export const apiGetReviews = async (packageId) => {
         return response.data;
     } catch (error) {
         apiHandleErrorAlert("Error al obtener las reseñas", error);
+        throw error;
+    }
+};
+
+export const apiGetAllBookingsAdmin = async () => {
+    try {
+        const response = await axios.get(`${API_URL_ADMIN}/bookings`, { headers: getHeaders() });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al obtener las reservas.");
+        throw error;
+    }
+};
+
+export const apiToggleContactedStatus = async (id, contacted) => {
+    try {
+        const response = await axios.patch(`${API_URL_ADMIN}/bookings/${id}/contacted`, { contacted }, { headers: getHeaders() });
+        return response.data;
+    } catch (error) {
+        apiHandleErrorAlert(error, "Error al actualizar el estado de contacto.");
         throw error;
     }
 };

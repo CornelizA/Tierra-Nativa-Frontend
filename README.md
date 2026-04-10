@@ -46,13 +46,21 @@ Aplicación web especializada en la gestión y visualización de paquetes turís
 
 ### 👤 Área de Usuario
 
-- **Catálogo Dinámico** Filtrado por categorías y buscador inteligente de destinos.
+- **Catálogo Dinámico y Detalle:**  Filtrado por categorías, buscador inteligente y visualización de itinerarios con características dinámicas.
 
-- **Detalle de Paquete** Visualización de itinerarios, precios, galería de imágenes y características (WiFi, traslados, entre otros).
+- **Búsqueda Avanzada y Disponibilidad:**  Motor de búsqueda por fechas y provincia con validación de cupos en tiempo real.
 
-- **Búsqueda Avanzada y Disponibilidad Dinámica** Motor de búsqueda que combina palabras clave con filtros por fechas y provincia.
+- **Calendario con Lógica de Duración Fija:**  Al seleccionar la fecha de inicio, el sistema autocalcula la fecha de fin según los días establecidos para cada paquete.
 
-- **Calendario de Disponibilidad Real** Integrado en la ficha técnica, permite visualizar bloqueos administrativos y reservas confirmadas, garantizando una planificación libre de errores.
+- **Proceso de Reserva (Checkout):**  Definición de cantidad de personas, captura de número de teléfono y campo de solicitudes especiales. El sistema calcula el total dinámicamente basado en los viajeros.
+
+- **Sistema de Favoritos y Reseñas:**  Persistencia de intereses y lógica de valoración donde solo usuarios con viajes finalizados pueden puntuar.
+
+- **Política de Cancelación:**  Autogestión de cancelaciones permitida hasta 15 días antes de la fecha de inicio.
+
+- **Notificaciones Duales por Correo:**  Envío automático de correo para confirmación de reserva (Voucher) y para confirmación de cancelación.
+
+- **Conectividad Social y Soporte:**  Botón flotante de WhatsApp dinámico y módulo de compartir enlaces.
 
 - **Sistema de Favoritos** Sección privada ("Mis Favoritos") para usuarios autenticados, permitiendo persistir intereses y agilizar la conversión de compra.
 
@@ -62,9 +70,16 @@ Aplicación web especializada en la gestión y visualización de paquetes turís
 
 - **Conectividad Social** Módulo de "Compartir" con copia rápida de enlaces y redirección optimizada a redes sociales.
 
-- **Sistema de Autenticación** Registro con validación de contraseña mediante Regex y login persistente con sessionStorage.
 
 ###  🛡️ Panel de Administración (Desktop Only)
+
+- **Gestión Administrativa de Reservas:** Nuevo panel para supervisar ventas que incluye:
+
+**Listado detallado:** Quién reservó, correo, teléfono, fechas y total.
+
+**Estado de Ocupación:** Monitoreo de cupos disponibles por paquete y fecha.
+
+**Checklist de Coordinación:** Registro interactivo para marcar si ya se estableció contacto con el cliente.
 
 - **Gestión de Paquetes** CRUD completo con asignación de categorías y múltiples características.
 

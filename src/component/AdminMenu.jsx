@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../style/AdminMenu.css';
-import { Plane, Plus, Users, Tags, Settings2, ShieldAlert, Laptop, } from 'lucide-react';
+import { Plane, Plus, Users, Tags, Settings2, ShieldAlert, Laptop, BookMarked } from 'lucide-react';
 
 export const AdminMenu = ({ onViewChange }) => {
 
@@ -161,6 +161,12 @@ export const AdminMenu = ({ onViewChange }) => {
                     onClick={() => handleNavigation('LIST_USERS')}
                 />
                 <MenuItem
+                    icon={BookMarked}
+                    title="Gestionar Reservas"
+                    description="Listar y gestionar reservas de usuarios"
+                    onClick={() => handleNavigation('LIST_BOOKING')}
+                />
+                <MenuItem
                     icon={Tags}
                     title="Gestionar Categorías"
                     description="Registrar, editar y eliminar categorias."
@@ -172,6 +178,7 @@ export const AdminMenu = ({ onViewChange }) => {
                     description="Registrar, editar y eliminar características."
                     onClick={() => handleNavigation('LIST_CHARACTERISTICS')}
                 />
+
             </div>
         </div>
     );

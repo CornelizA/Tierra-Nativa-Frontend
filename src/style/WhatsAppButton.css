@@ -25,3 +25,17 @@
 .whatsapp-float-btn:active {
     transform: scale(0.97);
 }
+
+@media only screen and (min-width: 768px) {
+    .whatsapp-float-btn {
+        width: 72px;
+        height: 72px;
+        bottom: 32px;
+        right: 32px;
+    }
+
+    .whatsapp-float-btn svg {
+        width: 38px;
+        height: 38px;
+    }
+}

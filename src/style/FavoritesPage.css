@@ -48,46 +48,24 @@
     font-weight: bolder;
 }
 
-@media (min-width: 769px) and (max-width: 1023px) {
+.container-favorites .package-card .btn-primary {
+    width: auto;
+    display: inline-block;
+}
 
-    .display-title {
-        margin-top: 250px !important;
-    }
-
-    .package-home {
-        padding: 0 20px;
+@media only screen and (max-width: 767px) {
+    .title-favorites {
+        padding-top: 20px;
     }
 
     .package-card {
-        flex: 0 0 auto;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 25px !important;
-        padding: 0 30px !important;
-        margin: auto;
+        padding: 10px 12px;
     }
+}
 
-    .flip-card {
-        width: 100% !important;
-        margin: 0 auto;
-        height: 320px !important;
-    }
-
-    .back-title {
-        font-size: 0.95rem !important;
-        margin-bottom: 0.4rem !important;
-    }
-
-    .back-description {
-        font-size: 0.7rem !important;
-        line-height: 1.2 !important;
-        margin-bottom: 0.5rem !important;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .front-title {
-        font-size: 1.1rem !important;
+@media (max-width: 575px) {
+    .package-card {
+        padding: 20px 30px 20px 50px;
     }
 
 }

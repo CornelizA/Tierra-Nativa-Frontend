@@ -1,7 +1,12 @@
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import '../style/NavBarComponent.css';
+import { useContext } from 'react';
+import { PackageTravelContext } from '../context/PackageTravelContext';
+import Swal from 'sweetalert2';
 
-export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout, categories = [] }) => {
+export const NavBarComponent = ({ isScrolled, shouldBeSolid }) => {
+    const { auth, logout, categories = [] } = useContext(PackageTravelContext);
+    const navigate = useNavigate();
 
     const navClasses = `navbar navbar-expand-lg tn-navbar navbar-fixed ${shouldBeSolid || isScrolled ? 'navbar-solid' : 'navbar-transparent'}`;
 
@@ -23,7 +28,27 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout, cat
         return `${f.charAt(0) || ''}${l.charAt(0) || ''}`.toUpperCase();
     };
 
+    const handleLogout = () => {
+        logout();
+        navigate('/home');
+        setTimeout(() => {
+            Swal.fire({
+                title: 'Sesión cerrada.',
+                text: '¡Regresa pronto!',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                customClass: {
+                    confirmButton: 'btn btn-outline-success border mx-2'
+                },
+                buttonsStyling: false,
+                timer: 2500,
+                timerProgressBar: true,
+            });
+        }, 100);
+    };
+
     const UserAvatar = () => {
+        const user = auth.user;
         const firstName = user?.firstName || '';
         const lastName = user?.lastName || '';
         const role = user?.role || 'USER';
@@ -62,7 +87,7 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout, cat
                     )}
                     <li><hr className="dropdown-divider" /></li>
                     <li>
-                        <button onClick={onLogout} className="dropdown-item text">Cerrar Sesión</button>
+                        <button onClick={handleLogout} className="dropdown-item text">Cerrar Sesión</button>
                     </li>
                 </ul>
             </div>
@@ -70,7 +95,7 @@ export const NavBarComponent = ({ isScrolled, shouldBeSolid, user, onLogout, cat
     };
 
     const AuthButtons = () => {
-        if (user) return <UserAvatar />;
+        if (auth.isAuthenticated) return <UserAvatar />;
         return (
             <div className="dropdown">
                 <button className="btn btn-secondary dropdown-toggle bg-green-600 hover:bg-green-700 text-white transition rounded-lg px-3 py-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">Mi cuenta</button>

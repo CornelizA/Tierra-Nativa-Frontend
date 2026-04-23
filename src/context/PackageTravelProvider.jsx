@@ -4,13 +4,71 @@ import { apiGetMyFavorites } from '../service/PackageTravelService'
 import Swal from 'sweetalert2';
 import { apiGetPackages, apiGetCategories } from "../service/PackageTravelService.js";
 
+const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+
 export const PackageTravelProvider = ({ children }) => {
 
     const [packageTravel, setPackageTravel] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [categoryMap, setCategoryMap] = useState({});
+    const [categories, setCategories] = useState([]);
     const [favoriteIds, setFavoriteIds] = useState(new Set());
     const [loadingFavorites, setLoadingFavorites] = useState(false);
+
+    const [auth, setAuth] = useState(() => {
+        try {
+            const storedUser = sessionStorage.getItem('user');
+            const token = sessionStorage.getItem('jwtToken');
+            const user = storedUser ? JSON.parse(storedUser) : null;
+            return { user, token, isAuthenticated: !!(token && user) };
+        } catch {
+            return { user: null, token: null, isAuthenticated: false };
+        }
+    });
+
+    const login = useCallback((userData) => {
+        const token = userData.jwtToken || userData.token;
+        if (!token) return;
+        const expiryTime = Date.now() + SIX_HOURS_MS;
+        const simplifiedUser = {
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            role: userData.role,
+            email: userData.email
+        };
+        sessionStorage.setItem('jwtToken', token);
+        sessionStorage.setItem('userRole', userData.role);
+        sessionStorage.setItem('user', JSON.stringify(simplifiedUser));
+        sessionStorage.setItem('token_expiry', expiryTime.toString());
+        setAuth({ user: simplifiedUser, token, isAuthenticated: true });
+    }, []);
+
+    const logout = useCallback(() => {
+        sessionStorage.clear();
+        setAuth({ user: null, token: null, isAuthenticated: false });
+        setFavoriteIds(new Set());
+    }, []);
+
+    useEffect(() => {
+        const checkTokenExpiry = () => {
+            const expiry = sessionStorage.getItem('token_expiry');
+            const token = sessionStorage.getItem('jwtToken');
+            if (token && expiry && Date.now() >= parseInt(expiry)) {
+                logout();
+                Swal.fire({
+                    title: 'Sesión Finalizada',
+                    text: 'Por seguridad, tu sesión se ha cerrado automáticamente.',
+                    icon: 'info',
+                    confirmButtonText: 'Aceptar',
+                    allowOutsideClick: false
+                }).then(() => {
+                    window.location.href = '/home?session=expired';
+                });
+            }
+        };
+        const interval = setInterval(checkTokenExpiry, 1000);
+        return () => clearInterval(interval);
+    }, [logout]);
 
     const fireAlert = () => {
         if (typeof Swal !== 'undefined') {
@@ -92,12 +150,12 @@ export const PackageTravelProvider = ({ children }) => {
             try {
                 const cats = await apiGetCategories();
                 if (Array.isArray(cats)) {
+                    setCategories(cats);
                     const map = {};
                     cats.forEach(c => { if (c && (c.id !== undefined)) map[c.id] = c.title || c.name || ''; });
                     setCategoryMap(map);
                 }
-            } catch (e) {
-                fireAlert('Failed to fetch categories map:', e);
+            } catch {
             }
         };
         fetchCats();
@@ -105,7 +163,6 @@ export const PackageTravelProvider = ({ children }) => {
 
     const syncFavorites = useCallback(async () => {
         const token = sessionStorage.getItem('jwtToken');
-
         if (!token) {
             setFavoriteIds(new Set());
             return;
@@ -115,7 +172,7 @@ export const PackageTravelProvider = ({ children }) => {
             const data = await apiGetMyFavorites();
             const ids = new Set(data.map(pkg => pkg.id));
             setFavoriteIds(ids);
-        } catch (error) {
+        } catch {
         } finally {
             setLoadingFavorites(false);
         }
@@ -134,8 +191,12 @@ export const PackageTravelProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        syncFavorites();
-    }, [syncFavorites]);
+        if (auth.isAuthenticated) {
+            syncFavorites();
+        } else {
+            setFavoriteIds(new Set());
+        }
+    }, [auth.isAuthenticated, syncFavorites]);
 
     return (
         <PackageTravelContext.Provider value={{
@@ -143,14 +204,19 @@ export const PackageTravelProvider = ({ children }) => {
             isLoaded,
             categoryMap,
             setCategoryMap,
+            categories,
             addPackageTravel,
             fetchPackageTravel,
             updatePackageTravel,
             removePackageTravel,
             favoriteIds,
+            setFavoriteIds,
             updateFavoriteInContext,
             loadingFavorites,
-            syncFavorites
+            syncFavorites,
+            auth,
+            login,
+            logout
         }}>
             {children}
         </PackageTravelContext.Provider>

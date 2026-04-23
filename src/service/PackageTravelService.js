@@ -198,25 +198,12 @@ export const apiLogin = async (credentials) => {
         const response = await axios.post(`${API_URL_AUTH}/login`, credentials, {
             headers: getHeaders()
         });
-        const token = response.data.jwtToken || response.data.token;
-        if (token) {
-            sessionStorage.setItem('jwtToken', token);
-            const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
-            const expiryTime = Date.now() + SIX_HOURS_MS;
-            sessionStorage.setItem('token_expiry', expiryTime.toString());
-        }
         fireAlert('¡Bienvenido!', 'Sesión iniciada correctamente', 'success');
         return response.data;
     } catch (error) {
         apiHandleErrorAlert(error, 'Credenciales inválidas. Por favor, verifica tu email y contraseña.');
         throw error;
     }
-};
-
-export const apiLogout = () => {
-    sessionStorage.removeItem('jwtToken');
-    sessionStorage.removeItem('token_expiry');
-    return true;
 };
 
 export const apiGetAdminUsers = async () => {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import Swal from 'sweetalert2';
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 const API_URL_PACKAGES = `${BASE_URL}/paquetes`;
 const API_URL_AUTH = `${BASE_URL}/auth`;
 const API_URL_ADMIN = `${BASE_URL}/admin`;
